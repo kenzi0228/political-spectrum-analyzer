@@ -55,7 +55,7 @@ def get_personalities() -> List[PersonalityPoint]:
         P("Kim Jong-un (est.)", "Dictateur", x=-2.8, y=3.4, ux=0.60, uy=0.55),
 
         # =========================
-        # Présidents / dirigeants actuels (est.)
+        # Présidents / dirigeants actuels 
         # =========================
         P("Macron (est.)", "Président", x=1.0, y=0.2, ux=0.55, uy=0.45),
         P("Biden (est.)", "Président", x=0.8, y=0.6, ux=0.55, uy=0.55),
@@ -68,7 +68,7 @@ def get_personalities() -> List[PersonalityPoint]:
         P("Mandela (est.)", "Président", x=-0.4, y=-0.2, ux=0.60, uy=0.55),
 
         # =========================
-        # Catégorie bonus (tu peux l'utiliser)
+        # Catégorie bonus 
         # =========================
         P("Robespierre (est.)", "Révolutionnaire", x=-1.8, y=1.8, ux=0.60, uy=0.55),
         P("Lénine (est.)", "Révolutionnaire", x=-2.2, y=2.6, ux=0.60, uy=0.55),
