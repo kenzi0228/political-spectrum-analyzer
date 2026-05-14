@@ -5,11 +5,12 @@ from typing import Iterable
 from political_spectrum_analyzer.domain.models import PersonalityPoint
 
 
-ANY_VALUE = "Any"
+NO_FILTER_VALUE = "None"
+ANY_VALUE = NO_FILTER_VALUE
 
 
 def _normalize_filter_value(value: str | None) -> str:
-    return (value or ANY_VALUE).strip()
+    return (value or NO_FILTER_VALUE).strip()
 
 
 def _split_values(value: str | None) -> list[str]:
@@ -23,7 +24,7 @@ def _split_values(value: str | None) -> list[str]:
 def _matches_filter(actual_value: str | None, selected_value: str | None) -> bool:
     selected_value = _normalize_filter_value(selected_value)
 
-    if selected_value == ANY_VALUE:
+    if selected_value == NO_FILTER_VALUE:
         return True
 
     actual_values = _split_values(actual_value)
@@ -43,15 +44,15 @@ def get_unique_values(
         for value in _split_values(raw_value):
             values.add(value)
 
-    return [ANY_VALUE] + sorted(values)
+    return [NO_FILTER_VALUE] + sorted(values)
 
 
 def filter_personalities(
     personalities: Iterable[PersonalityPoint],
-    display_group: str | None = ANY_VALUE,
-    country: str | None = ANY_VALUE,
-    period: str | None = ANY_VALUE,
-    ideology_family: str | None = ANY_VALUE,
+    display_group: str | None = NO_FILTER_VALUE,
+    country: str | None = NO_FILTER_VALUE,
+    period: str | None = NO_FILTER_VALUE,
+    ideology_family: str | None = NO_FILTER_VALUE,
 ) -> list[PersonalityPoint]:
     filtered: list[PersonalityPoint] = []
 

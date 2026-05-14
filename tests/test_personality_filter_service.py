@@ -1,6 +1,6 @@
 from political_spectrum_analyzer.domain.models import PersonalityPoint
 from political_spectrum_analyzer.services.personality_filter_service import (
-    ANY_VALUE,
+    NO_FILTER_VALUE,
     filter_personalities,
     get_unique_values,
 )
@@ -38,10 +38,10 @@ def _sample_personalities():
     ]
 
 
-def test_get_unique_values_includes_any_value():
+def test_get_unique_values_includes_none_value():
     values = get_unique_values(_sample_personalities(), "display_group")
 
-    assert values[0] == ANY_VALUE
+    assert values[0] == NO_FILTER_VALUE
     assert "Philosopher" in values
     assert "President" in values
 
@@ -49,6 +49,7 @@ def test_get_unique_values_includes_any_value():
 def test_get_unique_values_splits_multi_country_values():
     values = get_unique_values(_sample_personalities(), "country")
 
+    assert values[0] == NO_FILTER_VALUE
     assert "France" in values
     assert "Algeria" in values
 
@@ -83,13 +84,19 @@ def test_filter_personalities_by_country_and_period():
     assert len(result) == 2
 
 
-def test_filter_personalities_with_any_values_returns_all():
+def test_filter_personalities_with_none_values_returns_all():
     result = filter_personalities(
         _sample_personalities(),
-        display_group=ANY_VALUE,
-        country=ANY_VALUE,
-        period=ANY_VALUE,
-        ideology_family=ANY_VALUE,
+        display_group=NO_FILTER_VALUE,
+        country=NO_FILTER_VALUE,
+        period=NO_FILTER_VALUE,
+        ideology_family=NO_FILTER_VALUE,
     )
+
+    assert len(result) == 3
+
+
+def test_filter_personalities_defaults_return_all():
+    result = filter_personalities(_sample_personalities())
 
     assert len(result) == 3

@@ -20,6 +20,7 @@ from political_spectrum_analyzer.services.analysis_service import analyze_profil
 from political_spectrum_analyzer.services.export_results_service import export_analysis_to_csv
 from political_spectrum_analyzer.services.personality_filter_service import (
     ANY_VALUE,
+    NO_FILTER_VALUE,
     filter_personalities,
     get_unique_values,
 )
@@ -41,7 +42,7 @@ class PlotFrame(ttk.Frame):
         ctrl.pack(fill="x", pady=(0, 8))
 
         ttk.Label(ctrl, text="Group:", anchor="w").pack(side="left", padx=(0, 4))
-        self.group_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.group_filter_var = tk.StringVar(value=NO_FILTER_VALUE)
         self.group_filter_combo = ttk.Combobox(
             ctrl,
             textvariable=self.group_filter_var,
@@ -53,7 +54,7 @@ class PlotFrame(ttk.Frame):
         self.group_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
 
         ttk.Label(ctrl, text="Country:", anchor="w").pack(side="left", padx=(0, 4))
-        self.country_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.country_filter_var = tk.StringVar(value=NO_FILTER_VALUE)
         self.country_filter_combo = ttk.Combobox(
             ctrl,
             textvariable=self.country_filter_var,
@@ -65,7 +66,7 @@ class PlotFrame(ttk.Frame):
         self.country_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
 
         ttk.Label(ctrl, text="Period:", anchor="w").pack(side="left", padx=(0, 4))
-        self.period_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.period_filter_var = tk.StringVar(value=NO_FILTER_VALUE)
         self.period_filter_combo = ttk.Combobox(
             ctrl,
             textvariable=self.period_filter_var,
@@ -77,7 +78,7 @@ class PlotFrame(ttk.Frame):
         self.period_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
 
         ttk.Label(ctrl, text="Ideology:", anchor="w").pack(side="left", padx=(0, 4))
-        self.ideology_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.ideology_filter_var = tk.StringVar(value=NO_FILTER_VALUE)
         self.ideology_filter_combo = ttk.Combobox(
             ctrl,
             textvariable=self.ideology_filter_var,
@@ -222,10 +223,10 @@ class PlotFrame(ttk.Frame):
         self._update_analysis_panel()
 
     def clear_filters(self):
-        self.group_filter_var.set(ANY_VALUE)
-        self.country_filter_var.set(ANY_VALUE)
-        self.period_filter_var.set(ANY_VALUE)
-        self.ideology_filter_var.set(ANY_VALUE)
+        self.group_filter_var.set(NO_FILTER_VALUE)
+        self.country_filter_var.set(NO_FILTER_VALUE)
+        self.period_filter_var.set(NO_FILTER_VALUE)
+        self.ideology_filter_var.set(NO_FILTER_VALUE)
         self.apply_filter()
 
     def reset_graph_view(self):
