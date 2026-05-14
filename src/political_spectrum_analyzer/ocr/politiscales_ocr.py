@@ -94,7 +94,4 @@ def extract_scores_from_image(image_path: str) -> Dict[str, int]:
             if value is not None:
                 scores[variable_name] = value
                 break
-
-    # Fallback: if OCR found many percentages but not matched well,
-    # keep current result and let user review manually in UI.
     return scores
