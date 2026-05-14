@@ -18,20 +18,20 @@ def _sample_personalities():
             y=-0.8,
         ),
         PersonalityPoint(
-            name="Emmanuel Macron",
-            display_group="President",
-            country="France",
-            period="21st century",
-            ideology_family="Centrism",
-            x=1.0,
-            y=0.2,
+            name="Albert Camus",
+            display_group="Philosopher",
+            country="France; Algeria",
+            period="20th century",
+            ideology_family="Liberalism",
+            x=-0.4,
+            y=-0.8,
         ),
         PersonalityPoint(
             name="Charles de Gaulle",
             display_group="President",
             country="France",
             period="20th century",
-            ideology_family="Gaullism",
+            ideology_family="Conservatism",
             x=1.8,
             y=1.3,
         ),
@@ -46,14 +46,31 @@ def test_get_unique_values_includes_any_value():
     assert "President" in values
 
 
+def test_get_unique_values_splits_multi_country_values():
+    values = get_unique_values(_sample_personalities(), "country")
+
+    assert "France" in values
+    assert "Algeria" in values
+
+
 def test_filter_personalities_by_display_group():
     result = filter_personalities(
         _sample_personalities(),
         display_group="President",
     )
 
-    assert len(result) == 2
-    assert all(person.display_group == "President" for person in result)
+    assert len(result) == 1
+    assert result[0].name == "Charles de Gaulle"
+
+
+def test_filter_personalities_by_multi_country_token():
+    result = filter_personalities(
+        _sample_personalities(),
+        country="Algeria",
+    )
+
+    assert len(result) == 1
+    assert result[0].name == "Albert Camus"
 
 
 def test_filter_personalities_by_country_and_period():
@@ -63,8 +80,7 @@ def test_filter_personalities_by_country_and_period():
         period="20th century",
     )
 
-    assert len(result) == 1
-    assert result[0].name == "Charles de Gaulle"
+    assert len(result) == 2
 
 
 def test_filter_personalities_with_any_values_returns_all():

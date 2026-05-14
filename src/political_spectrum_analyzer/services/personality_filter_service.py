@@ -12,13 +12,23 @@ def _normalize_filter_value(value: str | None) -> str:
     return (value or ANY_VALUE).strip()
 
 
+def _split_values(value: str | None) -> list[str]:
+    if not value:
+        return []
+
+    normalized = str(value).replace("/", ";").replace("|", ";").replace(",", ";")
+    return [part.strip() for part in normalized.split(";") if part.strip()]
+
+
 def _matches_filter(actual_value: str | None, selected_value: str | None) -> bool:
     selected_value = _normalize_filter_value(selected_value)
 
     if selected_value == ANY_VALUE:
         return True
 
-    return (actual_value or "").strip().lower() == selected_value.lower()
+    actual_values = _split_values(actual_value)
+
+    return any(value.lower() == selected_value.lower() for value in actual_values)
 
 
 def get_unique_values(
@@ -28,10 +38,10 @@ def get_unique_values(
     values = set()
 
     for personality in personalities:
-        value = getattr(personality, attribute_name, None)
+        raw_value = getattr(personality, attribute_name, None)
 
-        if value:
-            values.add(str(value).strip())
+        for value in _split_values(raw_value):
+            values.add(value)
 
     return [ANY_VALUE] + sorted(values)
 
