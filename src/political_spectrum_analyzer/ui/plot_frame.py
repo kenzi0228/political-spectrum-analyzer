@@ -9,7 +9,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from political_spectrum_analyzer.plotting.plot_2d import (
     draw_base,
@@ -49,7 +49,27 @@ class PlotFrame(ttk.Frame):
         self.filter_combo.pack(side="left")
         self.filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
 
-        ttk.Button(ctrl, text="Apply", command=self.apply_filter).pack(side="left", padx=8)
+        ttk.Button(ctrl, text="Apply", command=self.apply_filter).pack(side="left", padx=(8, 0))
+
+        ttk.Separator(ctrl, orient="vertical").pack(side="left", fill="y", padx=10)
+
+        ttk.Button(
+            ctrl,
+            text="Reset graph view",
+            command=self.reset_graph_view,
+        ).pack(side="left", padx=(0, 8))
+
+        ttk.Button(
+            ctrl,
+            text="Export chart (PNG)",
+            command=self.save_figure,
+        ).pack(side="left", padx=(0, 8))
+
+        ttk.Button(
+            ctrl,
+            text="Back to main menu",
+            command=self.back_to_main_menu,
+        ).pack(side="left")
 
         graph = ttk.Frame(self)
         graph.pack(fill="both", expand=True)
@@ -57,10 +77,6 @@ class PlotFrame(ttk.Frame):
         self.fig, self.ax = plt.subplots(figsize=(7.6, 6.4))
         self.canvas = FigureCanvasTkAgg(self.fig, master=graph)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
-
-        toolbar = ttk.Frame(graph)
-        toolbar.pack(fill="x")
-        NavigationToolbar2Tk(self.canvas, toolbar)
 
         analysis_container = ttk.Frame(self)
         analysis_container.pack(fill="both", expand=False, pady=(8, 0))
@@ -82,21 +98,6 @@ class PlotFrame(ttk.Frame):
         )
         self.analysis_text.pack(fill="both", expand=True)
         self.analysis_text.configure(state="disabled")
-
-        bottom = ttk.Frame(self)
-        bottom.pack(fill="x", pady=(8, 0))
-
-        ttk.Button(
-            bottom,
-            text="Export chart (PNG)",
-            command=self.save_figure,
-        ).pack(side="left")
-
-        ttk.Button(
-            bottom,
-            text="Back to main menu",
-            command=self.back_to_main_menu,
-        ).pack(side="left", padx=8)
 
         self._people_data_cache = []
 
@@ -174,6 +175,9 @@ class PlotFrame(ttk.Frame):
     def apply_filter(self):
         self._redraw_all()
         self._update_analysis_panel()
+
+    def reset_graph_view(self):
+        self._redraw_all()
 
     def save_figure(self):
         file_path = filedialog.asksaveasfilename(
