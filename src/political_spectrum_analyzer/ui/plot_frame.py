@@ -18,6 +18,11 @@ from political_spectrum_analyzer.plotting.plot_2d import (
 )
 from political_spectrum_analyzer.services.analysis_service import analyze_profile
 from political_spectrum_analyzer.services.export_results_service import export_analysis_to_csv
+from political_spectrum_analyzer.services.personality_filter_service import (
+    ANY_VALUE,
+    filter_personalities,
+    get_unique_values,
+)
 
 
 class PlotFrame(ttk.Frame):
@@ -35,24 +40,63 @@ class PlotFrame(ttk.Frame):
         ctrl = ttk.Frame(self)
         ctrl.pack(fill="x", pady=(0, 8))
 
-        ttk.Label(ctrl, text="Personality filter:", anchor="w").pack(side="left", padx=(0, 8))
-
-        self.filter_var = tk.StringVar(value="None")
-        categories = sorted({p.display_group for p in self.app.personalities})
-
-        self.filter_combo = ttk.Combobox(
+        ttk.Label(ctrl, text="Group:", anchor="w").pack(side="left", padx=(0, 4))
+        self.group_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.group_filter_combo = ttk.Combobox(
             ctrl,
-            textvariable=self.filter_var,
+            textvariable=self.group_filter_var,
             state="readonly",
-            width=22,
-            values=["None", "All"] + categories,
+            width=16,
+            values=get_unique_values(self.app.personalities, "display_group"),
         )
-        self.filter_combo.pack(side="left")
-        self.filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
+        self.group_filter_combo.pack(side="left", padx=(0, 8))
+        self.group_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
 
-        ttk.Button(ctrl, text="Apply", command=self.apply_filter).pack(side="left", padx=(8, 0))
+        ttk.Label(ctrl, text="Country:", anchor="w").pack(side="left", padx=(0, 4))
+        self.country_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.country_filter_combo = ttk.Combobox(
+            ctrl,
+            textvariable=self.country_filter_var,
+            state="readonly",
+            width=18,
+            values=get_unique_values(self.app.personalities, "country"),
+        )
+        self.country_filter_combo.pack(side="left", padx=(0, 8))
+        self.country_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
 
-        ttk.Separator(ctrl, orient="vertical").pack(side="left", fill="y", padx=10)
+        ttk.Label(ctrl, text="Period:", anchor="w").pack(side="left", padx=(0, 4))
+        self.period_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.period_filter_combo = ttk.Combobox(
+            ctrl,
+            textvariable=self.period_filter_var,
+            state="readonly",
+            width=16,
+            values=get_unique_values(self.app.personalities, "period"),
+        )
+        self.period_filter_combo.pack(side="left", padx=(0, 8))
+        self.period_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
+
+        ttk.Label(ctrl, text="Ideology:", anchor="w").pack(side="left", padx=(0, 4))
+        self.ideology_filter_var = tk.StringVar(value=ANY_VALUE)
+        self.ideology_filter_combo = ttk.Combobox(
+            ctrl,
+            textvariable=self.ideology_filter_var,
+            state="readonly",
+            width=20,
+            values=get_unique_values(self.app.personalities, "ideology_family"),
+        )
+        self.ideology_filter_combo.pack(side="left", padx=(0, 8))
+        self.ideology_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
+
+        ttk.Button(ctrl, text="Apply", command=self.apply_filter).pack(side="left", padx=(0, 8))
+
+        ttk.Button(
+            ctrl,
+            text="Clear filters",
+            command=self.clear_filters,
+        ).pack(side="left", padx=(0, 8))
+
+        ttk.Separator(ctrl, orient="vertical").pack(side="left", fill="y", padx=8)
 
         ttk.Button(
             ctrl,
@@ -114,19 +158,13 @@ class PlotFrame(ttk.Frame):
         self._update_analysis_panel()
 
     def _get_filtered_personalities(self):
-        selection = (self.filter_var.get() or "None").strip()
-
-        if selection == "None":
-            return []
-
-        if selection == "All":
-            return self.app.personalities
-
-        return [
-            p
-            for p in self.app.personalities
-            if p.display_group.lower() == selection.lower()
-        ]
+        return filter_personalities(
+            personalities=self.app.personalities,
+            display_group=self.group_filter_var.get(),
+            country=self.country_filter_var.get(),
+            period=self.period_filter_var.get(),
+            ideology_family=self.ideology_filter_var.get(),
+        )
 
     def _redraw_all(self):
         draw_base(self.ax)
@@ -182,6 +220,13 @@ class PlotFrame(ttk.Frame):
     def apply_filter(self):
         self._redraw_all()
         self._update_analysis_panel()
+
+    def clear_filters(self):
+        self.group_filter_var.set(ANY_VALUE)
+        self.country_filter_var.set(ANY_VALUE)
+        self.period_filter_var.set(ANY_VALUE)
+        self.ideology_filter_var.set(ANY_VALUE)
+        self.apply_filter()
 
     def reset_graph_view(self):
         self._redraw_all()
@@ -250,7 +295,7 @@ class PlotFrame(ttk.Frame):
 
         ttk.Label(
             dialog,
-            text="Note: current filtered references depend on the selected personality filter above.",
+            text="Note: current filtered references depend on the selected filters above.",
             wraplength=430,
         ).pack(anchor="w", padx=12, pady=(6, 0))
 
@@ -281,8 +326,8 @@ class PlotFrame(ttk.Frame):
             if mode == "filtered_references" and not filtered_personalities:
                 messagebox.showwarning(
                     "CSV export",
-                    "No personality filter is currently selected. "
-                    "Choose a filter first or use another export mode.",
+                    "No references match the current filters. "
+                    "Adjust filters first or use another export mode.",
                 )
                 return
 
@@ -313,7 +358,7 @@ class PlotFrame(ttk.Frame):
         self.analysis_text.configure(state="disabled")
 
         try:
-            self.filter_var.set("None")
+            self.clear_filters()
         except Exception:
             pass
 
