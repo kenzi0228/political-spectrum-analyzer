@@ -38,90 +38,115 @@ class PlotFrame(ttk.Frame):
             style="Subtitle.TLabel",
         ).pack(anchor="w", pady=(0, 6))
 
-        ctrl = ttk.Frame(self)
-        ctrl.pack(fill="x", pady=(0, 8))
+        controls = ttk.Frame(self)
+        controls.pack(fill="x", pady=(0, 8))
 
-        ttk.Label(ctrl, text="Group:", anchor="w").pack(side="left", padx=(0, 4))
+        # ------------------------------------------------------------
+        # Filters row
+        # ------------------------------------------------------------
+        filters_row = ttk.LabelFrame(controls, text="Reference filters")
+        filters_row.pack(fill="x", padx=0, pady=(0, 6))
+
         self.group_filter_var = tk.StringVar(value=NONE_VALUE)
-        self.group_filter_combo = ttk.Combobox(
-            ctrl,
-            textvariable=self.group_filter_var,
-            state="readonly",
-            width=16,
-            values=get_unique_values(self.app.personalities, "display_group"),
-        )
-        self.group_filter_combo.pack(side="left", padx=(0, 8))
-        self.group_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
-
-        ttk.Label(ctrl, text="Country:", anchor="w").pack(side="left", padx=(0, 4))
         self.country_filter_var = tk.StringVar(value=NONE_VALUE)
-        self.country_filter_combo = ttk.Combobox(
-            ctrl,
-            textvariable=self.country_filter_var,
-            state="readonly",
-            width=18,
-            values=get_unique_values(self.app.personalities, "country"),
-        )
-        self.country_filter_combo.pack(side="left", padx=(0, 8))
-        self.country_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
-
-        ttk.Label(ctrl, text="Period:", anchor="w").pack(side="left", padx=(0, 4))
         self.period_filter_var = tk.StringVar(value=NONE_VALUE)
-        self.period_filter_combo = ttk.Combobox(
-            ctrl,
-            textvariable=self.period_filter_var,
-            state="readonly",
-            width=16,
-            values=get_unique_values(self.app.personalities, "period"),
-        )
-        self.period_filter_combo.pack(side="left", padx=(0, 8))
-        self.period_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
-
-        ttk.Label(ctrl, text="Ideology:", anchor="w").pack(side="left", padx=(0, 4))
         self.ideology_filter_var = tk.StringVar(value=NONE_VALUE)
-        self.ideology_filter_combo = ttk.Combobox(
-            ctrl,
-            textvariable=self.ideology_filter_var,
-            state="readonly",
-            width=20,
-            values=get_unique_values(self.app.personalities, "ideology_family"),
-        )
-        self.ideology_filter_combo.pack(side="left", padx=(0, 8))
-        self.ideology_filter_combo.bind("<<ComboboxSelected>>", lambda e: self.apply_filter())
 
-        ttk.Button(ctrl, text="Apply", command=self.apply_filter).pack(side="left", padx=(0, 8))
+        self._add_filter_control(
+            parent=filters_row,
+            label="Group",
+            variable=self.group_filter_var,
+            values=get_unique_values(self.app.personalities, "display_group"),
+            column=0,
+            width=18,
+        )
+
+        self._add_filter_control(
+            parent=filters_row,
+            label="Country",
+            variable=self.country_filter_var,
+            values=get_unique_values(self.app.personalities, "country"),
+            column=1,
+            width=20,
+        )
+
+        self._add_filter_control(
+            parent=filters_row,
+            label="Period",
+            variable=self.period_filter_var,
+            values=get_unique_values(self.app.personalities, "period"),
+            column=2,
+            width=18,
+        )
+
+        self._add_filter_control(
+            parent=filters_row,
+            label="Ideology",
+            variable=self.ideology_filter_var,
+            values=get_unique_values(self.app.personalities, "ideology_family"),
+            column=3,
+            width=24,
+        )
 
         ttk.Button(
-            ctrl,
+            filters_row,
+            text="Apply filters",
+            command=self.apply_filter,
+        ).grid(row=0, column=8, padx=(12, 4), pady=6, sticky="w")
+
+        ttk.Button(
+            filters_row,
             text="Clear filters",
             command=self.clear_filters,
-        ).pack(side="left", padx=(0, 8))
+        ).grid(row=0, column=9, padx=4, pady=6, sticky="w")
 
-        ttk.Separator(ctrl, orient="vertical").pack(side="left", fill="y", padx=8)
+        self.reference_count_var = tk.StringVar(value="Displayed references: 0")
+        ttk.Label(
+            filters_row,
+            textvariable=self.reference_count_var,
+            anchor="w",
+        ).grid(row=0, column=10, padx=(12, 4), pady=6, sticky="w")
+
+        for column in range(11):
+            filters_row.columnconfigure(column, weight=0)
+
+        filters_row.columnconfigure(10, weight=1)
+
+        # ------------------------------------------------------------
+        # Actions row
+        # ------------------------------------------------------------
+        actions_row = ttk.LabelFrame(controls, text="Actions")
+        actions_row.pack(fill="x", padx=0, pady=(0, 0))
 
         ttk.Button(
-            ctrl,
+            actions_row,
             text="Reset graph view",
             command=self.reset_graph_view,
-        ).pack(side="left", padx=(0, 8))
+        ).pack(side="left", padx=(8, 6), pady=6)
 
         ttk.Button(
-            ctrl,
+            actions_row,
             text="Export chart (PNG)",
             command=self.save_figure,
-        ).pack(side="left", padx=(0, 8))
+        ).pack(side="left", padx=6, pady=6)
 
         ttk.Button(
-            ctrl,
+            actions_row,
             text="Export results (CSV)",
             command=self.open_csv_export_dialog,
-        ).pack(side="left", padx=(0, 8))
+        ).pack(side="left", padx=6, pady=6)
 
         ttk.Button(
-            ctrl,
+            actions_row,
             text="Back to main menu",
             command=self.back_to_main_menu,
-        ).pack(side="left")
+        ).pack(side="left", padx=6, pady=6)
+
+        ttk.Label(
+            actions_row,
+            text="Tip: keep filters on None to hide references, use Any to display all values.",
+            anchor="w",
+        ).pack(side="left", padx=(16, 6), pady=6)
 
         graph = ttk.Frame(self)
         graph.pack(fill="both", expand=True)
@@ -152,6 +177,31 @@ class PlotFrame(ttk.Frame):
         self.analysis_text.configure(state="disabled")
 
         self._people_data_cache = []
+        self._update_reference_count()
+
+    def _add_filter_control(
+        self,
+        parent: ttk.Frame,
+        label: str,
+        variable: tk.StringVar,
+        values: list[str],
+        column: int,
+        width: int,
+    ) -> None:
+        container = ttk.Frame(parent)
+        container.grid(row=0, column=column, padx=(8, 6), pady=6, sticky="w")
+
+        ttk.Label(container, text=f"{label}:").pack(side="left", padx=(0, 4))
+
+        combo = ttk.Combobox(
+            container,
+            textvariable=variable,
+            state="readonly",
+            width=width,
+            values=values,
+        )
+        combo.pack(side="left")
+        combo.bind("<<ComboboxSelected>>", lambda event: self.apply_filter())
 
     def create_plot(self, people):
         self._people_data_cache = list(people)
@@ -168,11 +218,15 @@ class PlotFrame(ttk.Frame):
         )
 
     def _redraw_all(self):
+        filtered_personalities = self._get_filtered_personalities()
+
         draw_base(self.ax)
-        draw_personalities(self.ax, self._get_filtered_personalities())
+        draw_personalities(self.ax, filtered_personalities)
         draw_people(self.ax, self._people_data_cache)
         self.fig.tight_layout()
         self.canvas.draw()
+
+        self._update_reference_count(filtered_personalities)
 
     def _format_analysis(self) -> str:
         if not self._people_data_cache:
@@ -217,6 +271,17 @@ class PlotFrame(ttk.Frame):
         self.analysis_text.delete("1.0", "end")
         self.analysis_text.insert("1.0", analysis.strip())
         self.analysis_text.configure(state="disabled")
+
+    def _update_reference_count(self, filtered_personalities=None):
+        if filtered_personalities is None:
+            filtered_personalities = self._get_filtered_personalities()
+
+        total_references = len(self.app.personalities)
+        displayed_references = len(list(filtered_personalities))
+
+        self.reference_count_var.set(
+            f"Displayed references: {displayed_references} / {total_references}"
+        )
 
     def apply_filter(self):
         self._redraw_all()
