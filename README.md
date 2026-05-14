@@ -205,44 +205,44 @@ This allows the same personality to appear under multiple country filters.
 
 ```text
 political-spectrum-analyzer/
-├── data/
-│   └── reference/
-│       └── personalities.csv
-├── docs/
-│   ├── methodology.md
-│   └── reference_dataset.md
-├── outputs/
-├── src/
-│   └── political_spectrum_analyzer/
-│       ├── domain/
-│       │   ├── models.py
-│       │   └── validation.py
-│       ├── model/
-│       │   └── transforms.py
-│       ├── ocr/
-│       │   └── politiscales_ocr.py
-│       ├── plotting/
-│       │   └── plot_2d.py
-│       ├── services/
-│       │   ├── analysis_service.py
-│       │   ├── export_results_service.py
-│       │   ├── personalities_service.py
-│       │   ├── personality_filter_service.py
-│       │   ├── scoring_service.py
-│       │   └── text_import_service.py
-│       ├── ui/
-│       │   ├── app.py
-│       │   ├── form_frame.py
-│       │   ├── plot_frame.py
-│       │   └── start_frame.py
-│       ├── cli.py
-│       ├── config.py
-│       └── constants.py
-├── tests/
-├── main.py
-├── pyproject.toml
-├── pytest.ini
-└── requirements.txt
+â”œâ”€â”€ data/
+â”‚   â””â”€â”€ reference/
+â”‚       â””â”€â”€ personalities.csv
+â”œâ”€â”€ docs/
+â”‚   â”œâ”€â”€ methodology.md
+â”‚   â””â”€â”€ reference_dataset.md
+â”œâ”€â”€ outputs/
+â”œâ”€â”€ src/
+â”‚   â””â”€â”€ political_spectrum_analyzer/
+â”‚       â”œâ”€â”€ domain/
+â”‚       â”‚   â”œâ”€â”€ models.py
+â”‚       â”‚   â””â”€â”€ validation.py
+â”‚       â”œâ”€â”€ model/
+â”‚       â”‚   â””â”€â”€ transforms.py
+â”‚       â”œâ”€â”€ ocr/
+â”‚       â”‚   â””â”€â”€ politiscales_ocr.py
+â”‚       â”œâ”€â”€ plotting/
+â”‚       â”‚   â””â”€â”€ plot_2d.py
+â”‚       â”œâ”€â”€ services/
+â”‚       â”‚   â”œâ”€â”€ analysis_service.py
+â”‚       â”‚   â”œâ”€â”€ export_results_service.py
+â”‚       â”‚   â”œâ”€â”€ personalities_service.py
+â”‚       â”‚   â”œâ”€â”€ personality_filter_service.py
+â”‚       â”‚   â”œâ”€â”€ scoring_service.py
+â”‚       â”‚   â””â”€â”€ text_import_service.py
+â”‚       â”œâ”€â”€ ui/
+â”‚       â”‚   â”œâ”€â”€ app.py
+â”‚       â”‚   â”œâ”€â”€ form_frame.py
+â”‚       â”‚   â”œâ”€â”€ plot_frame.py
+â”‚       â”‚   â””â”€â”€ start_frame.py
+â”‚       â”œâ”€â”€ cli.py
+â”‚       â”œâ”€â”€ config.py
+â”‚       â””â”€â”€ constants.py
+â”œâ”€â”€ tests/
+â”œâ”€â”€ main.py
+â”œâ”€â”€ pyproject.toml
+â”œâ”€â”€ pytest.ini
+â””â”€â”€ requirements.txt
 ```
 
 ---
@@ -424,3 +424,31 @@ You may use, study, modify, and share the project for personal, educational, aca
 Commercial use, resale, paid integration, SaaS deployment, proprietary redistribution, or use in revenue-generating activities is not permitted without prior written permission from the author.
 
 See [`LICENSE`](LICENSE) for details.
+---
+
+## Streamlit web application
+
+This repository also includes a Streamlit web version of the desktop application.
+
+Run locally with:
+
+```powershell
+streamlit run streamlit_app.py
+```
+
+The web version keeps the core features:
+
+- manual score input;
+- copied-text import;
+- interactive Plotly chart;
+- reference filters;
+- closest-reference analysis;
+- CSV export;
+- reference dataset browser.
+
+OCR is intentionally excluded from the web version because native Tesseract dependencies can be fragile on free hosting platforms. Copied-text import is the recommended web import mode.
+
+Recommended free hosting options:
+
+- Streamlit Community Cloud;
+- Hugging Face Spaces with the Streamlit SDK.
