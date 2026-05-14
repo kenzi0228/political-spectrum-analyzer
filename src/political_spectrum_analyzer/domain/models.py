@@ -30,3 +30,20 @@ class PersonResult:
     scores: Dict[str, int]
     x: float
     y: float
+@dataclass(frozen=True)
+class ReferenceMatch:
+    name: str
+    display_group: str
+    distance: float
+    x: float
+    y: float
+
+
+@dataclass(frozen=True)
+class ProfileAnalysis:
+    name: str
+    x: float
+    y: float
+    quadrant: str
+    distance_to_center: float
+    closest_references: list[ReferenceMatch]
