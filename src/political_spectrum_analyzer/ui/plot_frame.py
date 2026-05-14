@@ -17,6 +17,7 @@ from political_spectrum_analyzer.plotting.plot_2d import (
     draw_personalities,
 )
 from political_spectrum_analyzer.services.analysis_service import analyze_profile
+from political_spectrum_analyzer.services.export_results_service import export_analysis_to_csv
 
 
 class PlotFrame(ttk.Frame):
@@ -63,6 +64,12 @@ class PlotFrame(ttk.Frame):
             ctrl,
             text="Export chart (PNG)",
             command=self.save_figure,
+        ).pack(side="left", padx=(0, 8))
+
+        ttk.Button(
+            ctrl,
+            text="Export results (CSV)",
+            command=self.open_csv_export_dialog,
         ).pack(side="left", padx=(0, 8))
 
         ttk.Button(
@@ -188,6 +195,111 @@ class PlotFrame(ttk.Frame):
         if file_path:
             self.fig.savefig(file_path, dpi=300)
             messagebox.showinfo("Image export", f"Chart saved to: {file_path}")
+
+    def open_csv_export_dialog(self):
+        if not self._people_data_cache:
+            messagebox.showwarning("CSV export", "No profile is available to export.")
+            return
+
+        dialog = tk.Toplevel(self)
+        dialog.title("Export results to CSV")
+        dialog.geometry("480x280")
+        dialog.minsize(440, 260)
+        dialog.transient(self)
+        dialog.grab_set()
+
+        ttk.Label(
+            dialog,
+            text="Choose what should be included in the CSV export.",
+            style="Subtitle.TLabel",
+        ).pack(anchor="w", padx=12, pady=(12, 8))
+
+        export_mode_var = tk.StringVar(value="profiles_only")
+
+        options_frame = ttk.Frame(dialog)
+        options_frame.pack(fill="x", padx=12, pady=4)
+
+        modes = [
+            ("Profiles only", "profiles_only"),
+            ("Profiles + closest references", "closest_references"),
+            ("Profiles + all references", "all_references"),
+            ("Profiles + current filtered references", "filtered_references"),
+        ]
+
+        for label, value in modes:
+            ttk.Radiobutton(
+                options_frame,
+                text=label,
+                value=value,
+                variable=export_mode_var,
+            ).pack(anchor="w", pady=2)
+
+        closest_frame = ttk.Frame(dialog)
+        closest_frame.pack(fill="x", padx=12, pady=(8, 4))
+
+        ttk.Label(closest_frame, text="Closest references count:").pack(side="left")
+
+        closest_count_var = tk.StringVar(value="3")
+        ttk.Spinbox(
+            closest_frame,
+            from_=1,
+            to=20,
+            textvariable=closest_count_var,
+            width=5,
+        ).pack(side="left", padx=8)
+
+        ttk.Label(
+            dialog,
+            text="Note: current filtered references depend on the selected personality filter above.",
+            wraplength=430,
+        ).pack(anchor="w", padx=12, pady=(6, 0))
+
+        button_bar = ttk.Frame(dialog)
+        button_bar.pack(fill="x", padx=12, pady=(12, 12))
+
+        def export_csv():
+            try:
+                closest_count = int(closest_count_var.get())
+                if closest_count <= 0:
+                    raise ValueError
+            except ValueError:
+                messagebox.showerror("CSV export", "Closest references count must be a positive integer.")
+                return
+
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=".csv",
+                filetypes=[("CSV", "*.csv")],
+                title="Save analysis export",
+            )
+
+            if not file_path:
+                return
+
+            mode = export_mode_var.get()
+            filtered_personalities = self._get_filtered_personalities()
+
+            if mode == "filtered_references" and not filtered_personalities:
+                messagebox.showwarning(
+                    "CSV export",
+                    "No personality filter is currently selected. "
+                    "Choose a filter first or use another export mode.",
+                )
+                return
+
+            export_analysis_to_csv(
+                file_path=file_path,
+                people=self._people_data_cache,
+                personalities=self.app.personalities,
+                mode=mode,
+                closest_count=closest_count,
+                filtered_personalities=filtered_personalities,
+            )
+
+            dialog.destroy()
+            messagebox.showinfo("CSV export", f"Results exported to: {file_path}")
+
+        ttk.Button(button_bar, text="Export", command=export_csv).pack(side="left")
+        ttk.Button(button_bar, text="Cancel", command=dialog.destroy).pack(side="left", padx=8)
 
     def back_to_main_menu(self):
         self._people_data_cache = []
