@@ -26,6 +26,7 @@ def load_personalities(csv_path: str | Path) -> List[PersonalityPoint]:
                     y=float(row["y"]),
                     ux=float(row.get("ux", 0.45) or 0.45),
                     uy=float(row.get("uy", 0.45) or 0.45),
+                    confidence=(row.get("confidence") or "medium").strip().lower(),
                     is_estimated=_parse_bool(row.get("is_estimated")),
                     source=(row.get("source") or "").strip() or None,
                     notes=(row.get("notes") or "").strip() or None,

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from tkinter import ttk
+
 import matplotlib
+
 matplotlib.use("TkAgg")
 
 import matplotlib.pyplot as plt
-import tkinter as tk
-
-from tkinter import filedialog, messagebox
-from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 from political_spectrum_analyzer.plotting.plot_2d import draw_base, draw_people, draw_personalities
@@ -21,7 +22,7 @@ class PlotFrame(ttk.Frame):
         ttk.Label(self, text="Political positioning (2D)", style="Title.TLabel").pack(anchor="w")
         ttk.Label(
             self,
-            text="Economic axis: Left â†” Right | Societal axis: Libertarian â†” Authoritarian",
+            text="Economic axis: Left ↔ Right | Societal axis: Libertarian ↔ Authoritarian",
             style="Subtitle.TLabel",
         ).pack(anchor="w", pady=(0, 6))
 
@@ -59,7 +60,17 @@ class PlotFrame(ttk.Frame):
         bottom = ttk.Frame(self)
         bottom.pack(fill="x", pady=(8, 0))
 
-        ttk.Button(bottom, text="Export chart (PNG)", command=self.save_figure).pack(side="left")
+        ttk.Button(
+            bottom,
+            text="Export chart (PNG)",
+            command=self.save_figure,
+        ).pack(side="left")
+
+        ttk.Button(
+            bottom,
+            text="Back to main menu",
+            command=self.back_to_main_menu,
+        ).pack(side="left", padx=8)
 
         self._people_data_cache = []
 
@@ -72,9 +83,15 @@ class PlotFrame(ttk.Frame):
 
         if selection == "None":
             return []
+
         if selection == "All":
             return self.app.personalities
-        return [p for p in self.app.personalities if p.display_group.lower() == selection.lower()]
+
+        return [
+            p
+            for p in self.app.personalities
+            if p.display_group.lower() == selection.lower()
+        ]
 
     def _redraw_all(self):
         draw_base(self.ax)
@@ -91,6 +108,26 @@ class PlotFrame(ttk.Frame):
             defaultextension=".png",
             filetypes=[("PNG", "*.png")],
         )
+
         if file_path:
             self.fig.savefig(file_path, dpi=300)
             messagebox.showinfo("Image export", f"Chart saved to: {file_path}")
+
+    def back_to_main_menu(self):
+        self._people_data_cache = []
+
+        self.app.people_data.clear()
+        self.app.current_index = 0
+        self.app.num_people = 0
+
+        try:
+            self.filter_var.set("None")
+        except Exception:
+            pass
+
+        try:
+            self.app.frame_start.entry.delete(0, "end")
+        except Exception:
+            pass
+
+        self.app.show_frame(self.app.frame_start)

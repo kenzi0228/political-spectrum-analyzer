@@ -1,11 +1,79 @@
 from __future__ import annotations
 
+import re
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter import ttk
 
 from political_spectrum_analyzer.constants import VARIABLE_NAMES
 from political_spectrum_analyzer.ocr import extract_scores_from_image
+
+
+ALIASES = {
+    "constructivisme": ["constructivisme", "constructivism"],
+    "essentialisme": ["essentialisme", "essentialism"],
+    "justice_rehabilitative": ["justice rehabilitative", "rehabilitative justice"],
+    "justice_punitive": ["justice punitive", "punitive justice"],
+    "progressisme": ["progressisme", "progressivism"],
+    "conservatisme": ["conservatisme", "conservatism"],
+    "internationalisme": ["internationalisme", "internationalism"],
+    "nationalisme": ["nationalisme", "nationalism"],
+    "communisme": ["communisme", "communism"],
+    "capitalisme": ["capitalisme", "capitalism"],
+    "regulation": ["regulation", "regulationnisme", "regulationism"],
+    "laissez_faire": ["laissez faire", "laissez-faire"],
+    "ecologie": ["ecologie", "ecology"],
+    "productivisme": ["productivisme", "productivism"],
+    "revolution": ["revolution"],
+    "reformisme": ["reformisme", "reformism"],
+}
+
+
+def _normalize_text(text: str) -> str:
+    text = text.lower()
+    text = text.replace("é", "e")
+    text = text.replace("è", "e")
+    text = text.replace("ê", "e")
+    text = text.replace("à", "a")
+    text = text.replace("ç", "c")
+    text = text.replace("’", "'")
+    text = text.replace("–", "-")
+    text = text.replace("—", "-")
+    text = text.replace("_", " ")
+    return text
+
+
+def _find_score_for_alias(text: str, alias: str) -> int | None:
+    alias = _normalize_text(alias)
+    alias_pattern = re.escape(alias)
+
+    patterns = [
+        rf"{alias_pattern}\D{{0,80}}(\d{{1,3}})\s*%?",
+        rf"(\d{{1,3}})\s*%?\D{{0,80}}{alias_pattern}",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, text, flags=re.IGNORECASE | re.DOTALL)
+        if match:
+            value = int(match.group(1))
+            if 0 <= value <= 100:
+                return value
+
+    return None
+
+
+def extract_scores_from_text(raw_text: str) -> dict[str, int]:
+    text = _normalize_text(raw_text)
+    scores: dict[str, int] = {name: 0 for name in VARIABLE_NAMES}
+
+    for variable_name, aliases in ALIASES.items():
+        for alias in aliases:
+            value = _find_score_for_alias(text, alias)
+            if value is not None:
+                scores[variable_name] = value
+                break
+
+    return scores
 
 
 class FormFrame(ttk.Frame):
@@ -55,6 +123,13 @@ class FormFrame(ttk.Frame):
         )
         self.btn_ocr.grid(row=1, column=0, columnspan=2, pady=(5, 0), sticky="w")
 
+        self.btn_text_import = ttk.Button(
+            name_block,
+            text="Import from copied text",
+            command=self.import_from_text,
+        )
+        self.btn_text_import.grid(row=2, column=0, columnspan=2, pady=(5, 0), sticky="w")
+
         self.entries: dict[str, ttk.Entry] = {}
         fields = ttk.Frame(self.inner_frame)
         fields.pack(fill="x")
@@ -89,6 +164,19 @@ class FormFrame(ttk.Frame):
         self.canvas.yview_moveto(0)
         self.name_entry.focus_set()
 
+    def _fill_entries_from_scores(self, scores: dict[str, int]) -> int:
+        detected_count = 0
+
+        for key, entry in self.entries.items():
+            if key in scores:
+                entry.delete(0, tk.END)
+                entry.insert(0, str(scores[key]))
+
+                if scores[key] != 0:
+                    detected_count += 1
+
+        return detected_count
+
     def import_from_screenshot(self) -> None:
         path = filedialog.askopenfilename(
             title="Choose a Politiscales screenshot",
@@ -103,18 +191,59 @@ class FormFrame(ttk.Frame):
             messagebox.showerror("OCR error", str(exc))
             return
 
-        found = False
-        for key, entry in self.entries.items():
-            if key in scores:
-                entry.delete(0, tk.END)
-                entry.insert(0, str(scores[key]))
-                if scores[key] != 0:
-                    found = True
+        detected_count = self._fill_entries_from_scores(scores)
 
-        if found:
-            messagebox.showinfo("OCR", "Scores imported from screenshot. Please review them before validation.")
+        if detected_count > 0:
+            messagebox.showinfo(
+                "OCR",
+                f"{detected_count} score(s) imported from screenshot. Please review before validation.",
+            )
         else:
             messagebox.showwarning("OCR", "No score was detected automatically.")
+
+    def import_from_text(self) -> None:
+        popup = tk.Toplevel(self)
+        popup.title("Import scores from copied text")
+        popup.geometry("650x450")
+        popup.minsize(500, 350)
+
+        ttk.Label(
+            popup,
+            text="Paste Politiscales results text below, then click Import.",
+            style="Subtitle.TLabel",
+        ).pack(anchor="w", padx=12, pady=(12, 6))
+
+        text_area = tk.Text(popup, wrap="word", height=16)
+        text_area.pack(fill="both", expand=True, padx=12, pady=8)
+
+        button_bar = ttk.Frame(popup)
+        button_bar.pack(fill="x", padx=12, pady=(0, 12))
+
+        def apply_import() -> None:
+            raw_text = text_area.get("1.0", "end").strip()
+
+            if not raw_text:
+                messagebox.showerror("Import error", "Please paste some text first.")
+                return
+
+            scores = extract_scores_from_text(raw_text)
+            detected_count = self._fill_entries_from_scores(scores)
+
+            popup.destroy()
+
+            if detected_count > 0:
+                messagebox.showinfo(
+                    "Text import",
+                    f"{detected_count} score(s) imported. Please review before validation.",
+                )
+            else:
+                messagebox.showwarning(
+                    "Text import",
+                    "No score was detected. You may need to adjust the pasted text format.",
+                )
+
+        ttk.Button(button_bar, text="Import", command=apply_import).pack(side="left")
+        ttk.Button(button_bar, text="Cancel", command=popup.destroy).pack(side="left", padx=8)
 
     def validate_form(self) -> None:
         name = self.name_entry.get().strip() or f"Person_{self.app.current_index + 1}"

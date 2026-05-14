@@ -12,6 +12,7 @@ class PersonalityPoint:
     y: float
     ux: float = 0.45
     uy: float = 0.45
+    confidence: str = "medium"
     is_estimated: bool = True
     source: Optional[str] = None
     notes: Optional[str] = None
