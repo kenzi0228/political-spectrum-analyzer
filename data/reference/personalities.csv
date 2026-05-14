@@ -11,7 +11,7 @@ John Stuart Mill,Philosopher,United Kingdom,19th century,Liberalism,0.8,-1.0,0.5
 Hannah Arendt,Philosopher,Germany United States,20th century,Republicanism,0.2,0.4,0.55,0.50,medium,true,,Approximate theoretical placement
 Michel Foucault,Philosopher,France,20th century,Post-structuralism,-0.6,-1.0,0.60,0.50,medium,true,,Approximate theoretical placement
 Noam Chomsky,Philosopher,United States,20th-21st century,Libertarian socialism,-1.5,-0.8,0.60,0.50,medium,true,,Approximate theoretical placement
-Ayn Rand,Philosopher,United States,20th century,Objectivism,3.0,-0.6,0.55,0.45,medium,true,,Approximate theoretical placement
+Ayn Rand,Philosopher,United States,20th century,Objectivism,3.0,-0.6,0.60,0.50,medium,true,,Approximate theoretical placement
 Joseph Stalin,Dictator,Soviet Union,20th century,Stalinism,-1.6,3.0,0.65,0.60,medium,true,,Approximate historical placement
 Adolf Hitler,Dictator,Germany,20th century,Nazism,3.1,3.0,0.65,0.60,medium,true,,Approximate historical placement
 Mao Zedong,Dictator,China,20th century,Maoism,-2.2,3.0,0.70,0.60,medium,true,,Approximate historical placement
@@ -33,3 +33,119 @@ Nelson Mandela,President,South Africa,20th-21st century,Anti-apartheid democracy
 Maximilien Robespierre,Revolutionary,France,18th century,Revolutionary republicanism,-1.8,1.8,0.70,0.60,low,true,,Highly approximate revolutionary placement
 Vladimir Lenin,Revolutionary,Russia Soviet Union,20th century,Leninism,-2.2,2.6,0.65,0.60,medium,true,,Approximate revolutionary placement
 Che Guevara,Revolutionary,Argentina Cuba,20th century,Marxist revolutionary socialism,-1.8,1.6,0.70,0.60,low,true,,Highly approximate revolutionary placement
+Plato,Philosopher,Greece,Ancient,Idealism,0.2,1.6,0.65,0.55,low,true,,Approximate philosophical placement
+Aristotle,Philosopher,Greece,Ancient,Classical republicanism,0.6,0.8,0.60,0.50,medium,true,,Approximate philosophical placement
+Cicero,Philosopher,Rome,Ancient,Republicanism,0.8,0.5,0.55,0.45,medium,true,,Approximate philosophical placement
+Augustine of Hippo,Philosopher,Roman Africa,Late antiquity,Christian political thought,0.6,1.8,0.65,0.60,low,true,,Approximate theological political placement
+Thomas Aquinas,Philosopher,Italy,13th century,Scholasticism,0.8,1.4,0.60,0.55,medium,true,,Approximate theological political placement
+Baruch Spinoza,Philosopher,Netherlands,17th century,Rationalist liberalism,0.0,-0.7,0.55,0.50,medium,true,,Approximate theoretical placement
+Immanuel Kant,Philosopher,Prussia,18th century,Liberal republicanism,0.2,-0.4,0.55,0.50,medium,true,,Approximate theoretical placement
+Georg Wilhelm Friedrich Hegel,Philosopher,Germany,19th century,Statist idealism,0.4,1.0,0.65,0.55,medium,true,,Approximate theoretical placement
+Edmund Burke,Philosopher,Ireland United Kingdom,18th century,Conservatism,1.4,1.1,0.55,0.50,medium,true,,Approximate theoretical placement
+Alexis de Tocqueville,Philosopher,France,19th century,Liberal conservatism,1.1,-0.1,0.55,0.50,medium,true,,Approximate theoretical placement
+Pierre-Joseph Proudhon,Philosopher,France,19th century,Mutualism,-1.7,-1.5,0.60,0.55,medium,true,,Approximate theoretical placement
+Mikhail Bakunin,Revolutionary,Russia,19th century,Anarchism,-2.5,-2.6,0.70,0.65,medium,true,,Approximate revolutionary placement
+Peter Kropotkin,Philosopher,Russia,19th-20th century,Anarcho-communism,-2.7,-2.4,0.65,0.60,medium,true,,Approximate theoretical placement
+Rosa Luxemburg,Revolutionary,Poland Germany,20th century,Democratic socialism,-2.1,-0.8,0.65,0.55,medium,true,,Approximate revolutionary placement
+Antonio Gramsci,Philosopher,Italy,20th century,Marxism,-1.8,-0.4,0.60,0.55,medium,true,,Approximate theoretical placement
+Leon Trotsky,Revolutionary,Russia Soviet Union,20th century,Trotskyism,-2.1,2.0,0.70,0.60,medium,true,,Approximate revolutionary placement
+Herbert Marcuse,Philosopher,Germany United States,20th century,Critical theory,-1.4,-1.0,0.60,0.55,medium,true,,Approximate theoretical placement
+John Rawls,Philosopher,United States,20th century,Liberal egalitarianism,-0.5,-0.5,0.55,0.50,medium,true,,Approximate theoretical placement
+Robert Nozick,Philosopher,United States,20th century,Libertarianism,2.8,-1.9,0.55,0.50,medium,true,,Approximate theoretical placement
+Milton Friedman,Economist,United States,20th century,Free-market liberalism,3.0,-1.0,0.55,0.45,medium,true,,Approximate economic placement
+John Maynard Keynes,Economist,United Kingdom,20th century,Keynesianism,-0.4,0.0,0.55,0.45,medium,true,,Approximate economic placement
+Amartya Sen,Economist,India,20th-21st century,Social liberalism,-0.5,-0.7,0.55,0.50,medium,true,,Approximate economic placement
+Murray Rothbard,Economist,United States,20th century,Anarcho-capitalism,3.6,-3.0,0.60,0.55,medium,true,,Approximate theoretical placement
+David Ricardo,Economist,United Kingdom,19th century,Classical liberalism,1.8,-0.4,0.55,0.45,medium,true,,Approximate economic placement
+Ferdinand Lassalle,Political Leader,Germany,19th century,State socialism,-1.6,0.8,0.60,0.55,medium,true,,Approximate historical placement
+Eduard Bernstein,Political Leader,Germany,19th-20th century,Revisionist socialism,-1.0,-0.1,0.55,0.50,medium,true,,Approximate historical placement
+Clement Attlee,Prime Minister,United Kingdom,20th century,Social democracy,-1.2,0.2,0.55,0.50,medium,true,,Approximate historical political placement
+Tony Blair,Prime Minister,United Kingdom,20th-21st century,Third Way,0.7,0.3,0.65,0.55,medium,true,,Approximate political placement
+Keir Starmer,Prime Minister,United Kingdom,21st century,Social democracy,-0.4,0.2,0.70,0.55,low,true,,Approximate contemporary political placement
+Jeremy Corbyn,Political Leader,United Kingdom,21st century,Democratic socialism,-1.9,-0.8,0.70,0.60,low,true,,Approximate contemporary political placement
+David Cameron,Prime Minister,United Kingdom,21st century,Liberal conservatism,1.6,0.4,0.65,0.55,medium,true,,Approximate contemporary political placement
+Boris Johnson,Prime Minister,United Kingdom,21st century,Conservative populism,2.0,1.2,0.75,0.60,low,true,,Approximate contemporary political placement
+Angela Merkel,Chancellor,Germany,21st century,Christian democracy,1.0,0.3,0.60,0.50,medium,true,,Approximate contemporary political placement
+Willy Brandt,Chancellor,Germany,20th century,Social democracy,-1.1,-0.2,0.55,0.50,medium,true,,Approximate historical political placement
+Konrad Adenauer,Chancellor,Germany,20th century,Christian democracy,1.4,0.9,0.55,0.50,medium,true,,Approximate historical political placement
+Otto von Bismarck,Political Leader,Germany,19th century,Conservative statism,1.7,2.3,0.65,0.60,medium,true,,Approximate historical placement
+Helmut Kohl,Chancellor,Germany,20th century,Christian democracy,1.5,0.8,0.55,0.50,medium,true,,Approximate historical political placement
+Gerhard Schroder,Chancellor,Germany,20th-21st century,Third Way,0.4,0.1,0.60,0.50,medium,true,,Approximate political placement
+Olof Palme,Prime Minister,Sweden,20th century,Social democracy,-1.4,-0.3,0.55,0.50,medium,true,,Approximate historical political placement
+Margrethe Vestager,Political Leader,Denmark EU,21st century,Social liberalism,0.2,-0.4,0.65,0.55,low,true,,Approximate contemporary political placement
+Viktor Orban,Prime Minister,Hungary,21st century,National conservatism,2.1,2.5,0.75,0.65,low,true,,Approximate contemporary political placement
+Jaroslaw Kaczynski,Political Leader,Poland,21st century,National conservatism,2.0,2.3,0.75,0.65,low,true,,Approximate contemporary political placement
+Lech Walesa,President,Poland,20th century,Christian democracy,0.8,0.6,0.60,0.55,medium,true,,Approximate historical political placement
+Vaclav Havel,President,Czech Republic,20th century,Liberal democracy,0.2,-0.7,0.55,0.50,medium,true,,Approximate historical political placement
+Nicolae Ceausescu,Dictator,Romania,20th century,National communism,-1.8,3.2,0.75,0.65,medium,true,,Approximate historical placement
+Josip Broz Tito,Dictator,Yugoslavia,20th century,Titoism,-1.3,1.5,0.70,0.60,medium,true,,Approximate historical placement
+Slobodan Milosevic,Political Leader,Serbia Yugoslavia,20th century,Nationalism,1.6,2.6,0.75,0.65,medium,true,,Approximate historical placement
+Juan Peron,President,Argentina,20th century,Peronism,-0.3,1.6,0.75,0.65,medium,true,,Approximate historical political placement
+Eva Peron,Political Leader,Argentina,20th century,Peronism,-0.8,1.0,0.70,0.60,medium,true,,Approximate historical political placement
+Salvador Allende,President,Chile,20th century,Democratic socialism,-2.0,-0.1,0.65,0.55,medium,true,,Approximate historical political placement
+Fidel Castro,Dictator,Cuba,20th-21st century,Castroism,-2.3,2.7,0.70,0.65,medium,true,,Approximate historical placement
+Hugo Chavez,President,Venezuela,21st century,Bolivarian socialism,-1.8,1.6,0.75,0.65,low,true,,Approximate contemporary political placement
+Nicolas Maduro,President,Venezuela,21st century,Bolivarian socialism,-1.9,2.4,0.80,0.70,low,true,,Approximate contemporary political placement
+Lula da Silva,President,Brazil,21st century,Social democracy,-0.9,-0.1,0.70,0.60,low,true,,Approximate contemporary political placement
+Jair Bolsonaro,President,Brazil,21st century,Right-wing populism,2.6,2.4,0.80,0.70,low,true,,Approximate contemporary political placement
+Getulio Vargas,President,Brazil,20th century,Corporatism,0.2,1.9,0.70,0.60,medium,true,,Approximate historical political placement
+Andres Manuel Lopez Obrador,President,Mexico,21st century,Left-wing populism,-1.0,0.8,0.75,0.65,low,true,,Approximate contemporary political placement
+Benito Juarez,President,Mexico,19th century,Liberal reformism,0.3,-0.2,0.60,0.55,medium,true,,Approximate historical political placement
+Porfirio Diaz,Dictator,Mexico,19th-20th century,Authoritarian liberalism,2.0,2.2,0.70,0.65,medium,true,,Approximate historical placement
+Franklin D Roosevelt,President,United States,20th century,New Deal liberalism,-0.6,0.4,0.55,0.50,medium,true,,Approximate historical political placement
+Theodore Roosevelt,President,United States,20th century,Progressive conservatism,0.7,0.9,0.60,0.55,medium,true,,Approximate historical political placement
+Woodrow Wilson,President,United States,20th century,Progressivism,0.4,1.2,0.65,0.60,medium,true,,Approximate historical political placement
+Abraham Lincoln,President,United States,19th century,Republican liberalism,0.5,0.2,0.60,0.55,medium,true,,Approximate historical political placement
+Thomas Jefferson,President,United States,18th-19th century,Classical liberalism,1.1,-1.2,0.65,0.60,medium,true,,Approximate historical political placement
+Alexander Hamilton,Political Leader,United States,18th century,Federalism,1.5,1.0,0.60,0.55,medium,true,,Approximate historical political placement
+Barack Obama,President,United States,21st century,Liberalism,0.5,-0.1,0.70,0.60,low,true,,Approximate contemporary political placement
+Bernie Sanders,Political Leader,United States,21st century,Democratic socialism,-1.8,-0.7,0.70,0.60,low,true,,Approximate contemporary political placement
+Elizabeth Warren,Political Leader,United States,21st century,Progressivism,-1.0,-0.5,0.70,0.60,low,true,,Approximate contemporary political placement
+Hillary Clinton,Political Leader,United States,21st century,Liberalism,0.5,0.4,0.70,0.60,low,true,,Approximate contemporary political placement
+Mitt Romney,Political Leader,United States,21st century,Conservatism,2.0,0.9,0.70,0.60,low,true,,Approximate contemporary political placement
+Barry Goldwater,Political Leader,United States,20th century,Conservatism,2.7,-0.3,0.65,0.55,medium,true,,Approximate historical political placement
+Martin Luther King Jr,Political Leader,United States,20th century,Civil rights liberalism,-0.6,-1.2,0.60,0.55,medium,true,,Approximate historical placement
+Malcolm X,Political Leader,United States,20th century,Black nationalism,-1.2,0.8,0.70,0.65,medium,true,,Approximate historical placement
+Xi Jinping,President,China,21st century,Chinese socialism,-1.2,3.0,0.75,0.65,low,true,,Approximate contemporary political placement
+Deng Xiaoping,Political Leader,China,20th century,Market socialism,0.2,2.0,0.70,0.60,medium,true,,Approximate historical political placement
+Sun Yat-sen,Revolutionary,China,20th century,National republicanism,0.0,0.7,0.65,0.60,medium,true,,Approximate revolutionary placement
+Chiang Kai-shek,Dictator,China Taiwan,20th century,National conservatism,2.0,2.5,0.70,0.60,medium,true,,Approximate historical placement
+Lee Kuan Yew,Prime Minister,Singapore,20th-21st century,Authoritarian pragmatism,1.5,2.0,0.65,0.55,medium,true,,Approximate historical political placement
+Ho Chi Minh,Revolutionary,Vietnam,20th century,Marxism-Leninism,-2.1,2.2,0.70,0.60,medium,true,,Approximate revolutionary placement
+Sukarno,President,Indonesia,20th century,Nationalism,-0.5,1.7,0.70,0.60,medium,true,,Approximate historical political placement
+Suharto,Dictator,Indonesia,20th century,Authoritarian conservatism,2.1,2.2,0.70,0.60,medium,true,,Approximate historical placement
+Mahatma Gandhi,Political Leader,India,20th century,Nonviolent anti-colonialism,-0.8,-1.4,0.65,0.60,medium,true,,Approximate historical placement
+Jawaharlal Nehru,Prime Minister,India,20th century,Democratic socialism,-1.0,0.0,0.60,0.55,medium,true,,Approximate historical political placement
+Indira Gandhi,Prime Minister,India,20th century,State-led nationalism,-0.8,1.5,0.70,0.60,medium,true,,Approximate historical political placement
+Narendra Modi,Prime Minister,India,21st century,Hindu nationalism,1.7,2.3,0.80,0.70,low,true,,Approximate contemporary political placement
+Muhammad Ali Jinnah,Political Leader,Pakistan,20th century,National liberalism,0.6,0.5,0.65,0.60,medium,true,,Approximate historical political placement
+Zulfikar Ali Bhutto,Prime Minister,Pakistan,20th century,Islamic socialism,-1.0,1.0,0.70,0.60,medium,true,,Approximate historical political placement
+Mustafa Kemal Ataturk,President,Turkey,20th century,Kemalism,0.7,1.2,0.65,0.55,medium,true,,Approximate historical political placement
+Recep Tayyip Erdogan,President,Turkey,21st century,Conservative populism,1.6,2.4,0.80,0.70,low,true,,Approximate contemporary political placement
+Gamal Abdel Nasser,President,Egypt,20th century,Arab socialism,-1.0,1.7,0.70,0.60,medium,true,,Approximate historical political placement
+Anwar Sadat,President,Egypt,20th century,Conservative nationalism,1.0,1.4,0.65,0.55,medium,true,,Approximate historical political placement
+Hosni Mubarak,President,Egypt,20th-21st century,Authoritarian centrism,1.2,2.2,0.70,0.60,medium,true,,Approximate historical political placement
+Ayatollah Khomeini,Political Leader,Iran,20th century,Islamic republicanism,-0.5,3.3,0.80,0.70,medium,true,,Approximate historical placement
+Mohammad Mosaddegh,Prime Minister,Iran,20th century,National democracy,-0.5,-0.2,0.65,0.55,medium,true,,Approximate historical political placement
+David Ben-Gurion,Prime Minister,Israel,20th century,Labor Zionism,-0.7,0.9,0.65,0.55,medium,true,,Approximate historical political placement
+Golda Meir,Prime Minister,Israel,20th century,Labor Zionism,-0.6,0.9,0.65,0.55,medium,true,,Approximate historical political placement
+Benjamin Netanyahu,Prime Minister,Israel,21st century,Conservatism,2.0,1.7,0.75,0.65,low,true,,Approximate contemporary political placement
+Yitzhak Rabin,Prime Minister,Israel,20th century,Labor Zionism,-0.3,0.4,0.65,0.55,medium,true,,Approximate historical political placement
+Yasser Arafat,Political Leader,Palestine,20th-21st century,Palestinian nationalism,-0.6,1.3,0.75,0.65,medium,true,,Approximate historical political placement
+King Faisal,King,Saudi Arabia,20th century,Monarchical conservatism,1.5,2.9,0.75,0.65,medium,true,,Approximate historical placement
+Mohammed bin Salman,Crown Prince,Saudi Arabia,21st century,Authoritarian modernization,2.0,2.5,0.80,0.70,low,true,,Approximate contemporary political placement
+Muammar Gaddafi,Dictator,Libya,20th-21st century,Arab socialism,-1.3,2.8,0.80,0.70,medium,true,,Approximate historical placement
+Habib Bourguiba,President,Tunisia,20th century,Secular nationalism,0.5,1.1,0.65,0.55,medium,true,,Approximate historical political placement
+Zine El Abidine Ben Ali,President,Tunisia,20th-21st century,Authoritarian centrism,1.3,2.1,0.70,0.60,medium,true,,Approximate historical political placement
+Ahmed Ben Bella,President,Algeria,20th century,Arab socialism,-1.2,1.4,0.70,0.60,medium,true,,Approximate historical political placement
+Houari Boumediene,President,Algeria,20th century,State socialism,-1.3,2.1,0.70,0.60,medium,true,,Approximate historical political placement
+Abdelaziz Bouteflika,President,Algeria,20th-21st century,Authoritarian nationalism,0.5,2.0,0.75,0.65,medium,true,,Approximate historical political placement
+Julius Nyerere,President,Tanzania,20th century,African socialism,-1.6,0.8,0.65,0.55,medium,true,,Approximate historical political placement
+Kwame Nkrumah,President,Ghana,20th century,Pan-African socialism,-1.3,1.3,0.70,0.60,medium,true,,Approximate historical political placement
+Patrice Lumumba,Prime Minister,Congo,20th century,Anti-colonial nationalism,-1.0,0.4,0.70,0.60,medium,true,,Approximate historical political placement
+Thomas Sankara,President,Burkina Faso,20th century,Revolutionary socialism,-2.0,0.8,0.70,0.60,medium,true,,Approximate revolutionary placement
+Robert Mugabe,President,Zimbabwe,20th-21st century,Authoritarian nationalism,-0.9,2.5,0.80,0.70,medium,true,,Approximate historical political placement
+Jomo Kenyatta,President,Kenya,20th century,Anti-colonial conservatism,0.7,1.5,0.70,0.60,medium,true,,Approximate historical political placement
+Mobutu Sese Seko,Dictator,Zaire,20th century,Authoritarian kleptocracy,1.1,2.7,0.80,0.70,medium,true,,Approximate historical placement
+Haile Selassie,Emperor,Ethiopia,20th century,Monarchical conservatism,1.2,2.1,0.70,0.60,medium,true,,Approximate historical placement
+Ellen Johnson Sirleaf,President,Liberia,21st century,Liberal democracy,0.7,-0.2,0.70,0.60,low,true,,Approximate contemporary political placement
