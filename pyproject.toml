@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "political-spectrum-analyzer"
+version = "0.1.0"
+description = "Desktop application for political profile positioning, reference comparison, OCR-assisted import, and CSV exports."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Kenzi Lali" }
+]
+keywords = [
+    "python",
+    "data-visualization",
+    "political-spectrum",
+    "tkinter",
+    "ocr",
+    "portfolio"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+dependencies = [
+    "matplotlib>=3.8",
+    "pillow>=10.0",
+    "pytesseract>=0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+ocr = [
+    "pillow>=10.0",
+    "pytesseract>=0.3",
+]
+
+[project.scripts]
+political-spectrum-analyzer = "political_spectrum_analyzer.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
