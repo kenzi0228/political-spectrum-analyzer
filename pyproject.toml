@@ -31,6 +31,9 @@ classifiers = [
 ]
 
 dependencies = [
+    "streamlit>=1.35",
+    "plotly>=5.20",
+    "pandas>=2.0",
     "matplotlib>=3.8",
     "pillow>=10.0",
     "pytesseract>=0.3",

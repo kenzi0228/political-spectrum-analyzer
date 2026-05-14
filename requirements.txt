@@ -1,4 +1,6 @@
 matplotlib>=3.8
 pillow>=10.0
 pytesseract>=0.3
-pytest>=8.0
+pytest>=8.0streamlit>=1.35
+plotly>=5.20
+pandas>=2.0
