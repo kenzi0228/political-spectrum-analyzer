@@ -205,44 +205,44 @@ This allows the same personality to appear under multiple country filters.
 
 ```text
 political-spectrum-analyzer/
-â”œâ”€â”€ data/
-â”‚   â””â”€â”€ reference/
-â”‚       â””â”€â”€ personalities.csv
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ methodology.md
-â”‚   â””â”€â”€ reference_dataset.md
-â”œâ”€â”€ outputs/
-â”œâ”€â”€ src/
-â”‚   â””â”€â”€ political_spectrum_analyzer/
-â”‚       â”œâ”€â”€ domain/
-â”‚       â”‚   â”œâ”€â”€ models.py
-â”‚       â”‚   â””â”€â”€ validation.py
-â”‚       â”œâ”€â”€ model/
-â”‚       â”‚   â””â”€â”€ transforms.py
-â”‚       â”œâ”€â”€ ocr/
-â”‚       â”‚   â””â”€â”€ politiscales_ocr.py
-â”‚       â”œâ”€â”€ plotting/
-â”‚       â”‚   â””â”€â”€ plot_2d.py
-â”‚       â”œâ”€â”€ services/
-â”‚       â”‚   â”œâ”€â”€ analysis_service.py
-â”‚       â”‚   â”œâ”€â”€ export_results_service.py
-â”‚       â”‚   â”œâ”€â”€ personalities_service.py
-â”‚       â”‚   â”œâ”€â”€ personality_filter_service.py
-â”‚       â”‚   â”œâ”€â”€ scoring_service.py
-â”‚       â”‚   â””â”€â”€ text_import_service.py
-â”‚       â”œâ”€â”€ ui/
-â”‚       â”‚   â”œâ”€â”€ app.py
-â”‚       â”‚   â”œâ”€â”€ form_frame.py
-â”‚       â”‚   â”œâ”€â”€ plot_frame.py
-â”‚       â”‚   â””â”€â”€ start_frame.py
-â”‚       â”œâ”€â”€ cli.py
-â”‚       â”œâ”€â”€ config.py
-â”‚       â””â”€â”€ constants.py
-â”œâ”€â”€ tests/
-â”œâ”€â”€ main.py
-â”œâ”€â”€ pyproject.toml
-â”œâ”€â”€ pytest.ini
-â””â”€â”€ requirements.txt
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ data/
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ reference/
+Ã¢â€â€š       Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ personalities.csv
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ docs/
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ methodology.md
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ reference_dataset.md
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ outputs/
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ src/
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ political_spectrum_analyzer/
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ domain/
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ models.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ validation.py
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ model/
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ transforms.py
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ ocr/
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ politiscales_ocr.py
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ plotting/
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ plot_2d.py
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ services/
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ analysis_service.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ export_results_service.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ personalities_service.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ personality_filter_service.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ scoring_service.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ text_import_service.py
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ ui/
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ app.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ form_frame.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ plot_frame.py
+Ã¢â€â€š       Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ start_frame.py
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ cli.py
+Ã¢â€â€š       Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ config.py
+Ã¢â€â€š       Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ constants.py
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ tests/
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ main.py
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ pyproject.toml
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ pytest.ini
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ requirements.txt
 ```
 
 ---
@@ -452,3 +452,34 @@ Recommended free hosting options:
 
 - Streamlit Community Cloud;
 - Hugging Face Spaces with the Streamlit SDK.
+---
+
+## Web deployment
+
+The repository includes a Streamlit web version of the application.
+
+Local launch:
+
+```powershell
+streamlit run streamlit_app.py
+```
+
+Recommended free deployment:
+
+```text
+Streamlit Community Cloud
+```
+
+Deployment entry point:
+
+```text
+streamlit_app.py
+```
+
+The web deployment guide is available in:
+
+```text
+docs/streamlit_deployment.md
+```
+
+The web version intentionally excludes OCR because screenshot OCR depends on the native Tesseract executable. Copied-text import is the recommended import method for the deployed web app.
