@@ -14,6 +14,9 @@ class PersonalityPoint:
     uy: float = 0.45
     confidence: str = "medium"
     is_estimated: bool = True
+    country: Optional[str] = None
+    period: Optional[str] = None
+    ideology_family: Optional[str] = None
     source: Optional[str] = None
     notes: Optional[str] = None
 
@@ -30,6 +33,8 @@ class PersonResult:
     scores: Dict[str, int]
     x: float
     y: float
+
+
 @dataclass(frozen=True)
 class ReferenceMatch:
     name: str

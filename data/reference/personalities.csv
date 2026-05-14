@@ -1,35 +1,35 @@
-name,display_group,x,y,ux,uy,confidence,is_estimated,source,notes
-Karl Marx,Philosopher,-2.8,-0.8,0.55,0.45,medium,true,,Approximate theoretical placement
-Friedrich Hayek,Philosopher,2.2,-1.2,0.50,0.45,medium,true,,Approximate theoretical placement
-Adam Smith,Philosopher,1.8,-0.8,0.55,0.45,medium,true,,Approximate theoretical placement
-John Locke,Philosopher,1.2,-0.4,0.55,0.45,medium,true,,Approximate theoretical placement
-Jean-Jacques Rousseau,Philosopher,-1.2,-0.2,0.60,0.50,medium,true,,Approximate theoretical placement
-Thomas Hobbes,Philosopher,1.0,1.7,0.55,0.55,medium,true,,Approximate theoretical placement
-Machiavelli,Philosopher,1.5,2.1,0.60,0.55,medium,true,,Approximate theoretical placement
-Montesquieu,Philosopher,0.4,-0.1,0.55,0.45,medium,true,,Approximate theoretical placement
-John Stuart Mill,Philosopher,0.8,-1.0,0.50,0.45,medium,true,,Approximate theoretical placement
-Hannah Arendt,Philosopher,0.2,0.4,0.55,0.50,medium,true,,Approximate theoretical placement
-Michel Foucault,Philosopher,-0.6,-1.0,0.60,0.50,medium,true,,Approximate theoretical placement
-Noam Chomsky,Philosopher,-1.5,-0.8,0.60,0.50,medium,true,,Approximate theoretical placement
-Ayn Rand,Philosopher,3.0,-0.6,0.55,0.45,medium,true,,Approximate theoretical placement
-Joseph Stalin,Dictator,-1.6,3.0,0.65,0.60,medium,true,,Approximate historical placement
-Adolf Hitler,Dictator,3.1,3.0,0.65,0.60,medium,true,,Approximate historical placement
-Mao Zedong,Dictator,-2.2,3.0,0.70,0.60,medium,true,,Approximate historical placement
-Pol Pot,Dictator,-2.6,3.2,0.75,0.65,low,true,,Highly approximate historical placement
-Benito Mussolini,Dictator,2.6,2.7,0.65,0.60,medium,true,,Approximate historical placement
-Francisco Franco,Dictator,2.4,2.4,0.65,0.60,medium,true,,Approximate historical placement
-Augusto Pinochet,Dictator,3.2,1.6,0.70,0.60,medium,true,,Approximate historical placement
-Saddam Hussein,Dictator,2.2,2.6,0.75,0.65,low,true,,Highly approximate historical placement
-Kim Jong-un,Dictator,-2.8,3.4,0.80,0.70,low,true,,Highly approximate contemporary placement
-Emmanuel Macron,President,1.0,0.2,0.70,0.55,low,true,,Approximate contemporary political placement
-Joe Biden,President,0.8,0.6,0.70,0.60,low,true,,Approximate contemporary political placement
-Donald Trump,President,2.6,2.2,0.75,0.60,low,true,,Approximate contemporary political placement
-Charles de Gaulle,President,1.8,1.3,0.65,0.55,medium,true,,Approximate historical political placement
-Francois Mitterrand,President,-1.0,0.5,0.65,0.55,medium,true,,Approximate historical political placement
-Margaret Thatcher,President,2.8,1.3,0.60,0.55,medium,true,,Approximate historical political placement
-Ronald Reagan,President,3.0,1.2,0.60,0.55,medium,true,,Approximate historical political placement
-Winston Churchill,President,1.8,1.6,0.65,0.60,medium,true,,Approximate historical political placement
-Nelson Mandela,President,-0.4,-0.2,0.65,0.55,medium,true,,Approximate historical political placement
-Maximilien Robespierre,Revolutionary,-1.8,1.8,0.70,0.60,low,true,,Highly approximate revolutionary placement
-Vladimir Lenin,Revolutionary,-2.2,2.6,0.65,0.60,medium,true,,Approximate revolutionary placement
-Che Guevara,Revolutionary,-1.8,1.6,0.70,0.60,low,true,,Highly approximate revolutionary placement
+name,display_group,country,period,ideology_family,x,y,ux,uy,confidence,is_estimated,source,notes
+Karl Marx,Philosopher,Germany,19th century,Socialism,-2.8,-0.8,0.55,0.45,medium,true,,Approximate theoretical placement
+Friedrich Hayek,Philosopher,Austria United Kingdom,20th century,Liberalism,2.2,-1.2,0.50,0.45,medium,true,,Approximate theoretical placement
+Adam Smith,Philosopher,Scotland,18th century,Classical liberalism,1.8,-0.8,0.55,0.45,medium,true,,Approximate theoretical placement
+John Locke,Philosopher,England,17th century,Liberalism,1.2,-0.4,0.55,0.45,medium,true,,Approximate theoretical placement
+Jean-Jacques Rousseau,Philosopher,France Switzerland,18th century,Republicanism,-1.2,-0.2,0.60,0.50,medium,true,,Approximate theoretical placement
+Thomas Hobbes,Philosopher,England,17th century,Authoritarianism,1.0,1.7,0.55,0.55,medium,true,,Approximate theoretical placement
+Machiavelli,Philosopher,Italy,16th century,Political realism,1.5,2.1,0.60,0.55,medium,true,,Approximate theoretical placement
+Montesquieu,Philosopher,France,18th century,Liberal constitutionalism,0.4,-0.1,0.55,0.45,medium,true,,Approximate theoretical placement
+John Stuart Mill,Philosopher,United Kingdom,19th century,Liberalism,0.8,-1.0,0.50,0.45,medium,true,,Approximate theoretical placement
+Hannah Arendt,Philosopher,Germany United States,20th century,Republicanism,0.2,0.4,0.55,0.50,medium,true,,Approximate theoretical placement
+Michel Foucault,Philosopher,France,20th century,Post-structuralism,-0.6,-1.0,0.60,0.50,medium,true,,Approximate theoretical placement
+Noam Chomsky,Philosopher,United States,20th-21st century,Libertarian socialism,-1.5,-0.8,0.60,0.50,medium,true,,Approximate theoretical placement
+Ayn Rand,Philosopher,United States,20th century,Objectivism,3.0,-0.6,0.55,0.45,medium,true,,Approximate theoretical placement
+Joseph Stalin,Dictator,Soviet Union,20th century,Stalinism,-1.6,3.0,0.65,0.60,medium,true,,Approximate historical placement
+Adolf Hitler,Dictator,Germany,20th century,Nazism,3.1,3.0,0.65,0.60,medium,true,,Approximate historical placement
+Mao Zedong,Dictator,China,20th century,Maoism,-2.2,3.0,0.70,0.60,medium,true,,Approximate historical placement
+Pol Pot,Dictator,Cambodia,20th century,Communist totalitarianism,-2.6,3.2,0.75,0.65,low,true,,Highly approximate historical placement
+Benito Mussolini,Dictator,Italy,20th century,Fascism,2.6,2.7,0.65,0.60,medium,true,,Approximate historical placement
+Francisco Franco,Dictator,Spain,20th century,National conservatism,2.4,2.4,0.65,0.60,medium,true,,Approximate historical placement
+Augusto Pinochet,Dictator,Chile,20th century,Authoritarian neoliberalism,3.2,1.6,0.70,0.60,medium,true,,Approximate historical placement
+Saddam Hussein,Dictator,Iraq,20th-21st century,Baathism,2.2,2.6,0.75,0.65,low,true,,Highly approximate historical placement
+Kim Jong-un,Dictator,North Korea,21st century,Juche,-2.8,3.4,0.80,0.70,low,true,,Highly approximate contemporary placement
+Emmanuel Macron,President,France,21st century,Centrism,1.0,0.2,0.70,0.55,low,true,,Approximate contemporary political placement
+Joe Biden,President,United States,21st century,Liberalism,0.8,0.6,0.70,0.60,low,true,,Approximate contemporary political placement
+Donald Trump,President,United States,21st century,Right-wing populism,2.6,2.2,0.75,0.60,low,true,,Approximate contemporary political placement
+Charles de Gaulle,President,France,20th century,Gaullism,1.8,1.3,0.65,0.55,medium,true,,Approximate historical political placement
+Francois Mitterrand,President,France,20th century,Social democracy,-1.0,0.5,0.65,0.55,medium,true,,Approximate historical political placement
+Margaret Thatcher,President,United Kingdom,20th century,Conservatism,2.8,1.3,0.60,0.55,medium,true,,Approximate historical political placement
+Ronald Reagan,President,United States,20th century,Conservatism,3.0,1.2,0.60,0.55,medium,true,,Approximate historical political placement
+Winston Churchill,President,United Kingdom,20th century,Conservatism,1.8,1.6,0.65,0.60,medium,true,,Approximate historical political placement
+Nelson Mandela,President,South Africa,20th-21st century,Anti-apartheid democracy,-0.4,-0.2,0.65,0.55,medium,true,,Approximate historical political placement
+Maximilien Robespierre,Revolutionary,France,18th century,Revolutionary republicanism,-1.8,1.8,0.70,0.60,low,true,,Highly approximate revolutionary placement
+Vladimir Lenin,Revolutionary,Russia Soviet Union,20th century,Leninism,-2.2,2.6,0.65,0.60,medium,true,,Approximate revolutionary placement
+Che Guevara,Revolutionary,Argentina Cuba,20th century,Marxist revolutionary socialism,-1.8,1.6,0.70,0.60,low,true,,Highly approximate revolutionary placement
