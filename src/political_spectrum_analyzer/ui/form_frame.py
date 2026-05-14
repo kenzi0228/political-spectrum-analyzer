@@ -1,79 +1,12 @@
 from __future__ import annotations
 
-import re
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter import ttk
 
 from political_spectrum_analyzer.constants import VARIABLE_NAMES
 from political_spectrum_analyzer.ocr import extract_scores_from_image
-
-
-ALIASES = {
-    "constructivisme": ["constructivisme", "constructivism"],
-    "essentialisme": ["essentialisme", "essentialism"],
-    "justice_rehabilitative": ["justice rehabilitative", "rehabilitative justice"],
-    "justice_punitive": ["justice punitive", "punitive justice"],
-    "progressisme": ["progressisme", "progressivism"],
-    "conservatisme": ["conservatisme", "conservatism"],
-    "internationalisme": ["internationalisme", "internationalism"],
-    "nationalisme": ["nationalisme", "nationalism"],
-    "communisme": ["communisme", "communism"],
-    "capitalisme": ["capitalisme", "capitalism"],
-    "regulation": ["regulation", "regulationnisme", "regulationism"],
-    "laissez_faire": ["laissez faire", "laissez-faire"],
-    "ecologie": ["ecologie", "ecology"],
-    "productivisme": ["productivisme", "productivism"],
-    "revolution": ["revolution"],
-    "reformisme": ["reformisme", "reformism"],
-}
-
-
-def _normalize_text(text: str) -> str:
-    text = text.lower()
-    text = text.replace("é", "e")
-    text = text.replace("è", "e")
-    text = text.replace("ê", "e")
-    text = text.replace("à", "a")
-    text = text.replace("ç", "c")
-    text = text.replace("’", "'")
-    text = text.replace("–", "-")
-    text = text.replace("—", "-")
-    text = text.replace("_", " ")
-    return text
-
-
-def _find_score_for_alias(text: str, alias: str) -> int | None:
-    alias = _normalize_text(alias)
-    alias_pattern = re.escape(alias)
-
-    patterns = [
-        rf"{alias_pattern}\D{{0,80}}(\d{{1,3}})\s*%?",
-        rf"(\d{{1,3}})\s*%?\D{{0,80}}{alias_pattern}",
-    ]
-
-    for pattern in patterns:
-        match = re.search(pattern, text, flags=re.IGNORECASE | re.DOTALL)
-        if match:
-            value = int(match.group(1))
-            if 0 <= value <= 100:
-                return value
-
-    return None
-
-
-def extract_scores_from_text(raw_text: str) -> dict[str, int]:
-    text = _normalize_text(raw_text)
-    scores: dict[str, int] = {name: 0 for name in VARIABLE_NAMES}
-
-    for variable_name, aliases in ALIASES.items():
-        for alias in aliases:
-            value = _find_score_for_alias(text, alias)
-            if value is not None:
-                scores[variable_name] = value
-                break
-
-    return scores
+from political_spectrum_analyzer.services import text_import_service
 
 
 class FormFrame(ttk.Frame):
@@ -106,13 +39,26 @@ class FormFrame(ttk.Frame):
         self.inner_frame = ttk.Frame(self.canvas)
         self.inner_window = self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
 
-        self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-        self.canvas.bind("<Configure>", lambda e: self.canvas.itemconfig(self.inner_window, width=e.width))
+        self.inner_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
+        )
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.inner_window, width=e.width),
+        )
 
         name_block = ttk.Frame(self.inner_frame)
         name_block.pack(fill="x", pady=(0, 10))
 
-        ttk.Label(name_block, text="Name:", width=18).grid(row=0, column=0, sticky="w", padx=(0, 10), pady=5)
+        ttk.Label(name_block, text="Name:", width=18).grid(
+            row=0,
+            column=0,
+            sticky="w",
+            padx=(0, 10),
+            pady=5,
+        )
+
         self.name_entry = ttk.Entry(name_block, width=25)
         self.name_entry.grid(row=0, column=1, sticky="w", pady=5)
 
@@ -131,19 +77,30 @@ class FormFrame(ttk.Frame):
         self.btn_text_import.grid(row=2, column=0, columnspan=2, pady=(5, 0), sticky="w")
 
         self.entries: dict[str, ttk.Entry] = {}
+
         fields = ttk.Frame(self.inner_frame)
         fields.pack(fill="x")
 
         for i, var in enumerate(VARIABLE_NAMES):
             fr = ttk.Frame(fields)
             fr.grid(row=i // 2, column=i % 2, padx=10, pady=6, sticky="w")
-            ttk.Label(fr, text=f"{var.replace('_', ' ').capitalize()} (0-100):").pack(anchor="w")
-            e = ttk.Entry(fr, width=10)
-            e.pack(anchor="w")
-            self.entries[var] = e
-            e.bind("<Return>", lambda ev: self.validate_form())
 
-        self.btn_validate = ttk.Button(self, text="Validate & next person", command=self.validate_form)
+            ttk.Label(
+                fr,
+                text=f"{var.replace('_', ' ').capitalize()} (0-100):",
+            ).pack(anchor="w")
+
+            entry = ttk.Entry(fr, width=10)
+            entry.pack(anchor="w")
+            entry.bind("<Return>", lambda ev: self.validate_form())
+
+            self.entries[var] = entry
+
+        self.btn_validate = ttk.Button(
+            self,
+            text="Validate & next person",
+            command=self.validate_form,
+        )
         self.btn_validate.pack(pady=12)
 
         self.name_entry.bind("<Return>", lambda e: self.validate_form())
@@ -155,9 +112,11 @@ class FormFrame(ttk.Frame):
     def reset_form(self) -> None:
         idx = self.app.current_index + 1
         total = self.app.num_people
+
         self.title_label.config(text=f"Input for person {idx}/{total}")
 
         self.name_entry.delete(0, tk.END)
+
         for entry in self.entries.values():
             entry.delete(0, tk.END)
 
@@ -168,20 +127,26 @@ class FormFrame(ttk.Frame):
         detected_count = 0
 
         for key, entry in self.entries.items():
-            if key in scores:
-                entry.delete(0, tk.END)
-                entry.insert(0, str(scores[key]))
+            if key not in scores:
+                continue
 
-                if scores[key] != 0:
-                    detected_count += 1
+            entry.delete(0, tk.END)
+            entry.insert(0, str(scores[key]))
+
+            if scores[key] != 0:
+                detected_count += 1
 
         return detected_count
 
     def import_from_screenshot(self) -> None:
         path = filedialog.askopenfilename(
             title="Choose a Politiscales screenshot",
-            filetypes=[("Images", "*.png;*.jpg;*.jpeg;*.bmp"), ("All files", "*.*")],
+            filetypes=[
+                ("Images", "*.png;*.jpg;*.jpeg;*.bmp"),
+                ("All files", "*.*"),
+            ],
         )
+
         if not path:
             return
 
@@ -226,7 +191,7 @@ class FormFrame(ttk.Frame):
                 messagebox.showerror("Import error", "Please paste some text first.")
                 return
 
-            scores = extract_scores_from_text(raw_text)
+            scores = text_import_service.extract_scores_from_text(raw_text)
             detected_count = self._fill_entries_from_scores(scores)
 
             popup.destroy()
@@ -249,13 +214,17 @@ class FormFrame(ttk.Frame):
         name = self.name_entry.get().strip() or f"Person_{self.app.current_index + 1}"
 
         scores: dict[str, int] = {}
+
         try:
             for key, entry in self.entries.items():
                 value = entry.get().strip() or "0"
                 value_int = int(value)
+
                 if not (0 <= value_int <= 100):
                     raise ValueError
+
                 scores[key] = value_int
+
         except Exception:
             messagebox.showerror("Error", "All scores must be integers between 0 and 100.")
             return
