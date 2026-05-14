@@ -7,3 +7,6 @@ __pycache__/
 .vscode/
 .DS_Store+
 .ps1
+
+# OCR debug outputs
+outputs/ocr_debug/
