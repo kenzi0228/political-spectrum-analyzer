@@ -10,3 +10,17 @@ __pycache__/
 
 # OCR debug outputs
 outputs/ocr_debug/
+
+# Build / packaging artifacts
+*.egg-info/
+dist/
+build/
+
+
+# Build / packaging artifacts
+*.egg-info/
+dist/
+build/
+
+# Local helper scripts
+commit_*.ps1

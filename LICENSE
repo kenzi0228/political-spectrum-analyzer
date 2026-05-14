@@ -1,0 +1,81 @@
+Political Spectrum Analyzer Non-Commercial License
+Version 1.0
+
+Copyright (c) 2026 Kenzi Lali
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use,
+copy, study, modify, and share the Software for personal, educational,
+academic, research, or non-commercial portfolio purposes, subject to the
+conditions below.
+
+1. Permitted Uses
+
+You may:
+
+- use the Software for personal learning or experimentation;
+- use the Software for academic, educational, or research purposes;
+- inspect, study, and modify the source code;
+- share modified or unmodified copies for non-commercial purposes;
+- reference the project in a portfolio, academic work, or technical review,
+  provided that appropriate credit is given to the original author.
+
+2. Prohibited Uses
+
+You may not, without prior written permission from the copyright holder:
+
+- sell, license, sublicense, rent, lease, or otherwise commercialize the
+  Software or any substantial part of it;
+- use the Software, modified or unmodified, in a commercial product, paid
+  service, SaaS platform, consulting deliverable, or revenue-generating
+  activity;
+- integrate the Software into proprietary or commercial software;
+- use the Software for commercial training, paid workshops, or commercial
+  educational products;
+- remove or alter copyright notices, attribution notices, or this license;
+- claim authorship of the original Software.
+
+3. Attribution
+
+Any redistribution or public use of the Software, modified or unmodified,
+must include clear attribution to:
+
+Kenzi Lali
+Political Spectrum Analyzer
+https://github.com/kenzi0228/political-spectrum-analyzer
+
+4. Modifications
+
+You may create modified versions of the Software for permitted non-commercial
+uses. Modified versions must clearly state that changes were made and must
+not misrepresent the original author as the author of those modifications.
+
+5. Commercial Licensing
+
+Commercial use is not permitted under this license.
+
+For commercial licensing, integration, redistribution, or any use not
+explicitly permitted by this license, prior written permission must be
+obtained from the copyright holder.
+
+6. No Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR
+OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. Termination
+
+Any violation of this license automatically terminates the rights granted
+under it. Upon termination, the user must stop using, copying, modifying,
+or distributing the Software.
+
+8. Governing Interpretation
+
+If any provision of this license is held to be unenforceable, the remaining
+provisions shall remain in effect to the maximum extent permitted by law.
