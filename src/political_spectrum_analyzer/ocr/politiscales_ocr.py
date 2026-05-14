@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 from typing import Dict
 
@@ -12,6 +13,29 @@ from political_spectrum_analyzer.services.text_import_service import extract_sco
 
 DEBUG_OCR = True
 DEBUG_DIR = Path("outputs") / "ocr_debug"
+
+TESSERACT_EXE_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+
+def _configure_tesseract() -> None:
+    """
+    Ensure pytesseract can find the Tesseract executable.
+
+    On Windows, installing the Python package pytesseract is not enough.
+    The native Tesseract OCR executable must also be installed.
+    """
+    if shutil.which("tesseract") is not None:
+        return
+
+    if Path(TESSERACT_EXE_PATH).exists():
+        pytesseract.pytesseract.tesseract_cmd = TESSERACT_EXE_PATH
+        return
+
+    raise RuntimeError(
+        "Tesseract OCR executable was not found. "
+        "Install Tesseract OCR or update TESSERACT_EXE_PATH in politiscales_ocr.py. "
+        f"Expected path: {TESSERACT_EXE_PATH}"
+    )
 
 
 def _ensure_debug_dir() -> None:
@@ -66,9 +90,11 @@ def _count_detected_scores(scores: Dict[str, int]) -> int:
 
 def _run_tesseract(image: Image.Image, config: str) -> str:
     """
-    Runs Tesseract with French + English when available.
+    Run Tesseract with French + English when available.
     Falls back to English if the French language pack is missing.
     """
+    _configure_tesseract()
+
     try:
         return pytesseract.image_to_string(image, lang="fra+eng", config=config)
     except pytesseract.TesseractError:
@@ -97,6 +123,8 @@ def extract_scores_from_image(image_path: str) -> Dict[str, int]:
     - OCR remains heuristic.
     - Manual review is still recommended after import.
     """
+    _configure_tesseract()
+
     preprocessors = [
         ("grayscale_x3", _preprocess_grayscale(image_path, factor=3)),
         ("threshold_x3_t150", _preprocess_threshold(image_path, factor=3, threshold=150)),
