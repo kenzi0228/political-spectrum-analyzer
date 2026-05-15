@@ -1,2 +1,0 @@
-# System packages for Streamlit deployment.
-# Tesseract is intentionally not installed for the web app because OCR is desktop-only.

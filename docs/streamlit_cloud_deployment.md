@@ -94,3 +94,14 @@ After deployment, verify online:
 - a saved JSON profile can be imported;
 - CSV export works;
 - the methodology tab renders correctly.
+## System packages policy
+
+No packages.txt file is required for the Streamlit deployment.
+
+The web app does not install Tesseract or any native OCR package because OCR remains desktop-only. Streamlit Community Cloud interprets `packages.txt` as a list of Debian apt packages. Therefore, this repository should not include prose, comments, or documentation text inside `packages.txt`.
+
+Python dependencies are handled through:
+
+```text
+requirements.txt
+```

@@ -13,16 +13,15 @@ def test_streamlit_deployment_document_exists():
     assert "ocr" in content
 
 
-def test_packages_file_exists_and_documents_ocr_decision():
+def test_packages_file_is_absent_because_ocr_is_desktop_only():
     path = Path("packages.txt")
 
-    assert path.exists()
+    assert not path.exists()
 
-    content = path.read_text(encoding="utf-8").lower()
+    deployment_doc = Path("docs/streamlit_cloud_deployment.md").read_text(encoding="utf-8").lower()
 
-    assert "tesseract" in content
-    assert "desktop-only" in content
-
+    assert "no packages.txt file is required" in deployment_doc
+    assert "ocr remains desktop-only" in deployment_doc
 
 def test_readme_mentions_web_deployment():
     path = Path("README.md")

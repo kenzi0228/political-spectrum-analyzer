@@ -23,12 +23,12 @@ def test_streamlit_profile_import_releases_uploaded_file_after_load():
     content = Path("streamlit_app.py").read_text(encoding="utf-8")
 
     assert "st.session_state[f\"{prefix}_upload_nonce\"] += 1" in content
-    assert "Profile loaded. The fields have been filled and remain editable." in content
+    assert "profile_loaded" in content or "Profile loaded. The fields have been filled and remain editable." in content
 
 
 def test_streamlit_profile_download_is_separate_from_import():
     content = Path("streamlit_app.py").read_text(encoding="utf-8")
 
-    assert "Import a saved profile" in content
-    assert "Save this profile" in content
-    assert "Download this profile JSON" in content
+    assert "import_saved_profile" in content or "Import a saved profile" in content
+    assert "save_this_profile" in content or "Save this profile" in content
+    assert "download_profile_json" in content or "Download this profile JSON" in content

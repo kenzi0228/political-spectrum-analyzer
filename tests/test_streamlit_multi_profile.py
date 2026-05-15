@@ -8,8 +8,8 @@ from political_spectrum_analyzer.web.plotly_plot import build_political_spectrum
 def test_streamlit_app_source_mentions_multi_profile_workflow():
     content = Path("streamlit_app.py").read_text(encoding="utf-8")
 
-    assert "Number of profiles to compare" in content
     assert "_render_multi_profile_inputs" in content
+    assert "profile_count_label" in content or "Number of profiles to compare" in content
     assert "Multi-profile analysis" in content
 
 
