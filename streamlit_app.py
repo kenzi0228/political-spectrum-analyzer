@@ -10,6 +10,7 @@ from political_spectrum_analyzer.model.transforms import apply_transformations_a
 from political_spectrum_analyzer.services.analysis_service import analyze_profile
 from political_spectrum_analyzer.services.export_results_service import build_export_rows
 from political_spectrum_analyzer.services.personalities_service import load_personalities
+from political_spectrum_analyzer.services.profile_interpretation_service import interpret_profile
 from political_spectrum_analyzer.services.personality_filter_service import (
     NONE_VALUE,
     filter_personalities,
@@ -21,7 +22,7 @@ from political_spectrum_analyzer.web.plotly_plot import build_political_spectrum
 
 st.set_page_config(
     page_title="Political Spectrum Analyzer",
-    page_icon="ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â ",
+    page_icon="ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â ",
     layout="wide",
 )
 
@@ -182,6 +183,63 @@ def _render_hero() -> None:
     )
 
 
+def _render_profile_interpretation(person: PersonResult) -> None:
+    interpretation = interpret_profile(
+        profile_name=person.name,
+        scores=person.scores,
+    )
+
+    st.markdown("#### Personalized profile reading")
+    st.write(interpretation.synthesis)
+
+    reading_col1, reading_col2, reading_col3 = st.columns(3)
+    reading_col1.info(interpretation.economic_reading)
+    reading_col2.info(interpretation.societal_reading)
+    reading_col3.info(interpretation.strategic_reading)
+
+    dominant_rows = [
+        {
+            "Axis": axis.label,
+            "Score": axis.score,
+            "Level": axis.level,
+            "Meaning": axis.interpretation,
+        }
+        for axis in interpretation.dominant_axes
+    ]
+
+    weak_rows = [
+        {
+            "Axis": axis.label,
+            "Score": axis.score,
+            "Level": axis.level,
+            "Meaning": axis.interpretation,
+        }
+        for axis in interpretation.weak_axes
+    ]
+
+    balance_rows = [
+        {
+            "Dimension": row["dimension"],
+            "First pole": row["left_axis"],
+            "First score": row["left_score"],
+            "Second pole": row["right_axis"],
+            "Second score": row["right_score"],
+            "Leading tendency": row["leading_side"],
+            "Reading": row["reading"],
+        }
+        for row in interpretation.axis_pair_balances
+    ]
+
+    st.markdown("#### Dominant axes")
+    st.dataframe(pd.DataFrame(dominant_rows), use_container_width=True, hide_index=True)
+
+    st.markdown("#### Weakest axes")
+    st.dataframe(pd.DataFrame(weak_rows), use_container_width=True, hide_index=True)
+
+    st.markdown("#### Axis-by-axis balance")
+    st.dataframe(pd.DataFrame(balance_rows), use_container_width=True, hide_index=True)
+
+
 def _render_single_profile_analysis(person: PersonResult, personalities) -> None:
     analysis = analyze_profile(person=person, personalities=personalities, top_n=3)
 
@@ -206,6 +264,8 @@ def _render_single_profile_analysis(person: PersonResult, personalities) -> None
 
     st.dataframe(pd.DataFrame(closest_data), use_container_width=True, hide_index=True)
 
+    _render_profile_interpretation(person)
+
 
 def _render_analysis(people: list[PersonResult], personalities) -> None:
     if not people:
@@ -213,7 +273,7 @@ def _render_analysis(people: list[PersonResult], personalities) -> None:
         return
 
     if len(people) == 1:
-        st.subheader(f"Analysis ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â {people[0].name}")
+        st.subheader(f"Analysis ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â {people[0].name}")
         _render_single_profile_analysis(people[0], personalities)
         return
 
@@ -465,15 +525,13 @@ def _build_export_dataframe(
 
 
 def _render_methodology_tab() -> None:
-    st.header("Methodology")
+    st.header("How the analyzer works")
 
     st.markdown(
         """
-        This application transforms 16 ideological scores into a 2D political position.
-
-        The goal is not to produce an absolute political truth. The model is an explainable heuristic:
-        every score contributes to an interpretable economic or societal direction, then the final
-        position is projected onto a readable map.
+        This page explains how the application turns 16 political scores into a readable position on
+        the spectrum. The explanation focuses on how to read the result and how each axis contributes
+        to the profile.
         """
     )
 
@@ -481,26 +539,17 @@ def _render_methodology_tab() -> None:
 
     st.markdown(
         """
-        The graph uses two axes:
-
         | Axis | Negative side | Positive side |
         |---|---|---|
         | `x` economic axis | Economic left | Economic right |
         | `y` societal axis | Libertarian / progressive | Authoritarian / conservative |
 
-        The final coordinates are bounded inside:
+        The visible range is:
 
         ```text
         x in [-4, 4]
         y in [-4, 4]
         ```
-
-        Interpretation:
-
-        - `x < 0`: more economically left;
-        - `x > 0`: more economically right;
-        - `y < 0`: more libertarian / socially progressive;
-        - `y > 0`: more authoritarian / socially conservative.
         """
     )
 
@@ -508,7 +557,7 @@ def _render_methodology_tab() -> None:
 
     st.markdown(
         """
-        The model first computes four intermediate blocks:
+        The application first builds four intermediate scores:
 
         ```text
         left_economic =
@@ -536,14 +585,14 @@ def _render_methodology_tab() -> None:
           + 0.55 * nationalisme
         ```
 
-        Then the model compares opposing blocks:
+        Then it compares opposite tendencies:
 
         ```text
         economic_raw = right_economic - left_economic
         societal_raw = authoritarian_social - libertarian_social
         ```
 
-        A few secondary adjustments are then applied:
+        Secondary adjustments refine the reading:
 
         ```text
         economic_raw += 0.12 * (productivisme - ecologie)
@@ -551,8 +600,7 @@ def _render_methodology_tab() -> None:
         societal_raw += 0.08 * (revolution - reformisme)
         ```
 
-        Finally, the values are normalized, compressed with a sigmoid function, and clamped to the
-        plotting range:
+        The values are normalized and compressed into the graph range:
 
         ```text
         economic_normalized = economic_raw / 120
@@ -561,195 +609,65 @@ def _render_methodology_tab() -> None:
         x = 4 * sigmoid_scaled(economic_normalized)
         y = 4 * sigmoid_scaled(societal_normalized)
         ```
-
-        The sigmoid compression prevents a single very strong opposition from sending the point too
-        violently to an extreme edge of the graph.
         """
     )
 
-    st.subheader("3. Why these weights?")
-
-    st.markdown(
-        """
-        The model intentionally uses weighted sums rather than machine learning.
-
-        Reasons:
-
-        - the model remains explainable;
-        - each input variable has a visible role;
-        - the projection can be discussed and adjusted;
-        - there is no labeled training dataset that would justify a statistical model.
-
-        The highest weights are assigned to the most direct ideological indicators:
-
-        - `communisme` and `capitalisme` strongly affect the economic axis;
-        - `regulation` and `laissez_faire` strongly affect the economic axis;
-        - `progressisme`, `conservatisme`, justice orientation, and social philosophy strongly affect the societal axis.
-
-        Lower weights are used for variables that are meaningful but less directly tied to a single axis:
-
-        - `ecologie` and `productivisme`;
-        - `revolution` and `reformisme`;
-        - `internationalisme` and `nationalisme`.
-        """
-    )
-
-    st.subheader("4. Detailed explanation of the 16 input axes")
+    st.subheader("3. Meaning of the 16 axes")
 
     axes_rows = [
-        {
-            "Axis": "constructivisme",
-            "Meaning": "Views identities, norms, and social categories as historically and socially constructed.",
-            "Effect": "Moves the profile toward the libertarian / progressive side.",
-            "High score suggests": "Openness to social change, contextual analysis of norms, and less essentialist reasoning.",
-        },
-        {
-            "Axis": "essentialisme",
-            "Meaning": "Views identities, cultures, or social roles as more fixed, natural, inherited, or stable.",
-            "Effect": "Moves the profile toward the authoritarian / conservative side.",
-            "High score suggests": "Attachment to stable categories, inherited structures, and more traditional social interpretation.",
-        },
-        {
-            "Axis": "justice_rehabilitative",
-            "Meaning": "Prioritizes reintegration, prevention, and social causes of crime over pure punishment.",
-            "Effect": "Moves the profile toward the libertarian / progressive side.",
-            "High score suggests": "Support for restorative justice, rehabilitation, and reduced punitive intensity.",
-        },
-        {
-            "Axis": "justice_punitive",
-            "Meaning": "Prioritizes punishment, deterrence, order, and strict sanctions.",
-            "Effect": "Moves the profile toward the authoritarian / conservative side.",
-            "High score suggests": "Support for tougher penalties, stronger policing, and order-centered justice.",
-        },
-        {
-            "Axis": "progressisme",
-            "Meaning": "Supports social reforms, civil liberties, equality policies, and cultural modernization.",
-            "Effect": "Moves the profile downward toward the libertarian / progressive side.",
-            "High score suggests": "Preference for reforming norms and institutions toward inclusion and social change.",
-        },
-        {
-            "Axis": "conservatisme",
-            "Meaning": "Prioritizes tradition, continuity, social stability, and preservation of inherited norms.",
-            "Effect": "Moves the profile upward toward the authoritarian / conservative side.",
-            "High score suggests": "Preference for order, continuity, tradition, and cautious social change.",
-        },
-        {
-            "Axis": "internationalisme",
-            "Meaning": "Values cooperation beyond national borders and openness to global or supranational perspectives.",
-            "Effect": "Moves the profile toward the libertarian / progressive side.",
-            "High score suggests": "Support for international cooperation, cosmopolitanism, and cross-border solidarity.",
-        },
-        {
-            "Axis": "nationalisme",
-            "Meaning": "Prioritizes national sovereignty, national identity, and national interest.",
-            "Effect": "Moves the profile toward the authoritarian / conservative side.",
-            "High score suggests": "Preference for national priority, sovereignty, borders, and collective identity.",
-        },
-        {
-            "Axis": "communisme",
-            "Meaning": "Represents support for collective ownership, anti-capitalism, and strong redistribution.",
-            "Effect": "Moves the profile strongly toward the economic left.",
-            "High score suggests": "Strong opposition to capitalist ownership structures and support for collectivized economics.",
-        },
-        {
-            "Axis": "capitalisme",
-            "Meaning": "Represents support for private ownership, markets, entrepreneurship, and capital accumulation.",
-            "Effect": "Moves the profile strongly toward the economic right.",
-            "High score suggests": "Support for market allocation, private enterprise, and capitalist economic organization.",
-        },
-        {
-            "Axis": "regulation",
-            "Meaning": "Supports state intervention, rules, and constraints on markets.",
-            "Effect": "Moves the profile toward the economic left.",
-            "High score suggests": "Preference for public oversight, regulated markets, and economic correction by institutions.",
-        },
-        {
-            "Axis": "laissez_faire",
-            "Meaning": "Supports minimal state intervention and freer market dynamics.",
-            "Effect": "Moves the profile toward the economic right.",
-            "High score suggests": "Preference for deregulation, market autonomy, and limited economic intervention.",
-        },
-        {
-            "Axis": "ecologie",
-            "Meaning": "Prioritizes ecological sustainability, environmental constraints, and climate responsibility.",
-            "Effect": "Slightly moves the profile left economically and away from productivist logic.",
-            "High score suggests": "Support for environmental regulation, ecological limits, and sustainability over growth.",
-        },
-        {
-            "Axis": "productivisme",
-            "Meaning": "Prioritizes production, industrial growth, infrastructure, output, and economic expansion.",
-            "Effect": "Slightly moves the profile right economically and away from ecological restraint.",
-            "High score suggests": "Preference for growth, production capacity, industrial policy, and material expansion.",
-        },
-        {
-            "Axis": "revolution",
-            "Meaning": "Represents preference for rupture, radical change, and transformation of existing systems.",
-            "Effect": "Slightly influences economic-left and authoritarian/libertarian posture, but is mainly a radicality signal.",
-            "High score suggests": "Support for deep systemic change rather than gradual institutional reform.",
-        },
-        {
-            "Axis": "reformisme",
-            "Meaning": "Represents preference for gradual change through existing institutions.",
-            "Effect": "Slightly moves away from revolutionary posture and slightly affects economic-right scoring.",
-            "High score suggests": "Preference for institutional reform, gradualism, compromise, and legal continuity.",
-        },
+        {"Axis": "constructivisme", "What it means": "Social norms and identities are understood as shaped by history, institutions, and context.", "High score indicates": "A more constructivist and socially fluid interpretation of society."},
+        {"Axis": "essentialisme", "What it means": "Identities, cultures, or social roles are seen as more fixed, inherited, or stable.", "High score indicates": "A stronger attachment to stable social categories and inherited structures."},
+        {"Axis": "justice_rehabilitative", "What it means": "Justice is seen through reintegration, prevention, and rehabilitation.", "High score indicates": "Preference for restorative justice and reduced purely punitive logic."},
+        {"Axis": "justice_punitive", "What it means": "Justice is seen through sanction, deterrence, responsibility, and order.", "High score indicates": "Preference for stronger penalties and stricter law-and-order responses."},
+        {"Axis": "progressisme", "What it means": "Support for social reform, modernization, and expansion of rights.", "High score indicates": "A profile open to social change and progressive reforms."},
+        {"Axis": "conservatisme", "What it means": "Attachment to continuity, tradition, social stability, and inherited norms.", "High score indicates": "A profile cautious toward rapid social change."},
+        {"Axis": "internationalisme", "What it means": "Preference for cross-border cooperation and global or supranational perspectives.", "High score indicates": "A more cosmopolitan or internationally cooperative outlook."},
+        {"Axis": "nationalisme", "What it means": "Priority given to sovereignty, national identity, and national interest.", "High score indicates": "A stronger national-priority and sovereignty-oriented outlook."},
+        {"Axis": "communisme", "What it means": "Support for collective ownership, redistribution, or anti-capitalist economic logic.", "High score indicates": "A strong movement toward the economic left."},
+        {"Axis": "capitalisme", "What it means": "Support for private ownership, markets, entrepreneurship, and capital accumulation.", "High score indicates": "A strong movement toward the economic right."},
+        {"Axis": "regulation", "What it means": "Support for rules, public oversight, and institutional control of markets.", "High score indicates": "A preference for regulated markets and public correction of economic imbalances."},
+        {"Axis": "laissez_faire", "What it means": "Support for market autonomy and limited state intervention.", "High score indicates": "A preference for deregulation and freer economic activity."},
+        {"Axis": "ecologie", "What it means": "Priority given to environmental responsibility and sustainability.", "High score indicates": "A preference for ecological limits and sustainability over unrestricted growth."},
+        {"Axis": "productivisme", "What it means": "Priority given to production, infrastructure, growth, and material expansion.", "High score indicates": "A profile more favorable to output, industry, and productive capacity."},
+        {"Axis": "revolution", "What it means": "Preference for rupture, systemic transformation, and radical change.", "High score indicates": "A more rupture-oriented political strategy."},
+        {"Axis": "reformisme", "What it means": "Preference for gradual change through existing institutions.", "High score indicates": "A more institutional, gradualist, and reform-oriented strategy."},
     ]
 
     st.dataframe(pd.DataFrame(axes_rows), use_container_width=True, hide_index=True)
 
-    st.subheader("5. Quadrant interpretation")
+    st.subheader("4. How to read your result")
 
     st.markdown(
         """
-        | Quadrant | Interpretation |
-        |---|---|
-        | Left / Authoritarian | Economically left, but socially/order oriented |
-        | Right / Authoritarian | Economically right, socially conservative or authority oriented |
-        | Left / Libertarian | Economically left, socially progressive or libertarian |
-        | Right / Libertarian | Economically right, socially liberal or libertarian |
-        | Center / Moderate | Weak distance from the center or balanced contradictory tendencies |
+        Once the position is computed, the app gives three levels of reading:
 
-        A central profile does not necessarily mean "no opinion". It may mean that opposite scores
-        compensate each other in the 2D projection.
+        1. **Graph position** â€” where the profile appears on the spectrum.
+        2. **Closest references** â€” which reference personalities are geometrically closest.
+        3. **Personalized profile reading** â€” which axes dominate, which axes are weakest, and which
+           opposing pairs define the profile most strongly.
+
+        The detailed profile analysis is based on the raw 16 scores, not only on the final `x/y`
+        coordinates. This helps explain why two profiles can appear close on the graph while still
+        having different internal score structures.
         """
     )
 
-    st.subheader("6. Reference personalities and closest references")
+    st.subheader("5. Closest references")
 
     st.markdown(
         """
-        Reference personalities are approximate anchors. They help interpret the map visually, but they
-        are not ground truth.
-
-        The closest references are computed using Euclidean distance:
+        Closest references are computed with Euclidean distance:
 
         ```text
         distance = sqrt((x_profile - x_reference)^2 + (y_profile - y_reference)^2)
         ```
 
-        A close reference means proximity in this simplified 2D space. It does not mean ideological identity.
-        Two profiles can be close on the chart while differing strongly on one of the 16 raw axes.
+        This identifies nearby points on the same map. The detailed score analysis should then be used
+        to understand the specific ideological composition of the profile.
         """
     )
 
-    st.subheader("7. Limitations")
 
-    st.markdown(
-        """
-        Main limitations:
-
-        - the model is heuristic;
-        - the 2D projection loses information;
-        - the reference dataset is approximate;
-        - historical figures are difficult to map onto contemporary axes;
-        - no labeled calibration dataset is used;
-        - nearest neighbors are interpretive, not definitive;
-        - OCR can be unreliable and is intentionally excluded from the web version.
-
-        The next planned improvement is a more detailed profile analysis that explains what each user's
-        strongest and weakest scores imply about their ideological profile.
-        """
-    )
 
 def main() -> None:
     _inject_css()

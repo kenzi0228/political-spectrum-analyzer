@@ -39,8 +39,11 @@ def test_streamlit_methodology_tab_mentions_all_16_axes():
         assert axis in content
 
 
-def test_streamlit_methodology_tab_announces_next_profile_analysis_step():
+def test_streamlit_methodology_is_product_facing_not_academic():
     content = Path("streamlit_app.py").read_text(encoding="utf-8").lower()
 
-    assert "next planned improvement" in content
-    assert "detailed profile analysis" in content
+    assert "how the analyzer works" in content
+    assert "how to read your result" in content
+    assert "personalized profile reading" in content
+    assert "next planned improvement" not in content
+    assert "limitations" not in content
