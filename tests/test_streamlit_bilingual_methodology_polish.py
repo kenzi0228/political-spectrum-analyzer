@@ -7,7 +7,7 @@ def test_recommended_workflow_markdown_uses_helper():
     assert "def _md_text" in content
     assert 'st.markdown(_md_text(language, "recommended_workflow_body"))' in content
     assert "1. Gardez la saisie numerique activee" not in content
-    assert "2. Saisissez d'abord un profil" not in content
+    assert "2. Saisissez d\'abord un profil" not in content
     assert "- Gardez la saisie numerique activee" in content
 
 
