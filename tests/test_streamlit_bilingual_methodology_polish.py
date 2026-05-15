@@ -1,13 +1,21 @@
 from pathlib import Path
 
 
+def test_ui_text_does_not_call_translation_function_inside_dictionary():
+    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    ui_start = content.index("UI_TEXT: dict")
+    t_start = content.index("def _t", ui_start)
+    ui_block = content[ui_start:t_start]
+    assert "_t(" not in ui_block
+
+
 def test_recommended_workflow_markdown_uses_helper():
     content = Path("streamlit_app.py").read_text(encoding="utf-8")
 
     assert "def _md_text" in content
-    assert 'st.markdown(_md_text(language, "recommended_workflow_body"))' in content
+    assert "st.markdown(_md_text(language, \"recommended_workflow_body\"))" in content
     assert "1. Gardez la saisie numerique activee" not in content
-    assert "2. Saisissez d\'abord un profil" not in content
+    assert "2. Saisissez d'abord un profil" not in content
     assert "- Gardez la saisie numerique activee" in content
 
 

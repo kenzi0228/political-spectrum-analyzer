@@ -169,54 +169,18 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "input_intro": "Add one or several profiles. Choose slider input or exact numeric input from the sidebar. Each profile can be saved and imported independently.",
         "manual_numeric_entry": "Manual numeric entry",
         "manual_numeric_help": "On: type exact values for each axis. Off: adjust scores with sliders.",
-        "profile_count_label": _t(st.session_state.get("language", "en"), "profile_count_label"),
+        "profile_count_label": "Number of profiles to compare",
         "profile_count_help": "Use up to 8 profiles to keep the chart readable.",
         "import_saved_profile": "Import a saved profile",
-        "select_saved_json": _t(st.session_state.get("language", "en"), "select_saved_json"),
+        "select_saved_json": "Select a saved profile JSON",
         "load_this_profile": "Load this profile",
         "save_this_profile": "Save this profile",
         "download_profile_json": "Download this profile JSON",
         "copied_text_import": "Import from copied Politiscales-style text",
-        "paste_results_text": _t(st.session_state.get("language", "en"), "paste_results_text"),
+        "paste_results_text": "Paste copied results text",
         "apply_copied_scores": "Apply copied-text scores to this profile",
-        "profile_loaded": _t(st.session_state.get("language", "en"), "profile_loaded"),
-        "profile_save_caption": _t(st.session_state.get("language", "en"), "profile_save_caption"),
-        "profile_count_label": _t(st.session_state.get("language", "en"), "profile_count_label"),
-        "profile_count_help": "Use up to 8 profiles to keep the chart readable.",
-        "import_saved_profile": "Import a saved profile",
-        "select_saved_json": _t(st.session_state.get("language", "en"), "select_saved_json"),
-        "load_this_profile": "Load this profile",
-        "save_this_profile": "Save this profile",
-        "download_profile_json": "Download this profile JSON",
-        "copied_text_import": "Import from copied Politiscales-style text",
-        "paste_results_text": _t(st.session_state.get("language", "en"), "paste_results_text"),
-        "apply_copied_scores": "Apply copied-text scores to this profile",
-        "profile_loaded": _t(st.session_state.get("language", "en"), "profile_loaded"),
-        "profile_save_caption": _t(st.session_state.get("language", "en"), "profile_save_caption"),
-        "profile_count_label": _t(st.session_state.get("language", "en"), "profile_count_label"),
-        "profile_count_help": "Use up to 8 profiles to keep the chart readable.",
-        "import_saved_profile": "Import a saved profile",
-        "select_saved_json": _t(st.session_state.get("language", "en"), "select_saved_json"),
-        "load_this_profile": "Load this profile",
-        "save_this_profile": "Save this profile",
-        "download_profile_json": "Download this profile JSON",
-        "copied_text_import": "Import from copied Politiscales-style text",
-        "paste_results_text": _t(st.session_state.get("language", "en"), "paste_results_text"),
-        "apply_copied_scores": "Apply copied-text scores to this profile",
-        "profile_loaded": _t(st.session_state.get("language", "en"), "profile_loaded"),
-        "profile_save_caption": _t(st.session_state.get("language", "en"), "profile_save_caption"),
-        "profile_count_label": _t(st.session_state.get("language", "en"), "profile_count_label"),
-        "profile_count_help": "Use up to 8 profiles to keep the chart readable.",
-        "import_saved_profile": "Import a saved profile",
-        "select_saved_json": _t(st.session_state.get("language", "en"), "select_saved_json"),
-        "load_this_profile": "Load this profile",
-        "save_this_profile": "Save this profile",
-        "download_profile_json": "Download this profile JSON",
-        "copied_text_import": "Import from copied Politiscales-style text",
-        "paste_results_text": _t(st.session_state.get("language", "en"), "paste_results_text"),
-        "apply_copied_scores": "Apply copied-text scores to this profile",
-        "profile_loaded": _t(st.session_state.get("language", "en"), "profile_loaded"),
-        "profile_save_caption": _t(st.session_state.get("language", "en"), "profile_save_caption"),
+        "profile_loaded": "Profile loaded. The fields have been filled and remain editable.",
+        "profile_save_caption": "Profile save/import is currently local and file-based. A future authenticated version can store profiles per user account.",
         "formula_main_blocks_intro": "The analyzer does not use a black-box model. It builds four weighted blocks, then compares them.",
         "formula_coefficients_note": "A coefficient is a weight. The higher it is, the more that score influences the final coordinate. 0.90 is direct and strong, 0.75 is strong, 0.55 is moderate, and values around 0.20-0.35 are secondary.",
         "formula_left_block_title": "Economic-left block",
@@ -253,7 +217,7 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "guide_step_3": "Etape 3 - Sauvegarder ou exporter",
         "guide_step_3_body": "Sauvegardez chaque profil individuellement en JSON, ou exportez l'analyse complete en CSV pour Excel, Power BI ou une comparaison ulterieure.",
         "recommended_workflow": "Parcours recommande",
-        "recommended_workflow_body": "- Gardez la saisie numerique activee pour des valeurs precises.\n- Saisissez d'abord un profil et verifiez le resultat.\n- Sauvegardez ce profil en JSON si vous voulez le reutiliser.\n- Augmentez le nombre de profils si vous voulez comparer.\n- Utilisez les filtres uniquement si vous voulez afficher les personnalites de reference.\n- Exportez le CSV lorsque vous voulez un fichier d'analyse structure.",
+        "recommended_workflow_body": "- Gardez la saisie numerique activee pour des valeurs precises.\\n- Saisissez d'abord un profil et verifiez le resultat.\\n- Sauvegardez ce profil en JSON si vous voulez le reutiliser.\\n- Augmentez le nombre de profils si vous voulez comparer.\\n- Utilisez les filtres uniquement si vous voulez afficher les personnalites de reference.\\n- Exportez le CSV lorsque vous voulez un fichier d'analyse structure.",
         "profile_save_import": "Sauvegarde et import de profil",
         "profile_save_import_body": "La sauvegarde est actuellement locale et basee sur des fichiers. Chaque profil peut etre telecharge en JSON puis importe plus tard dans n'importe quel formulaire. Une fois importe, le profil reste modifiable.",
         "input_mode": "Mode de saisie",
@@ -285,19 +249,6 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "apply_copied_scores": "Appliquer les scores detectes a ce profil",
         "profile_loaded": "Profil charge. Les champs ont ete remplis et restent modifiables.",
         "profile_save_caption": "La sauvegarde est actuellement locale et basee sur des fichiers. Une future version authentifiee pourra stocker les profils par compte utilisateur.",
-        "formula_main_blocks_intro": "L\'analyseur n\'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
-        "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
-        "formula_left_block_title": "Bloc economique de gauche",
-        "formula_left_block_explanation": "- 0.90 * communisme : marqueur economique de gauche le plus fort ; il pousse directement x vers la gauche.\\n- 0.75 * regulation : marqueur interventionniste fort ; il pousse x vers la gauche.\\n- 0.35 * ecologie : contribution moderee car l\'ecologie implique souvent de la regulation, sans etre purement economique.\\n- 0.25 * revolution : contribution secondaire car la radicalite est une methode, pas une doctrine economique complete.",
-        "formula_right_block_title": "Bloc economique de droite",
-        "formula_right_block_explanation": "- 0.90 * capitalisme : marqueur economique de droite le plus fort ; il pousse directement x vers la droite.\\n- 0.75 * laissez_faire : marqueur fort d\'autonomie du marche ; il pousse x vers la droite.\\n- 0.35 * productivisme : contribution moderee car croissance et production peuvent exister dans plusieurs systemes.\\n- 0.20 * reformisme : contribution secondaire faible car le reformisme est surtout une methode politique.",
-        "formula_libertarian_block_title": "Bloc societal libertaire / progressiste",
-        "formula_libertarian_block_explanation": "- 0.75 * constructivisme : marqueur social progressiste fort car il traduit une lecture flexible du social.\\n- 0.70 * justice_rehabilitative : marqueur anti-punitif fort car il favorise reintegration et prevention.\\n- 0.70 * progressisme : marqueur fort d\'ouverture au changement social.\\n- 0.55 * internationalisme : marqueur modere d\'ouverture vers une cooperation elargie.",
-        "formula_authoritarian_block_title": "Bloc societal autoritaire / conservateur",
-        "formula_authoritarian_block_explanation": "- 0.75 * essentialisme : marqueur social conservateur fort car il traduit des categories sociales plus fixes.\\n- 0.70 * justice_punitive : marqueur d\'autorite fort car il insiste sur sanction et dissuasion.\\n- 0.70 * conservatisme : marqueur fort de continuite et stabilite.\\n- 0.55 * nationalisme : marqueur modere d\'autorite et de communaute car il renforce souverainete et priorite nationale.",
-        "formula_raw_axis_explanation": "Le modele soustrait les blocs opposes. right_economic - left_economic donne la direction de x. authoritarian_social - libertarian_social donne la direction de y.",
-        "formula_adjustments_explanation": "- productivisme - ecologie affine la lecture croissance contre contrainte ecologique.\\n- nationalisme - internationalisme affine la lecture souverainete contre ouverture internationale.\\n- revolution - reformisme affine la lecture rupture contre changement institutionnel.",
-        "formula_normalization_explanation": "Les scores bruts sont divises par 120 puis passes dans une sigmoide. Les profils marques se rapprochent des bords, mais le graphe reste lisible.",
         "formula_main_blocks_intro": "L'analyseur n'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
         "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
         "formula_left_block_title": "Bloc economique de gauche",
@@ -311,7 +262,7 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "formula_raw_axis_explanation": "Le modele soustrait les blocs opposes. right_economic - left_economic donne la direction de x. authoritarian_social - libertarian_social donne la direction de y.",
         "formula_adjustments_explanation": "- productivisme - ecologie affine la lecture croissance contre contrainte ecologique.\\n- nationalisme - internationalisme affine la lecture souverainete contre ouverture internationale.\\n- revolution - reformisme affine la lecture rupture contre changement institutionnel.",
         "formula_normalization_explanation": "Les scores bruts sont divises par 120 puis passes dans une sigmoide. Les profils marques se rapprochent des bords, mais le graphe reste lisible.",
-    }
+    },
 }
 
 
@@ -319,23 +270,23 @@ def _t(language: str, key: str) -> str:
     return UI_TEXT.get(language, UI_TEXT["en"]).get(key, UI_TEXT["en"].get(key, key))
 
 
-
 def _md_text(language: str, key: str) -> str:
     return _t(language, key).replace("\\n", "\n")
 
 
 def _render_politiscales_link(language: str) -> None:
-    html = (
-        '<div class="warning-box">'
-        f'<strong>{_t(language, "politiscales_title")}</strong><br>'
-        f'{_t(language, "politiscales_description")}<br>'
-        '<a href="https://politiscales.fr/" target="_blank" rel="noopener noreferrer">'
-        f'{_t(language, "politiscales_link_label")}'
-        '</a>'
-        '</div>'
+    st.markdown(
+        f"""
+        <div class="warning-box">
+            <strong>{_t(language, "politiscales_title")}</strong><br>
+            {_t(language, "politiscales_description")}<br>
+            <a href="https://politiscales.fr/" target="_blank" rel="noopener noreferrer">
+                {_t(language, "politiscales_link_label")}
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.markdown(html, unsafe_allow_html=True)
-
 
 
 def _inject_css() -> None:
