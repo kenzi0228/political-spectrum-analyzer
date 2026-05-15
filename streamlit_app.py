@@ -21,7 +21,7 @@ from political_spectrum_analyzer.web.plotly_plot import build_political_spectrum
 
 st.set_page_config(
     page_title="Political Spectrum Analyzer",
-    page_icon="ðŸ“Š",
+    page_icon="Ã°Å¸â€œÅ ",
     layout="wide",
 )
 
@@ -92,6 +92,30 @@ div[data-testid="stMetric"] {
 
 section[data-testid="stSidebar"] {
     background-color: #f8fafc;
+}
+
+/* Make metric cards readable when values are long, especially quadrant labels. */
+div[data-testid="stMetric"] {
+    min-height: 118px;
+}
+
+div[data-testid="stMetricLabel"] {
+    font-size: 0.86rem;
+    color: #334155;
+}
+
+div[data-testid="stMetricValue"] {
+    font-size: 1.42rem;
+    line-height: 1.15;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+div[data-testid="stMetricValue"] > div {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
 }
 </style>
 """
@@ -189,7 +213,7 @@ def _render_analysis(people: list[PersonResult], personalities) -> None:
         return
 
     if len(people) == 1:
-        st.subheader(f"Analysis â€” {people[0].name}")
+        st.subheader(f"Analysis Ã¢â‚¬â€ {people[0].name}")
         _render_single_profile_analysis(people[0], personalities)
         return
 
