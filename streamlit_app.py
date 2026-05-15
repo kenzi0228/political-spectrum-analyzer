@@ -132,13 +132,13 @@ def _render_hero() -> None:
             <div class="hero-title">Political Spectrum Analyzer</div>
             <div class="hero-subtitle">
                 Interactive web version of the desktop application for ideological score projection,
-                reference comparison, nearest-neighbor analysis, and CSV export.
+                multi-profile comparison, reference comparison, nearest-neighbor analysis, and CSV export.
             </div>
             <div style="margin-top: 0.9rem;">
                 <span class="feature-pill">Python</span>
                 <span class="feature-pill">Streamlit</span>
                 <span class="feature-pill">Plotly</span>
-                <span class="feature-pill">Data visualization</span>
+                <span class="feature-pill">Multi-profile comparison</span>
                 <span class="feature-pill">CSV export</span>
                 <span class="feature-pill">150 reference profiles</span>
             </div>
@@ -158,7 +158,7 @@ def _render_hero() -> None:
     )
 
 
-def _render_analysis(person: PersonResult, personalities) -> None:
+def _render_single_profile_analysis(person: PersonResult, personalities) -> None:
     analysis = analyze_profile(person=person, personalities=personalities, top_n=3)
 
     col1, col2, col3, col4 = st.columns(4)
@@ -167,8 +167,6 @@ def _render_analysis(person: PersonResult, personalities) -> None:
     col2.metric("y coordinate", f"{analysis.y:.3f}")
     col3.metric("Quadrant", analysis.quadrant)
     col4.metric("Distance to center", f"{analysis.distance_to_center:.3f}")
-
-    st.subheader("Closest references")
 
     closest_data = [
         {
@@ -183,6 +181,43 @@ def _render_analysis(person: PersonResult, personalities) -> None:
     ]
 
     st.dataframe(pd.DataFrame(closest_data), use_container_width=True, hide_index=True)
+
+
+def _render_analysis(people: list[PersonResult], personalities) -> None:
+    if not people:
+        st.info("No profile available for analysis.")
+        return
+
+    if len(people) == 1:
+        st.subheader(f"Analysis â€” {people[0].name}")
+        _render_single_profile_analysis(people[0], personalities)
+        return
+
+    st.subheader("Multi-profile analysis")
+
+    summary_rows = []
+    for person in people:
+        analysis = analyze_profile(person=person, personalities=personalities, top_n=3)
+
+        closest = analysis.closest_references[0].name if analysis.closest_references else ""
+
+        summary_rows.append(
+            {
+                "Profile": analysis.name,
+                "x": analysis.x,
+                "y": analysis.y,
+                "Quadrant": analysis.quadrant,
+                "Distance to center": analysis.distance_to_center,
+                "Closest reference": closest,
+            }
+        )
+
+    st.dataframe(pd.DataFrame(summary_rows), use_container_width=True, hide_index=True)
+
+    st.markdown("### Details by profile")
+    for person in people:
+        with st.expander(person.name, expanded=False):
+            _render_single_profile_analysis(person, personalities)
 
 
 def _render_reference_filters(personalities):
@@ -230,7 +265,40 @@ def _render_reference_filters(personalities):
     return filtered
 
 
-def _render_score_inputs(imported_scores: dict[str, int] | None) -> dict[str, int]:
+def _render_sidebar_export_options():
+    st.sidebar.subheader("Export options")
+
+    export_mode = st.sidebar.selectbox(
+        "CSV export mode",
+        [
+            "profiles_only",
+            "closest_references",
+            "all_references",
+            "filtered_references",
+        ],
+        format_func=lambda value: {
+            "profiles_only": "Profiles only",
+            "closest_references": "Profiles + closest references",
+            "all_references": "Profiles + all references",
+            "filtered_references": "Profiles + current filtered references",
+        }[value],
+    )
+
+    closest_count = st.sidebar.number_input(
+        "Closest references count",
+        min_value=1,
+        max_value=20,
+        value=3,
+        step=1,
+    )
+
+    return export_mode, int(closest_count)
+
+
+def _render_score_inputs(
+    imported_scores: dict[str, int] | None,
+    widget_prefix: str,
+) -> dict[str, int]:
     scores = imported_scores or _default_scores()
 
     output_scores: dict[str, int] = {}
@@ -274,24 +342,95 @@ def _render_score_inputs(imported_scores: dict[str, int] | None) -> dict[str, in
                         max_value=100,
                         value=int(scores.get(variable, 0)),
                         step=1,
+                        key=f"{widget_prefix}_{variable}",
                     )
 
-    # Guarantee all variables exist even if category mapping changes.
     for variable in VARIABLE_NAMES:
         output_scores.setdefault(variable, int(scores.get(variable, 0)))
 
     return output_scores
 
 
+def _render_profile_input(profile_index: int) -> PersonResult:
+    widget_prefix = f"profile_{profile_index}"
+
+    st.markdown(f"### Profile {profile_index + 1}")
+
+    profile_name = st.text_input(
+        "Profile name",
+        value=f"Profile {profile_index + 1}",
+        key=f"{widget_prefix}_name",
+    )
+
+    imported_scores = None
+
+    with st.expander("Import from copied Politiscales-style text", expanded=False):
+        copied_text = st.text_area(
+            "Paste copied results text",
+            height=200,
+            key=f"{widget_prefix}_copied_text",
+            placeholder=(
+                "Constructivisme\n"
+                "Essentialisme\n"
+                "7%\n"
+                "26%\n"
+                "67%"
+            ),
+        )
+
+        if copied_text.strip():
+            imported_scores = extract_scores_from_text(copied_text)
+            detected_count = sum(1 for value in imported_scores.values() if value != 0)
+            st.success(f"{detected_count}/16 non-zero scores detected from copied text.")
+
+    scores = _render_score_inputs(
+        imported_scores=imported_scores,
+        widget_prefix=widget_prefix,
+    )
+
+    return _build_person_result(profile_name, scores)
+
+
+def _render_multi_profile_inputs() -> list[PersonResult]:
+    st.header("Profile input")
+    st.markdown(
+        '<p class="small-muted">Add one or several profiles. Each profile can be entered manually or imported from copied Politiscales-style text. OCR is intentionally excluded from the web version for deployment reliability.</p>',
+        unsafe_allow_html=True,
+    )
+
+    profile_count = st.number_input(
+        "Number of profiles to compare",
+        min_value=1,
+        max_value=8,
+        value=1,
+        step=1,
+        help="Use up to 8 profiles to keep the chart readable.",
+    )
+
+    people: list[PersonResult] = []
+
+    if int(profile_count) == 1:
+        people.append(_render_profile_input(0))
+        return people
+
+    tabs = st.tabs([f"Profile {index + 1}" for index in range(int(profile_count))])
+
+    for index, tab in enumerate(tabs):
+        with tab:
+            people.append(_render_profile_input(index))
+
+    return people
+
+
 def _build_export_dataframe(
-    person: PersonResult,
+    people: list[PersonResult],
     personalities,
     filtered_personalities,
     export_mode: str,
     closest_count: int,
 ) -> pd.DataFrame:
     rows = build_export_rows(
-        people=[person],
+        people=people,
         personalities=personalities,
         mode=export_mode,
         closest_count=closest_count,
@@ -299,36 +438,6 @@ def _build_export_dataframe(
     )
 
     return pd.DataFrame(rows)
-
-
-def _render_sidebar_export_options():
-    st.sidebar.subheader("Export options")
-
-    export_mode = st.sidebar.selectbox(
-        "CSV export mode",
-        [
-            "profiles_only",
-            "closest_references",
-            "all_references",
-            "filtered_references",
-        ],
-        format_func=lambda value: {
-            "profiles_only": "Profiles only",
-            "closest_references": "Profiles + closest references",
-            "all_references": "Profiles + all references",
-            "filtered_references": "Profiles + current filtered references",
-        }[value],
-    )
-
-    closest_count = st.sidebar.number_input(
-        "Closest references count",
-        min_value=1,
-        max_value=20,
-        value=3,
-        step=1,
-    )
-
-    return export_mode, int(closest_count)
 
 
 def main() -> None:
@@ -345,54 +454,23 @@ def main() -> None:
         ["Input", "Visualization", "Reference data", "Methodology"]
     )
 
-    imported_scores = None
-
     with input_tab:
-        st.header("Profile input")
-        st.markdown(
-            '<p class="small-muted">Enter scores manually or paste Politiscales-style copied results. OCR is intentionally excluded from the web version for deployment reliability.</p>',
-            unsafe_allow_html=True,
-        )
-
-        profile_name = st.text_input("Profile name", value="My profile")
-
-        with st.expander("Import from copied Politiscales-style text", expanded=False):
-            copied_text = st.text_area(
-                "Paste copied results text",
-                height=220,
-                placeholder=(
-                    "Constructivisme\n"
-                    "Essentialisme\n"
-                    "7%\n"
-                    "26%\n"
-                    "67%"
-                ),
-            )
-
-            if copied_text.strip():
-                imported_scores = extract_scores_from_text(copied_text)
-                detected_count = sum(1 for value in imported_scores.values() if value != 0)
-                st.success(f"{detected_count}/16 non-zero scores detected from copied text.")
-
-        scores = _render_score_inputs(imported_scores)
-
-    person = _build_person_result(profile_name, scores)
+        people = _render_multi_profile_inputs()
 
     with graph_tab:
         st.header("Political positioning")
 
         fig = build_political_spectrum_figure(
-            people=[person],
+            people=people,
             personalities=filtered_personalities,
         )
 
         st.plotly_chart(fig, use_container_width=True)
 
-        st.subheader("Position analysis")
-        _render_analysis(person, personalities)
+        _render_analysis(people, personalities)
 
         export_df = _build_export_dataframe(
-            person=person,
+            people=people,
             personalities=personalities,
             filtered_personalities=filtered_personalities,
             export_mode=export_mode,
@@ -444,10 +522,10 @@ def main() -> None:
             The projection is heuristic and explainable. It is intended for exploration and visualization, not for definitive political classification.
 
             Reference personalities are estimated anchors with uncertainty and confidence metadata. Closest references are computed with Euclidean distance in the 2D space.
+
+            For the full model explanation, see `docs/methodology.md`.
             """
         )
-
-        st.info("See `docs/methodology.md` and `docs/reference_dataset.md` for the full documentation.")
 
 
 if __name__ == "__main__":
