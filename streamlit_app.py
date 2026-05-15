@@ -187,16 +187,9 @@ def _render_hero() -> None:
         <div class="hero-card">
             <div class="hero-title">Political Spectrum Analyzer</div>
             <div class="hero-subtitle">
-                Interactive web application for ideological score projection, multi-profile comparison,
-                reference comparison, personalized profile reading, and CSV export.
-            </div>
-            <div style="margin-top: 0.9rem;">
-                <span class="feature-pill">Python</span>
-                <span class="feature-pill">Streamlit</span>
-                <span class="feature-pill">Plotly</span>
-                <span class="feature-pill">Multi-profile comparison</span>
-                <span class="feature-pill">Profile save/import</span>
-                <span class="feature-pill">150 reference profiles</span>
+                Build, compare, and interpret political profiles from 16 ideological scores.
+                Enter one or several profiles, project them on the spectrum, compare them with
+                reference personalities, and get a detailed score-based reading of each profile.
             </div>
         </div>
         """,
@@ -206,8 +199,9 @@ def _render_hero() -> None:
     st.markdown(
         """
         <div class="warning-box">
-            Read the result through three layers: graph position, closest references, and the detailed
-            score-based profile reading.
+            Start by entering a profile manually or importing copied Politiscales-style results.
+            The app then shows the graph position, closest references, and a personalized analysis
+            based on the strongest and weakest axes.
         </div>
         """,
         unsafe_allow_html=True,
@@ -417,9 +411,9 @@ def _render_sidebar_export_options():
     )
 
     precise_input_mode = st.sidebar.toggle(
-        "Precise score entry",
-        value=False,
-        help="Off: adjust scores with sliders. On: type exact values for each axis.",
+        "Manual numeric entry",
+        value=True,
+        help="On: type exact values for each axis. Off: adjust scores with sliders.",
     )
 
     return export_mode, int(closest_count), precise_input_mode
@@ -640,9 +634,9 @@ def _render_methodology_tab() -> None:
 
     st.markdown(
         """
-        This page explains how the application turns 16 political scores into a readable position on
-        the spectrum. The explanation focuses on how to read the result and how each axis contributes
-        to the profile.
+        The analyzer turns 16 ideological scores into a readable political position.
+        Each score contributes to one or more interpretive blocks. Those blocks are then compared
+        to produce the final economic coordinate `x` and societal coordinate `y`.
         """
     )
 
@@ -655,20 +649,25 @@ def _render_methodology_tab() -> None:
         | `x` economic axis | Economic left | Economic right |
         | `y` societal axis | Libertarian / progressive | Authoritarian / conservative |
 
-        The visible range is:
+        Final coordinates are displayed in the range:
 
         ```text
         x in [-4, 4]
         y in [-4, 4]
         ```
+
+        A profile close to the center has a more balanced or mixed score structure. A profile further
+        from the center has a clearer directional tendency.
         """
     )
 
-    st.subheader("2. Calculation formula")
+    st.subheader("2. Score blocks and coefficients")
 
     st.markdown(
         """
-        The application first builds four intermediate scores:
+        The model first builds four weighted blocks.
+
+        ### Economic-left block
 
         ```text
         left_economic =
@@ -676,19 +675,56 @@ def _render_methodology_tab() -> None:
           + 0.75 * regulation
           + 0.35 * ecologie
           + 0.25 * revolution
+        ```
 
+        Meaning:
+
+        - `communisme` receives the strongest weight because it is the clearest economic-left signal.
+        - `regulation` is highly weighted because state intervention directly affects the economic axis.
+        - `ecologie` has a moderate effect because ecological priorities often imply economic constraints,
+          but ecology is not purely economic.
+        - `revolution` has a smaller effect because radicality is a political method, not a direct
+          economic position.
+
+        ### Economic-right block
+
+        ```text
         right_economic =
             0.90 * capitalisme
           + 0.75 * laissez_faire
           + 0.35 * productivisme
           + 0.20 * reformisme
+        ```
 
+        Meaning:
+
+        - `capitalisme` receives the strongest weight because it is the clearest economic-right signal.
+        - `laissez_faire` is highly weighted because it directly expresses deregulation and market autonomy.
+        - `productivisme` has a moderate effect because growth and production can exist in several systems,
+          but often reinforce a market or expansion-oriented reading.
+        - `reformisme` has a smaller effect because gradualism is a method, not a strict right-wing marker.
+
+        ### Libertarian / progressive social block
+
+        ```text
         libertarian_social =
             0.75 * constructivisme
           + 0.70 * justice_rehabilitative
           + 0.70 * progressisme
           + 0.55 * internationalisme
+        ```
 
+        Meaning:
+
+        - `constructivisme` strongly contributes to the progressive/libertarian side because it reflects
+          flexible social interpretation.
+        - `justice_rehabilitative` strongly contributes because it favors reintegration over coercion.
+        - `progressisme` strongly contributes because it directly measures openness to social reform.
+        - `internationalisme` contributes moderately because it reflects openness beyond national boundaries.
+
+        ### Authoritarian / conservative social block
+
+        ```text
         authoritarian_social =
             0.75 * essentialisme
           + 0.70 * justice_punitive
@@ -696,14 +732,40 @@ def _render_methodology_tab() -> None:
           + 0.55 * nationalisme
         ```
 
-        Then it compares opposite tendencies:
+        Meaning:
+
+        - `essentialisme` strongly contributes because it implies stable and fixed social categories.
+        - `justice_punitive` strongly contributes because it reinforces order, sanction, and authority.
+        - `conservatisme` strongly contributes because it directly measures attachment to continuity.
+        - `nationalisme` contributes moderately because it reinforces sovereignty and collective identity.
+        """
+    )
+
+    st.subheader("3. Raw axis calculation")
+
+    st.markdown(
+        """
+        Once the four blocks are computed, the model compares opposite forces:
 
         ```text
         economic_raw = right_economic - left_economic
         societal_raw = authoritarian_social - libertarian_social
         ```
 
-        Secondary adjustments refine the reading:
+        Therefore:
+
+        - if `economic_raw` is negative, the profile moves left;
+        - if `economic_raw` is positive, the profile moves right;
+        - if `societal_raw` is negative, the profile moves libertarian/progressive;
+        - if `societal_raw` is positive, the profile moves authoritarian/conservative.
+        """
+    )
+
+    st.subheader("4. Secondary adjustments")
+
+    st.markdown(
+        """
+        Three smaller corrections refine the result:
 
         ```text
         economic_raw += 0.12 * (productivisme - ecologie)
@@ -711,19 +773,38 @@ def _render_methodology_tab() -> None:
         societal_raw += 0.08 * (revolution - reformisme)
         ```
 
-        The values are normalized and compressed into the graph range:
+        These are intentionally lower than the main coefficients.
+
+        - `productivisme - ecologie` adjusts the economic reading around growth versus ecological constraint.
+        - `nationalisme - internationalisme` adjusts the social reading around national priority versus global openness.
+        - `revolution - reformisme` adjusts the authority/posture reading around rupture versus institutional gradualism.
+        """
+    )
+
+    st.subheader("5. Normalization and final coordinates")
+
+    st.markdown(
+        """
+        The raw values are normalized:
 
         ```text
         economic_normalized = economic_raw / 120
         societal_normalized = societal_raw / 120
+        ```
 
+        Then they are compressed into the visible graph range:
+
+        ```text
         x = 4 * sigmoid_scaled(economic_normalized)
         y = 4 * sigmoid_scaled(societal_normalized)
         ```
+
+        The sigmoid step keeps the graph readable: very strong scores still move toward the edges,
+        but without making the visualization unusable.
         """
     )
 
-    st.subheader("3. Meaning of the 16 axes")
+    st.subheader("6. Meaning of the 16 axes")
 
     axes_rows = [
         {"Axis": "constructivisme", "What it means": "Social norms and identities are understood as shaped by history, institutions, and context.", "High score indicates": "A more constructivist and socially fluid interpretation of society."},
@@ -746,35 +827,18 @@ def _render_methodology_tab() -> None:
 
     st.dataframe(pd.DataFrame(axes_rows), use_container_width=True, hide_index=True)
 
-    st.subheader("4. How to read your result")
+    st.subheader("7. How to read your result")
 
     st.markdown(
         """
-        Once the position is computed, the app gives three levels of reading:
+        The app gives three levels of reading:
 
         1. **Graph position** - where the profile appears on the spectrum.
         2. **Closest references** - which reference personalities are geometrically closest.
         3. **Personalized profile reading** - which axes dominate, which axes are weakest, and which
            opposing pairs define the profile most strongly.
 
-        The detailed profile analysis is based on the raw 16 scores, not only on the final `x/y`
-        coordinates. This helps explain why two profiles can appear close on the graph while still
-        having different internal score structures.
-        """
-    )
-
-    st.subheader("5. Closest references")
-
-    st.markdown(
-        """
-        Closest references are computed with Euclidean distance:
-
-        ```text
-        distance = sqrt((x_profile - x_reference)^2 + (y_profile - y_reference)^2)
-        ```
-
-        This identifies nearby points on the same map. The detailed score analysis should then be used
-        to understand the specific ideological composition of the profile.
+        The detailed reading is based on the raw 16 scores, not only on the final `x/y` coordinates.
         """
     )
 

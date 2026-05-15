@@ -10,10 +10,12 @@ def test_streamlit_app_has_no_mojibake_symbols():
         assert fragment not in content
 
 
-def test_streamlit_app_has_precise_score_entry_toggle():
+def test_streamlit_app_has_manual_numeric_entry_toggle():
     content = Path("streamlit_app.py").read_text(encoding="utf-8")
 
-    assert "Precise score entry" in content
+    assert "Manual numeric entry" in content
+    assert "value=True" in content
+    assert "On: type exact values" in content
     assert "st.number_input" in content
     assert "st.slider" in content
 
