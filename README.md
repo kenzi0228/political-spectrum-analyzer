@@ -500,3 +500,14 @@ The Streamlit app includes a Guide tab that explains the recommended workflow:
 - save one profile at a time as JSON;
 - import a saved profile and edit it;
 - export the final analysis as CSV.
+
+---
+
+## Bilingual Streamlit interface
+
+The Streamlit version includes a language selector with two modes:
+
+- English;
+- French.
+
+The app also provides a direct external link to Politiscales so users can open the original test in a new browser tab, complete it, and paste copied results into the analyzer.

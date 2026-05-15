@@ -125,6 +125,115 @@ section[data-testid="stSidebar"] {
 """
 
 
+
+UI_TEXT: dict[str, dict[str, str]] = {
+    "en": {
+        "language_label": "Language",
+        "hero_title": "Political Spectrum Analyzer",
+        "hero_subtitle": "Build, compare, and interpret political profiles from 16 ideological scores. Enter one or several profiles, project them on the spectrum, compare them with reference personalities, and get a detailed score-based reading of each profile.",
+        "hero_help": "Start by entering a profile manually, importing copied Politiscales-style results, or loading a saved profile JSON. The app then shows the graph position, closest references, and a personalized analysis based on the strongest and weakest axes.",
+        "politiscales_title": "Need to take or retake the test?",
+        "politiscales_description": "You can open Politiscales in a new browser tab, take the test there, then copy and paste the results into this app.",
+        "politiscales_link_label": "Open Politiscales test",
+        "tab_input": "Input",
+        "tab_guide": "Guide",
+        "tab_visualization": "Visualization",
+        "tab_reference": "Reference data",
+        "tab_methodology": "Methodology",
+        "guide_header": "User guide",
+        "guide_intro": "Use this workflow to create, compare, save, and export political profiles. Start with one profile, then add more profiles if you want to compare several people or scenarios.",
+        "guide_step_1": "Step 1 - Enter scores",
+        "guide_step_1_body": "Choose the number of profiles to compare. For each profile, you can type exact values with Manual numeric entry, disable it and use sliders, or paste copied Politiscales-style text and apply detected scores.",
+        "guide_step_2": "Step 2 - Read the graph",
+        "guide_step_2_body": "Open the Visualization tab to view the profile position, closest reference personalities, detailed profile reading, and axis-by-axis balance.",
+        "guide_step_3": "Step 3 - Save or export",
+        "guide_step_3_body": "Save each profile individually as JSON, or export the full analysis as CSV for Excel, Power BI, or later comparison.",
+        "recommended_workflow": "Recommended workflow",
+        "recommended_workflow_body": "1. Keep Manual numeric entry enabled for precise values.\\n2. Enter one profile first and check the result.\\n3. Save that profile as JSON if you want to reuse it later.\\n4. Increase the number of profiles if you want comparison.\\n5. Use filters only when you want reference personalities visible.\\n6. Export the CSV when you want a structured analysis file.",
+        "profile_save_import": "Profile save and import",
+        "profile_save_import_body": "Profile saving is currently file-based. Each profile can be downloaded as a JSON file and imported again later into any profile form. Once imported, the profile remains editable.",
+        "input_mode": "Input mode",
+        "input_mode_body": "Manual numeric entry is enabled by default. Keep it enabled when you want exact score values. Disable it when you prefer visual adjustment with sliders.",
+        "reference_filters": "Reference filters",
+        "reference_filters_body": "Reference personalities are hidden by default. None hides references for a cleaner graph. Any displays references for that filter dimension. A specific value displays only matching references.",
+        "methodology_header": "How the analyzer works",
+        "methodology_intro": "The analyzer turns 16 ideological scores into a readable political position. Each score contributes to one or more interpretive blocks. Those blocks are then compared to produce the final economic coordinate x and societal coordinate y.",
+        "coordinate_system": "1. Coordinate system",
+        "score_blocks": "2. Score blocks and coefficients",
+        "raw_axis": "3. Raw axis calculation",
+        "secondary_adjustments": "4. Secondary adjustments",
+        "normalization": "5. Normalization and final coordinates",
+        "axes_meaning": "6. Meaning of the 16 axes",
+        "read_result": "7. How to read your result",
+        "input_header": "Profile input",
+        "input_intro": "Add one or several profiles. Choose slider input or exact numeric input from the sidebar. Each profile can be saved and imported independently.",
+        "manual_numeric_entry": "Manual numeric entry",
+        "manual_numeric_help": "On: type exact values for each axis. Off: adjust scores with sliders."
+    },
+    "fr": {
+        "language_label": "Langue",
+        "hero_title": "Political Spectrum Analyzer",
+        "hero_subtitle": "Creez, comparez et interpretez des profils politiques a partir de 16 scores ideologiques. Ajoutez un ou plusieurs profils, projetez-les sur le spectre, comparez-les a des personnalites de reference et obtenez une analyse detaillee de chaque profil.",
+        "hero_help": "Commencez par saisir un profil manuellement, importer un texte copie depuis Politiscales, ou charger un profil JSON sauvegarde. L'application affiche ensuite la position sur le graphe, les references les plus proches et une analyse personnalisee des axes dominants et faibles.",
+        "politiscales_title": "Besoin de faire ou refaire le test ?",
+        "politiscales_description": "Vous pouvez ouvrir Politiscales dans un nouvel onglet, faire le test, puis copier-coller les resultats dans cette application.",
+        "politiscales_link_label": "Ouvrir le test Politiscales",
+        "tab_input": "Saisie",
+        "tab_guide": "Guide",
+        "tab_visualization": "Visualisation",
+        "tab_reference": "Donnees de reference",
+        "tab_methodology": "Methodologie",
+        "guide_header": "Guide utilisateur",
+        "guide_intro": "Utilisez ce parcours pour creer, comparer, sauvegarder et exporter des profils politiques. Commencez avec un seul profil, puis ajoutez-en plusieurs si vous voulez comparer des personnes ou des scenarios.",
+        "guide_step_1": "Etape 1 - Saisir les scores",
+        "guide_step_1_body": "Choisissez le nombre de profils a comparer. Pour chaque profil, vous pouvez saisir les valeurs exactes, desactiver la saisie numerique pour utiliser les sliders, ou coller un texte Politiscales et appliquer les scores detectes.",
+        "guide_step_2": "Etape 2 - Lire le graphe",
+        "guide_step_2_body": "Ouvrez l'onglet Visualisation pour voir la position du profil, les references les plus proches, l'analyse detaillee et l'equilibre axe par axe.",
+        "guide_step_3": "Etape 3 - Sauvegarder ou exporter",
+        "guide_step_3_body": "Sauvegardez chaque profil individuellement en JSON, ou exportez l'analyse complete en CSV pour Excel, Power BI ou une comparaison ulterieure.",
+        "recommended_workflow": "Parcours recommande",
+        "recommended_workflow_body": "1. Gardez la saisie numerique activee pour des valeurs precises.\\n2. Saisissez d'abord un profil et verifiez le resultat.\\n3. Sauvegardez ce profil en JSON si vous voulez le reutiliser.\\n4. Augmentez le nombre de profils si vous voulez comparer.\\n5. Utilisez les filtres uniquement si vous voulez afficher les personnalites de reference.\\n6. Exportez le CSV lorsque vous voulez un fichier d'analyse structure.",
+        "profile_save_import": "Sauvegarde et import de profil",
+        "profile_save_import_body": "La sauvegarde est actuellement locale et basee sur des fichiers. Chaque profil peut etre telecharge en JSON puis importe plus tard dans n'importe quel formulaire. Une fois importe, le profil reste modifiable.",
+        "input_mode": "Mode de saisie",
+        "input_mode_body": "La saisie numerique manuelle est activee par defaut. Gardez-la activee pour saisir des valeurs exactes. Desactivez-la si vous preferez ajuster les scores avec des sliders.",
+        "reference_filters": "Filtres de reference",
+        "reference_filters_body": "Les personnalites de reference sont masquees par defaut. None masque les references pour garder un graphe lisible. Any affiche les references pour cette dimension. Une valeur precise affiche uniquement les references correspondantes.",
+        "methodology_header": "Comment fonctionne l'analyseur",
+        "methodology_intro": "L'analyseur transforme 16 scores ideologiques en une position politique lisible. Chaque score contribue a un ou plusieurs blocs d'interpretation. Ces blocs sont ensuite compares pour produire la coordonnee economique x et la coordonnee societale y.",
+        "coordinate_system": "1. Systeme de coordonnees",
+        "score_blocks": "2. Blocs de scores et coefficients",
+        "raw_axis": "3. Calcul brut des axes",
+        "secondary_adjustments": "4. Ajustements secondaires",
+        "normalization": "5. Normalisation et coordonnees finales",
+        "axes_meaning": "6. Signification des 16 axes",
+        "read_result": "7. Comment lire le resultat",
+        "input_header": "Saisie du profil",
+        "input_intro": "Ajoutez un ou plusieurs profils. Choisissez la saisie exacte ou les sliders depuis la barre laterale. Chaque profil peut etre sauvegarde et importe independamment.",
+        "manual_numeric_entry": "Saisie numerique manuelle",
+        "manual_numeric_help": "Activee : saisir les valeurs exactes. Desactivee : ajuster les scores avec des sliders."
+    }
+}
+
+
+def _t(language: str, key: str) -> str:
+    return UI_TEXT.get(language, UI_TEXT["en"]).get(key, UI_TEXT["en"].get(key, key))
+
+
+def _render_politiscales_link(language: str) -> None:
+    html = (
+        '<div class="warning-box">'
+        f'<strong>{_t(language, "politiscales_title")}</strong><br>'
+        f'{_t(language, "politiscales_description")}<br>'
+        '<a href="https://politiscales.fr/" target="_blank" rel="noopener noreferrer">'
+        f'{_t(language, "politiscales_link_label")}'
+        '</a>'
+        '</div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
+
+
+
 def _inject_css() -> None:
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
@@ -181,15 +290,13 @@ def _apply_profile_payload_to_state(profile_index: int, payload: dict[str, objec
         st.session_state[f"{prefix}_{axis}"] = max(0, min(100, value))
 
 
-def _render_hero() -> None:
+def _render_hero(language: str) -> None:
     st.markdown(
-        """
+        f"""
         <div class="hero-card">
-            <div class="hero-title">Political Spectrum Analyzer</div>
+            <div class="hero-title">{_t(language, "hero_title")}</div>
             <div class="hero-subtitle">
-                Build, compare, and interpret political profiles from 16 ideological scores.
-                Enter one or several profiles, project them on the spectrum, compare them with
-                reference personalities, and get a detailed score-based reading of each profile.
+                {_t(language, "hero_subtitle")}
             </div>
         </div>
         """,
@@ -197,15 +304,16 @@ def _render_hero() -> None:
     )
 
     st.markdown(
-        """
+        f"""
         <div class="warning-box">
-            Start by entering a profile manually or importing copied Politiscales-style results.
-            The app then shows the graph position, closest references, and a personalized analysis
-            based on the strongest and weakest axes.
+            {_t(language, "hero_help")}
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+    _render_politiscales_link(language)
+
 
 
 def _render_single_profile_analysis(person: PersonResult, personalities) -> None:
@@ -340,6 +448,13 @@ def _render_analysis(people: list[PersonResult], personalities) -> None:
 
 def _render_reference_filters(personalities):
     st.sidebar.header("Controls")
+    current_language = st.session_state.get("language", "en")
+    st.sidebar.selectbox(
+        _t(current_language, "language_label"),
+        options=["en", "fr"],
+        format_func=lambda value: "English" if value == "en" else "Francais",
+        key="language",
+    )
     st.sidebar.subheader("Reference filters")
 
     group = st.sidebar.selectbox(
@@ -411,9 +526,9 @@ def _render_sidebar_export_options():
     )
 
     precise_input_mode = st.sidebar.toggle(
-        "Manual numeric entry",
+        _t(st.session_state.get("language", "en"), "manual_numeric_entry"),
         value=True,
-        help="On: type exact values for each axis. Off: adjust scores with sliders.",
+        help=_t(st.session_state.get("language", "en"), "manual_numeric_help"),
     )
 
     return export_mode, int(closest_count), precise_input_mode
@@ -595,11 +710,8 @@ def _render_profile_input(profile_index: int, precise_input_mode: bool) -> Perso
 
 
 def _render_multi_profile_inputs(precise_input_mode: bool) -> list[PersonResult]:
-    st.header("Profile input")
-    st.markdown(
-        '<p class="small-muted">Add one or several profiles. Choose slider input or exact numeric input from the sidebar. Each profile can be saved and imported independently.</p>',
-        unsafe_allow_html=True,
-    )
+    st.header(_t(st.session_state.get("language", "en"), "input_header"))
+    st.markdown('<p class="small-muted">' + _t(st.session_state.get("language", "en"), "input_intro") + '</p>', unsafe_allow_html=True)
 
     profile_count = st.number_input(
         "Number of profiles to compare",
@@ -643,124 +755,45 @@ def _build_export_dataframe(
     return pd.DataFrame(rows)
 
 
-def _render_user_guide_tab() -> None:
-    st.header("User guide")
+def _render_user_guide_tab(language: str) -> None:
+    st.header(_t(language, "guide_header"))
 
-    st.markdown(
-        """
-        Use this workflow to create, compare, save, and export political profiles.
-        The app is designed to be used without technical knowledge: start with one profile,
-        then add more profiles if you want to compare several people or scenarios.
-        """
-    )
+    st.markdown(_t(language, "guide_intro"))
 
     step1, step2, step3 = st.columns(3)
 
     with step1:
-        st.subheader("Step 1 - Enter scores")
-        st.markdown(
-            """
-            Choose the number of profiles to compare.
-
-            For each profile, you can either:
-
-            - type exact values with **Manual numeric entry**;
-            - disable it and use sliders;
-            - paste copied Politiscales-style text and apply detected scores.
-            """
-        )
+        st.subheader(_t(language, "guide_step_1"))
+        st.markdown(_t(language, "guide_step_1_body"))
 
     with step2:
-        st.subheader("Step 2 - Read the graph")
-        st.markdown(
-            """
-            Open the **Visualization** tab.
-
-            You will see:
-
-            - the profile position on the spectrum;
-            - closest reference personalities;
-            - a detailed reading based on dominant and weak axes;
-            - axis-by-axis balance.
-            """
-        )
+        st.subheader(_t(language, "guide_step_2"))
+        st.markdown(_t(language, "guide_step_2_body"))
 
     with step3:
-        st.subheader("Step 3 - Save or export")
-        st.markdown(
-            """
-            You can save each profile individually as JSON.
+        st.subheader(_t(language, "guide_step_3"))
+        st.markdown(_t(language, "guide_step_3_body"))
 
-            You can also export the full analysis as CSV for Excel, Power BI,
-            or later comparison.
-            """
-        )
+    st.subheader(_t(language, "recommended_workflow"))
+    st.markdown(_t(language, "recommended_workflow_body"))
 
-    st.subheader("Recommended workflow")
+    st.subheader(_t(language, "profile_save_import"))
+    st.markdown(_t(language, "profile_save_import_body"))
 
-    st.markdown(
-        """
-        1. Keep **Manual numeric entry** enabled for precise values.
-        2. Enter one profile first and check the result.
-        3. Save that profile as JSON if you want to reuse it later.
-        4. Increase the number of profiles if you want comparison.
-        5. Use filters only when you want reference personalities visible.
-        6. Export the CSV when you want a structured analysis file.
-        """
-    )
+    st.subheader(_t(language, "input_mode"))
+    st.markdown(_t(language, "input_mode_body"))
 
-    st.subheader("Profile save and import")
-
-    st.markdown(
-        """
-        Profile saving is currently file-based.
-
-        Each profile can be downloaded as a JSON file and imported again later into any profile form.
-        Once imported, the profile remains editable: you can change the name, adjust scores, and save a new version.
-
-        This design prepares the app for a future authenticated version where users can sign in and retrieve
-        their saved profiles directly from an account.
-        """
-    )
-
-    st.subheader("Input mode")
-
-    st.markdown(
-        """
-        **Manual numeric entry** is enabled by default.
-
-        - Keep it enabled when you want exact score values.
-        - Disable it when you prefer visual adjustment with sliders.
-        """
-    )
-
-    st.subheader("Reference filters")
-
-    st.markdown(
-        """
-        Reference personalities are hidden by default.
-
-        - `None` hides references for a cleaner graph.
-        - `Any` displays references for that filter dimension.
-        - A specific value displays only matching references.
-
-        This keeps the graph readable while still allowing deeper comparison when needed.
-        """
-    )
+    st.subheader(_t(language, "reference_filters"))
+    st.markdown(_t(language, "reference_filters_body"))
 
 
-def _render_methodology_tab() -> None:
-    st.header("How the analyzer works")
 
-    st.markdown(
-        """
-        The analyzer turns 16 ideological scores into a readable political position.
-        Each score contributes to one or more interpretive blocks. Those blocks are then compared
-        to produce the final economic coordinate `x` and societal coordinate `y`.
-        """
-    )
+def _render_methodology_tab(language: str) -> None:
+    st.header(_t(language, "methodology_header"))
 
-    st.subheader("1. Coordinate system")
+    st.markdown(_t(language, "methodology_intro"))
+
+    st.subheader(_t(language, "coordinate_system"))
 
     st.markdown(
         """
@@ -781,7 +814,7 @@ def _render_methodology_tab() -> None:
         """
     )
 
-    st.subheader("2. Score blocks and coefficients")
+    st.subheader(_t(language, "score_blocks"))
 
     st.markdown(
         """
@@ -861,7 +894,7 @@ def _render_methodology_tab() -> None:
         """
     )
 
-    st.subheader("3. Raw axis calculation")
+    st.subheader(_t(language, "raw_axis"))
 
     st.markdown(
         """
@@ -881,7 +914,7 @@ def _render_methodology_tab() -> None:
         """
     )
 
-    st.subheader("4. Secondary adjustments")
+    st.subheader(_t(language, "secondary_adjustments"))
 
     st.markdown(
         """
@@ -901,7 +934,7 @@ def _render_methodology_tab() -> None:
         """
     )
 
-    st.subheader("5. Normalization and final coordinates")
+    st.subheader(_t(language, "normalization"))
 
     st.markdown(
         """
@@ -924,7 +957,7 @@ def _render_methodology_tab() -> None:
         """
     )
 
-    st.subheader("6. Meaning of the 16 axes")
+    st.subheader(_t(language, "axes_meaning"))
 
     axes_rows = [
         {"Axis": "constructivisme", "What it means": "Social norms and identities are understood as shaped by history, institutions, and context.", "High score indicates": "A more constructivist and socially fluid interpretation of society."},
@@ -947,7 +980,7 @@ def _render_methodology_tab() -> None:
 
     st.dataframe(pd.DataFrame(axes_rows), use_container_width=True, hide_index=True)
 
-    st.subheader("7. How to read your result")
+    st.subheader(_t(language, "read_result"))
 
     st.markdown(
         """
@@ -968,20 +1001,22 @@ def main() -> None:
 
     personalities = _load_reference_personalities()
 
-    _render_hero()
+    _render_hero(st.session_state.get("language", "en"))
 
     filtered_personalities = _render_reference_filters(personalities)
     export_mode, closest_count, precise_input_mode = _render_sidebar_export_options()
 
+    language = st.session_state.get("language", "en")
+
     input_tab, guide_tab, graph_tab, data_tab, methodology_tab = st.tabs(
-        ["Input", "Guide", "Visualization", "Reference data", "Methodology"]
+        [_t(language, "tab_input"), _t(language, "tab_guide"), _t(language, "tab_visualization"), _t(language, "tab_reference"), _t(language, "tab_methodology")]
     )
 
     with input_tab:
         people = _render_multi_profile_inputs(precise_input_mode)
 
     with guide_tab:
-        _render_user_guide_tab()
+        _render_user_guide_tab(language)
 
     with graph_tab:
         st.header("Political positioning")
@@ -1034,7 +1069,7 @@ def main() -> None:
         st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
 
     with methodology_tab:
-        _render_methodology_tab()
+        _render_methodology_tab(language)
 
 
 if __name__ == "__main__":
