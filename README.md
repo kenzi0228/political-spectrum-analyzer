@@ -539,3 +539,21 @@ Deployment guide:
 ```text
 docs/streamlit_cloud_deployment.md
 ```
+
+---
+
+## Screenshots to add
+
+The repository includes a screenshot assets folder:
+
+```text
+docs/assets/
+```
+
+Recommended screenshots:
+
+- desktop app;
+- Streamlit home page;
+- multi-profile graph;
+- detailed profile analysis;
+- profile JSON import/export.

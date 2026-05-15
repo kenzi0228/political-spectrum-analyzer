@@ -149,7 +149,7 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "guide_step_3": "Step 3 - Save or export",
         "guide_step_3_body": "Save each profile individually as JSON, or export the full analysis as CSV for Excel, Power BI, or later comparison.",
         "recommended_workflow": "Recommended workflow",
-        "recommended_workflow_body": "1. Keep Manual numeric entry enabled for precise values.\\n2. Enter one profile first and check the result.\\n3. Save that profile as JSON if you want to reuse it later.\\n4. Increase the number of profiles if you want comparison.\\n5. Use filters only when you want reference personalities visible.\\n6. Export the CSV when you want a structured analysis file.",
+        "recommended_workflow_body": "- Keep Manual numeric entry enabled for precise values.\\n- Enter one profile first and check the result.\\n- Save that profile as JSON if you want to reuse it later.\\n- Increase the number of profiles if you want comparison.\\n- Use filters only when you want reference personalities visible.\\n- Export the CSV when you want a structured analysis file.",
         "profile_save_import": "Profile save and import",
         "profile_save_import_body": "Profile saving is currently file-based. Each profile can be downloaded as a JSON file and imported again later into any profile form. Once imported, the profile remains editable.",
         "input_mode": "Input mode",
@@ -168,7 +168,32 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "input_header": "Profile input",
         "input_intro": "Add one or several profiles. Choose slider input or exact numeric input from the sidebar. Each profile can be saved and imported independently.",
         "manual_numeric_entry": "Manual numeric entry",
-        "manual_numeric_help": "On: type exact values for each axis. Off: adjust scores with sliders."
+        "manual_numeric_help": "On: type exact values for each axis. Off: adjust scores with sliders.",
+        "profile_count_label": _t(st.session_state.get("language", "en"), "profile_count_label"),
+        "profile_count_help": "Use up to 8 profiles to keep the chart readable.",
+        "import_saved_profile": "Import a saved profile",
+        "select_saved_json": _t(st.session_state.get("language", "en"), "select_saved_json"),
+        "load_this_profile": "Load this profile",
+        "save_this_profile": "Save this profile",
+        "download_profile_json": "Download this profile JSON",
+        "copied_text_import": "Import from copied Politiscales-style text",
+        "paste_results_text": _t(st.session_state.get("language", "en"), "paste_results_text"),
+        "apply_copied_scores": "Apply copied-text scores to this profile",
+        "profile_loaded": _t(st.session_state.get("language", "en"), "profile_loaded"),
+        "profile_save_caption": _t(st.session_state.get("language", "en"), "profile_save_caption"),
+        "formula_main_blocks_intro": "The analyzer does not use a black-box model. It builds four weighted blocks, then compares them.",
+        "formula_coefficients_note": "A coefficient is a weight. The higher it is, the more that score influences the final coordinate. 0.90 is direct and strong, 0.75 is strong, 0.55 is moderate, and values around 0.20-0.35 are secondary.",
+        "formula_left_block_title": "Economic-left block",
+        "formula_left_block_explanation": "- 0.90 * communisme: strongest economic-left marker; it directly pushes x to the left.\\n- 0.75 * regulation: strong interventionist marker; it pushes x to the left.\\n- 0.35 * ecologie: moderate contribution because ecology often implies regulation, without being purely economic.\\n- 0.25 * revolution: secondary contribution because radicality is a method, not a complete economic doctrine.",
+        "formula_right_block_title": "Economic-right block",
+        "formula_right_block_explanation": "- 0.90 * capitalisme: strongest economic-right marker; it directly pushes x to the right.\\n- 0.75 * laissez_faire: strong market-autonomy marker; it pushes x to the right.\\n- 0.35 * productivisme: moderate contribution because growth and production can exist in several systems.\\n- 0.20 * reformisme: weak secondary contribution because reformism is mainly a political method.",
+        "formula_libertarian_block_title": "Libertarian / progressive social block",
+        "formula_libertarian_block_explanation": "- 0.75 * constructivisme: strong progressive-social marker because it reflects flexible social interpretation.\\n- 0.70 * justice_rehabilitative: strong anti-punitive marker because it favors reintegration and prevention.\\n- 0.70 * progressisme: strong social-change marker.\\n- 0.55 * internationalisme: moderate openness marker because it moves the profile toward broader cooperation.",
+        "formula_authoritarian_block_title": "Authoritarian / conservative social block",
+        "formula_authoritarian_block_explanation": "- 0.75 * essentialisme: strong conservative-social marker because it reflects fixed social categories.\\n- 0.70 * justice_punitive: strong authority marker because it emphasizes sanction and deterrence.\\n- 0.70 * conservatisme: strong continuity and stability marker.\\n- 0.55 * nationalisme: moderate authority/community marker because it reinforces sovereignty and national priority.",
+        "formula_raw_axis_explanation": "The model subtracts opposite blocks. right_economic - left_economic gives the x direction. authoritarian_social - libertarian_social gives the y direction.",
+        "formula_adjustments_explanation": "- productivisme - ecologie refines the growth-versus-ecological-constraint reading.\\n- nationalisme - internationalisme refines the sovereignty-versus-global-openness reading.\\n- revolution - reformisme refines the rupture-versus-institutional-change reading.",
+        "formula_normalization_explanation": "The raw scores are divided by 120 and passed through a sigmoid. Strong profiles move toward the edges, but the chart remains readable.",
     },
     "fr": {
         "language_label": "Langue",
@@ -192,7 +217,7 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "guide_step_3": "Etape 3 - Sauvegarder ou exporter",
         "guide_step_3_body": "Sauvegardez chaque profil individuellement en JSON, ou exportez l'analyse complete en CSV pour Excel, Power BI ou une comparaison ulterieure.",
         "recommended_workflow": "Parcours recommande",
-        "recommended_workflow_body": "1. Gardez la saisie numerique activee pour des valeurs precises.\\n2. Saisissez d'abord un profil et verifiez le resultat.\\n3. Sauvegardez ce profil en JSON si vous voulez le reutiliser.\\n4. Augmentez le nombre de profils si vous voulez comparer.\\n5. Utilisez les filtres uniquement si vous voulez afficher les personnalites de reference.\\n6. Exportez le CSV lorsque vous voulez un fichier d'analyse structure.",
+        "recommended_workflow_body": "- Gardez la saisie numerique activee pour des valeurs precises.\n- Saisissez d'abord un profil et verifiez le resultat.\n- Sauvegardez ce profil en JSON si vous voulez le reutiliser.\n- Augmentez le nombre de profils si vous voulez comparer.\n- Utilisez les filtres uniquement si vous voulez afficher les personnalites de reference.\n- Exportez le CSV lorsque vous voulez un fichier d'analyse structure.",
         "profile_save_import": "Sauvegarde et import de profil",
         "profile_save_import_body": "La sauvegarde est actuellement locale et basee sur des fichiers. Chaque profil peut etre telecharge en JSON puis importe plus tard dans n'importe quel formulaire. Une fois importe, le profil reste modifiable.",
         "input_mode": "Mode de saisie",
@@ -211,13 +236,43 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "input_header": "Saisie du profil",
         "input_intro": "Ajoutez un ou plusieurs profils. Choisissez la saisie exacte ou les sliders depuis la barre laterale. Chaque profil peut etre sauvegarde et importe independamment.",
         "manual_numeric_entry": "Saisie numerique manuelle",
-        "manual_numeric_help": "Activee : saisir les valeurs exactes. Desactivee : ajuster les scores avec des sliders."
+        "manual_numeric_help": "Activee : saisir les valeurs exactes. Desactivee : ajuster les scores avec des sliders.",
+        "profile_count_label": "Nombre de profils a comparer",
+        "profile_count_help": "Utilisez jusqu'a 8 profils pour garder le graphe lisible.",
+        "import_saved_profile": "Importer un profil sauvegarde",
+        "select_saved_json": "Selectionner un profil JSON sauvegarde",
+        "load_this_profile": "Charger ce profil",
+        "save_this_profile": "Sauvegarder ce profil",
+        "download_profile_json": "Telecharger ce profil JSON",
+        "copied_text_import": "Importer depuis un texte Politiscales copie",
+        "paste_results_text": "Coller le texte des resultats",
+        "apply_copied_scores": "Appliquer les scores detectes a ce profil",
+        "profile_loaded": "Profil charge. Les champs ont ete remplis et restent modifiables.",
+        "profile_save_caption": "La sauvegarde est actuellement locale et basee sur des fichiers. Une future version authentifiee pourra stocker les profils par compte utilisateur.",
+        "formula_main_blocks_intro": "L'analyseur n'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
+        "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
+        "formula_left_block_title": "Bloc economique de gauche",
+        "formula_left_block_explanation": "- 0.90 * communisme : marqueur economique de gauche le plus fort ; il pousse directement x vers la gauche.\\n- 0.75 * regulation : marqueur interventionniste fort ; il pousse x vers la gauche.\\n- 0.35 * ecologie : contribution moderee car l'ecologie implique souvent de la regulation, sans etre purement economique.\\n- 0.25 * revolution : contribution secondaire car la radicalite est une methode, pas une doctrine economique complete.",
+        "formula_right_block_title": "Bloc economique de droite",
+        "formula_right_block_explanation": "- 0.90 * capitalisme : marqueur economique de droite le plus fort ; il pousse directement x vers la droite.\\n- 0.75 * laissez_faire : marqueur fort d'autonomie du marche ; il pousse x vers la droite.\\n- 0.35 * productivisme : contribution moderee car croissance et production peuvent exister dans plusieurs systemes.\\n- 0.20 * reformisme : contribution secondaire faible car le reformisme est surtout une methode politique.",
+        "formula_libertarian_block_title": "Bloc societal libertaire / progressiste",
+        "formula_libertarian_block_explanation": "- 0.75 * constructivisme : marqueur social progressiste fort car il traduit une lecture flexible du social.\\n- 0.70 * justice_rehabilitative : marqueur anti-punitif fort car il favorise reintegration et prevention.\\n- 0.70 * progressisme : marqueur fort d'ouverture au changement social.\\n- 0.55 * internationalisme : marqueur modere d'ouverture vers une cooperation elargie.",
+        "formula_authoritarian_block_title": "Bloc societal autoritaire / conservateur",
+        "formula_authoritarian_block_explanation": "- 0.75 * essentialisme : marqueur social conservateur fort car il traduit des categories sociales plus fixes.\\n- 0.70 * justice_punitive : marqueur d'autorite fort car il insiste sur sanction et dissuasion.\\n- 0.70 * conservatisme : marqueur fort de continuite et stabilite.\\n- 0.55 * nationalisme : marqueur modere d'autorite et de communaute car il renforce souverainete et priorite nationale.",
+        "formula_raw_axis_explanation": "Le modele soustrait les blocs opposes. right_economic - left_economic donne la direction de x. authoritarian_social - libertarian_social donne la direction de y.",
+        "formula_adjustments_explanation": "- productivisme - ecologie affine la lecture croissance contre contrainte ecologique.\\n- nationalisme - internationalisme affine la lecture souverainete contre ouverture internationale.\\n- revolution - reformisme affine la lecture rupture contre changement institutionnel.",
+        "formula_normalization_explanation": "Les scores bruts sont divises par 120 puis passes dans une sigmoide. Les profils marques se rapprochent des bords, mais le graphe reste lisible.",
     }
 }
 
 
 def _t(language: str, key: str) -> str:
     return UI_TEXT.get(language, UI_TEXT["en"]).get(key, UI_TEXT["en"].get(key, key))
+
+
+
+def _md_text(language: str, key: str) -> str:
+    return _t(language, key).replace("\\n", "\n")
 
 
 def _render_politiscales_link(language: str) -> None:
@@ -613,22 +668,22 @@ def _render_profile_import_controls(profile_index: int) -> None:
     if f"{prefix}_upload_nonce" not in st.session_state:
         st.session_state[f"{prefix}_upload_nonce"] = 0
 
-    with st.expander("Import a saved profile", expanded=False):
+    with st.expander(_t(st.session_state.get("language", "en"), "import_saved_profile"), expanded=False):
         uploaded_file = st.file_uploader(
-            "Select a saved profile JSON",
+            _t(st.session_state.get("language", "en"), "select_saved_json"),
             type=["json"],
             key=f"{prefix}_json_upload_{st.session_state[f'{prefix}_upload_nonce']}",
         )
 
         if uploaded_file is not None:
-            if st.button("Load this profile", key=f"{prefix}_load_json"):
+            if st.button(_t(st.session_state.get("language", "en"), "load_this_profile"), key=f"{prefix}_load_json"):
                 try:
                     payload = json.loads(uploaded_file.getvalue().decode("utf-8"))
                     _apply_profile_payload_to_state(profile_index, payload)
 
                     # Change the uploader key on rerun so the uploaded file is released from the UI.
                     st.session_state[f"{prefix}_upload_nonce"] += 1
-                    st.success("Profile loaded. The fields have been filled and remain editable.")
+                    st.success(_t(st.session_state.get("language", "en"), "profile_loaded"))
                     st.rerun()
                 except Exception as exc:
                     st.error(f"Could not load this profile file: {exc}")
@@ -637,13 +692,13 @@ def _render_profile_import_controls(profile_index: int) -> None:
 def _render_profile_import_export(profile_index: int, current_person: PersonResult | None) -> None:
     prefix = _profile_state_prefix(profile_index)
 
-    with st.expander("Save this profile", expanded=False):
+    with st.expander(_t(st.session_state.get("language", "en"), "save_this_profile"), expanded=False):
         if current_person is not None:
             payload = _profile_payload(current_person)
             safe_name = current_person.name.lower().replace(" ", "_").replace("/", "_")
 
             st.download_button(
-                label="Download this profile JSON",
+                label=_t(st.session_state.get("language", "en"), "download_profile_json"),
                 data=json.dumps(payload, indent=2, ensure_ascii=False).encode("utf-8"),
                 file_name=f"{safe_name or 'profile'}_profile.json",
                 mime="application/json",
@@ -652,7 +707,7 @@ def _render_profile_import_export(profile_index: int, current_person: PersonResu
             )
 
             st.caption(
-                "Profile save/import is currently local and file-based. A future authenticated version can store profiles per user account."
+                _t(st.session_state.get("language", "en"), "profile_save_caption")
             )
 
 
@@ -673,9 +728,9 @@ def _render_profile_input(profile_index: int, precise_input_mode: bool) -> Perso
 
     imported_scores = None
 
-    with st.expander("Import from copied Politiscales-style text", expanded=False):
+    with st.expander(_t(st.session_state.get("language", "en"), "copied_text_import"), expanded=False):
         copied_text = st.text_area(
-            "Paste copied results text",
+            _t(st.session_state.get("language", "en"), "paste_results_text"),
             height=200,
             key=f"{widget_prefix}_copied_text",
             placeholder=(
@@ -692,7 +747,7 @@ def _render_profile_input(profile_index: int, precise_input_mode: bool) -> Perso
             detected_count = sum(1 for value in imported_scores.values() if value != 0)
             st.success(f"{detected_count}/16 non-zero scores detected from copied text.")
 
-            if st.button("Apply copied-text scores to this profile", key=f"{widget_prefix}_apply_text"):
+            if st.button(_t(st.session_state.get("language", "en"), "apply_copied_scores"), key=f"{widget_prefix}_apply_text"):
                 for axis in VARIABLE_NAMES:
                     st.session_state[f"{widget_prefix}_{axis}"] = int(imported_scores.get(axis, 0))
                 st.rerun()
@@ -714,12 +769,12 @@ def _render_multi_profile_inputs(precise_input_mode: bool) -> list[PersonResult]
     st.markdown('<p class="small-muted">' + _t(st.session_state.get("language", "en"), "input_intro") + '</p>', unsafe_allow_html=True)
 
     profile_count = st.number_input(
-        "Number of profiles to compare",
+        _t(st.session_state.get("language", "en"), "profile_count_label"),
         min_value=1,
         max_value=8,
         value=1,
         step=1,
-        help="Use up to 8 profiles to keep the chart readable.",
+        help=_t(st.session_state.get("language", "en"), "profile_count_help"),
     )
 
     people: list[PersonResult] = []
@@ -758,7 +813,7 @@ def _build_export_dataframe(
 def _render_user_guide_tab(language: str) -> None:
     st.header(_t(language, "guide_header"))
 
-    st.markdown(_t(language, "guide_intro"))
+    st.markdown(_md_text(language, "guide_intro"))
 
     step1, step2, step3 = st.columns(3)
 
@@ -775,16 +830,16 @@ def _render_user_guide_tab(language: str) -> None:
         st.markdown(_t(language, "guide_step_3_body"))
 
     st.subheader(_t(language, "recommended_workflow"))
-    st.markdown(_t(language, "recommended_workflow_body"))
+    st.markdown(_md_text(language, "recommended_workflow_body"))
 
     st.subheader(_t(language, "profile_save_import"))
-    st.markdown(_t(language, "profile_save_import_body"))
+    st.markdown(_md_text(language, "profile_save_import_body"))
 
     st.subheader(_t(language, "input_mode"))
-    st.markdown(_t(language, "input_mode_body"))
+    st.markdown(_md_text(language, "input_mode_body"))
 
     st.subheader(_t(language, "reference_filters"))
-    st.markdown(_t(language, "reference_filters_body"))
+    st.markdown(_md_text(language, "reference_filters_body"))
 
 
 
@@ -816,146 +871,62 @@ def _render_methodology_tab(language: str) -> None:
 
     st.subheader(_t(language, "score_blocks"))
 
-    st.markdown(
-        """
-        The model first builds four weighted blocks.
+    st.markdown(_md_text(language, "formula_main_blocks_intro"))
+    st.info(_md_text(language, "formula_coefficients_note"))
 
-        ### Economic-left block
+    st.markdown(f"### {_t(language, 'formula_left_block_title')}")
+    st.code("left_economic =
+    0.90 * communisme
+  + 0.75 * regulation
+  + 0.35 * ecologie
+  + 0.25 * revolution", language="text")
+    st.markdown(_md_text(language, "formula_left_block_explanation"))
 
-        ```text
-        left_economic =
-            0.90 * communisme
-          + 0.75 * regulation
-          + 0.35 * ecologie
-          + 0.25 * revolution
-        ```
+    st.markdown(f"### {_t(language, 'formula_right_block_title')}")
+    st.code("right_economic =
+    0.90 * capitalisme
+  + 0.75 * laissez_faire
+  + 0.35 * productivisme
+  + 0.20 * reformisme", language="text")
+    st.markdown(_md_text(language, "formula_right_block_explanation"))
 
-        Meaning:
+    st.markdown(f"### {_t(language, 'formula_libertarian_block_title')}")
+    st.code("libertarian_social =
+    0.75 * constructivisme
+  + 0.70 * justice_rehabilitative
+  + 0.70 * progressisme
+  + 0.55 * internationalisme", language="text")
+    st.markdown(_md_text(language, "formula_libertarian_block_explanation"))
 
-        - `communisme` receives the strongest weight because it is the clearest economic-left signal.
-        - `regulation` is highly weighted because state intervention directly affects the economic axis.
-        - `ecologie` has a moderate effect because ecological priorities often imply economic constraints,
-          but ecology is not purely economic.
-        - `revolution` has a smaller effect because radicality is a political method, not a direct
-          economic position.
-
-        ### Economic-right block
-
-        ```text
-        right_economic =
-            0.90 * capitalisme
-          + 0.75 * laissez_faire
-          + 0.35 * productivisme
-          + 0.20 * reformisme
-        ```
-
-        Meaning:
-
-        - `capitalisme` receives the strongest weight because it is the clearest economic-right signal.
-        - `laissez_faire` is highly weighted because it directly expresses deregulation and market autonomy.
-        - `productivisme` has a moderate effect because growth and production can exist in several systems,
-          but often reinforce a market or expansion-oriented reading.
-        - `reformisme` has a smaller effect because gradualism is a method, not a strict right-wing marker.
-
-        ### Libertarian / progressive social block
-
-        ```text
-        libertarian_social =
-            0.75 * constructivisme
-          + 0.70 * justice_rehabilitative
-          + 0.70 * progressisme
-          + 0.55 * internationalisme
-        ```
-
-        Meaning:
-
-        - `constructivisme` strongly contributes to the progressive/libertarian side because it reflects
-          flexible social interpretation.
-        - `justice_rehabilitative` strongly contributes because it favors reintegration over coercion.
-        - `progressisme` strongly contributes because it directly measures openness to social reform.
-        - `internationalisme` contributes moderately because it reflects openness beyond national boundaries.
-
-        ### Authoritarian / conservative social block
-
-        ```text
-        authoritarian_social =
-            0.75 * essentialisme
-          + 0.70 * justice_punitive
-          + 0.70 * conservatisme
-          + 0.55 * nationalisme
-        ```
-
-        Meaning:
-
-        - `essentialisme` strongly contributes because it implies stable and fixed social categories.
-        - `justice_punitive` strongly contributes because it reinforces order, sanction, and authority.
-        - `conservatisme` strongly contributes because it directly measures attachment to continuity.
-        - `nationalisme` contributes moderately because it reinforces sovereignty and collective identity.
-        """
-    )
+    st.markdown(f"### {_t(language, 'formula_authoritarian_block_title')}")
+    st.code("authoritarian_social =
+    0.75 * essentialisme
+  + 0.70 * justice_punitive
+  + 0.70 * conservatisme
+  + 0.55 * nationalisme", language="text")
+    st.markdown(_md_text(language, "formula_authoritarian_block_explanation"))
 
     st.subheader(_t(language, "raw_axis"))
 
-    st.markdown(
-        """
-        Once the four blocks are computed, the model compares opposite forces:
-
-        ```text
-        economic_raw = right_economic - left_economic
-        societal_raw = authoritarian_social - libertarian_social
-        ```
-
-        Therefore:
-
-        - if `economic_raw` is negative, the profile moves left;
-        - if `economic_raw` is positive, the profile moves right;
-        - if `societal_raw` is negative, the profile moves libertarian/progressive;
-        - if `societal_raw` is positive, the profile moves authoritarian/conservative.
-        """
-    )
+    st.code("economic_raw = right_economic - left_economic
+societal_raw = authoritarian_social - libertarian_social", language="text")
+    st.markdown(_md_text(language, "formula_raw_axis_explanation"))
 
     st.subheader(_t(language, "secondary_adjustments"))
 
-    st.markdown(
-        """
-        Three smaller corrections refine the result:
-
-        ```text
-        economic_raw += 0.12 * (productivisme - ecologie)
-        societal_raw += 0.10 * (nationalisme - internationalisme)
-        societal_raw += 0.08 * (revolution - reformisme)
-        ```
-
-        These are intentionally lower than the main coefficients.
-
-        - `productivisme - ecologie` adjusts the economic reading around growth versus ecological constraint.
-        - `nationalisme - internationalisme` adjusts the social reading around national priority versus global openness.
-        - `revolution - reformisme` adjusts the authority/posture reading around rupture versus institutional gradualism.
-        """
-    )
+    st.code("economic_raw += 0.12 * (productivisme - ecologie)
+societal_raw += 0.10 * (nationalisme - internationalisme)
+societal_raw += 0.08 * (revolution - reformisme)", language="text")
+    st.markdown(_md_text(language, "formula_adjustments_explanation"))
 
     st.subheader(_t(language, "normalization"))
 
-    st.markdown(
-        """
-        The raw values are normalized:
+    st.code("economic_normalized = economic_raw / 120
+societal_normalized = societal_raw / 120
 
-        ```text
-        economic_normalized = economic_raw / 120
-        societal_normalized = societal_raw / 120
-        ```
-
-        Then they are compressed into the visible graph range:
-
-        ```text
-        x = 4 * sigmoid_scaled(economic_normalized)
-        y = 4 * sigmoid_scaled(societal_normalized)
-        ```
-
-        The sigmoid step keeps the graph readable: very strong scores still move toward the edges,
-        but without making the visualization unusable.
-        """
-    )
+x = 4 * sigmoid_scaled(economic_normalized)
+y = 4 * sigmoid_scaled(societal_normalized)", language="text")
+    st.markdown(_md_text(language, "formula_normalization_explanation"))
 
     st.subheader(_t(language, "axes_meaning"))
 
