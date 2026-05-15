@@ -492,29 +492,41 @@ def _render_score_inputs(
     return output_scores
 
 
-def _render_profile_import_export(profile_index: int, current_person: PersonResult | None) -> None:
+def _render_profile_import_controls(profile_index: int) -> None:
     prefix = _profile_state_prefix(profile_index)
 
-    with st.expander("Save or import this profile", expanded=False):
+    if f"{prefix}_upload_nonce" not in st.session_state:
+        st.session_state[f"{prefix}_upload_nonce"] = 0
+
+    with st.expander("Import a saved profile", expanded=False):
         uploaded_file = st.file_uploader(
-            "Import a saved profile JSON",
+            "Select a saved profile JSON",
             type=["json"],
-            key=f"{prefix}_json_upload",
+            key=f"{prefix}_json_upload_{st.session_state[f'{prefix}_upload_nonce']}",
         )
 
         if uploaded_file is not None:
-            if st.button("Load saved profile into this form", key=f"{prefix}_load_json"):
+            if st.button("Load this profile", key=f"{prefix}_load_json"):
                 try:
                     payload = json.loads(uploaded_file.getvalue().decode("utf-8"))
                     _apply_profile_payload_to_state(profile_index, payload)
-                    st.success("Saved profile loaded. You can now edit the values before exporting again.")
+
+                    # Change the uploader key on rerun so the uploaded file is released from the UI.
+                    st.session_state[f"{prefix}_upload_nonce"] += 1
+                    st.success("Profile loaded. The fields have been filled and remain editable.")
                     st.rerun()
                 except Exception as exc:
                     st.error(f"Could not load this profile file: {exc}")
 
+
+def _render_profile_import_export(profile_index: int, current_person: PersonResult | None) -> None:
+    prefix = _profile_state_prefix(profile_index)
+
+    with st.expander("Save this profile", expanded=False):
         if current_person is not None:
             payload = _profile_payload(current_person)
             safe_name = current_person.name.lower().replace(" ", "_").replace("/", "_")
+
             st.download_button(
                 label="Download this profile JSON",
                 data=json.dumps(payload, indent=2, ensure_ascii=False).encode("utf-8"),
@@ -533,6 +545,8 @@ def _render_profile_input(profile_index: int, precise_input_mode: bool) -> Perso
     widget_prefix = _profile_state_prefix(profile_index)
 
     st.markdown(f"### Profile {profile_index + 1}")
+
+    _render_profile_import_controls(profile_index)
 
     if f"{widget_prefix}_name" not in st.session_state:
         st.session_state[f"{widget_prefix}_name"] = f"Profile {profile_index + 1}"

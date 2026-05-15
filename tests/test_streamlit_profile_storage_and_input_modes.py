@@ -20,12 +20,14 @@ def test_streamlit_app_has_manual_numeric_entry_toggle():
     assert "st.slider" in content
 
 
-def test_streamlit_app_has_profile_save_and_import():
+def test_streamlit_app_has_separated_profile_import_and_save():
     content = Path("streamlit_app.py").read_text(encoding="utf-8")
 
-    assert "Save or import this profile" in content
+    assert "Import a saved profile" in content
+    assert "Select a saved profile JSON" in content
+    assert "Load this profile" in content
+    assert "Save this profile" in content
     assert "Download this profile JSON" in content
-    assert "Load saved profile into this form" in content
     assert "political_spectrum_profile.v1" in content
 
 
