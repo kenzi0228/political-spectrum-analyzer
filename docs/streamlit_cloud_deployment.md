@@ -2,16 +2,11 @@
 
 ## Goal
 
-This document prepares the web version of Political Spectrum Analyzer for deployment on Streamlit Community Cloud.
+This document describes how to publish the Streamlit web version of Political Spectrum Analyzer.
 
-The deployed app uses:
+The app is designed to run on free Streamlit hosting without OCR or native Tesseract dependencies.
 
-- `streamlit_app.py` as the entry point;
-- `requirements.txt` for Python dependencies;
-- `.streamlit/config.toml` for theme and server configuration;
-- `data/reference/personalities.csv` for the reference dataset.
-
-## Recommended deployment target
+## Deployment target
 
 Recommended platform:
 
@@ -19,63 +14,83 @@ Recommended platform:
 Streamlit Community Cloud
 ```
 
-Reason:
+## App settings
 
-- the project is Python-first;
-- the app is data-oriented;
-- the web version already uses Streamlit;
-- no separate backend is required;
-- deployment is directly connected to GitHub.
-
-## Deployment settings
-
-Use the following settings:
+Use these settings:
 
 | Field | Value |
 |---|---|
 | Repository | `kenzi0228/political-spectrum-analyzer` |
 | Branch | `main` |
 | Main file path | `streamlit_app.py` |
-| Python version | see `runtime.txt` |
+| Python version | `python-3.12` |
+| Dependency file | `requirements.txt` |
 
-## Local deployment check
+## Before deployment
 
-Before deploying, run:
+Run locally:
 
 ```powershell
+python -m py_compile streamlit_app.py
 python -m pytest
 streamlit run streamlit_app.py
 ```
 
-The app should open locally and support:
+Confirm that the web app supports:
 
-- English / French language selection;
-- direct Politiscales link;
+- English and French interface;
+- Politiscales external link;
 - manual numeric score entry;
 - slider score entry;
 - copied-text import;
 - profile JSON import/export;
 - multi-profile visualization;
+- detailed profile interpretation;
 - CSV export.
 
-## OCR policy for deployment
+## OCR policy
+
+OCR is intentionally excluded from the Streamlit runtime.
 
 OCR remains desktop-only.
 
-The Streamlit web app must not import or require Tesseract at runtime. This avoids deployment fragility on free hosting platforms.
+Reason:
+
+- OCR requires native Tesseract installation;
+- free Streamlit deployments should remain lightweight;
+- copied-text import already covers the online workflow.
 
 Expected behavior:
 
-- desktop app can use OCR when dependencies are installed;
-- web app uses copied-text import instead;
-- Streamlit deployment does not need native Tesseract packages.
+- desktop app can use OCR if installed locally;
+- Streamlit app does not import `pytesseract`;
+- Streamlit app does not import the OCR module;
+- deployment depends only on Python packages from `requirements.txt`.
 
-## Post-deployment README update
+## Public URL
 
-After deployment, update the README with the public Streamlit URL:
+After the app is deployed, copy the generated Streamlit URL and update the README.
+
+Expected format:
 
 ```text
-Live demo: https://<your-app-name>.streamlit.app
+https://<your-app-name>.streamlit.app
 ```
 
-Also add screenshots after the live app is verified.
+Recommended final commit after deployment:
+
+```text
+docs: add live Streamlit demo URL
+```
+
+## Post-deployment checks
+
+After deployment, verify online:
+
+- the app opens without dependency errors;
+- the language selector works;
+- the Politiscales link opens in a new tab;
+- a sample profile can be entered manually;
+- a saved JSON profile can be imported;
+- CSV export works;
+- the methodology tab renders correctly.
