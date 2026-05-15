@@ -105,3 +105,14 @@ Python dependencies are handled through:
 ```text
 requirements.txt
 ```
+## src-layout import path
+
+The project uses a `src/` package layout.
+
+Streamlit Community Cloud runs `streamlit_app.py` directly from the repository root. To make the internal package importable without requiring an editable install, the Streamlit entry point adds the local `src/` folder to `sys.path` at startup.
+
+This ensures imports such as the following work in the deployed app:
+
+```python
+from political_spectrum_analyzer.config import PERSONALITIES_CSV_PATH
+```

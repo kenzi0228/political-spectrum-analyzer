@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+PACKAGE_SRC_PATH = Path(__file__).resolve().parent / "src"
+if PACKAGE_SRC_PATH.exists() and str(PACKAGE_SRC_PATH) not in sys.path:
+    sys.path.insert(0, str(PACKAGE_SRC_PATH))
+
 import json
 from datetime import datetime
 
