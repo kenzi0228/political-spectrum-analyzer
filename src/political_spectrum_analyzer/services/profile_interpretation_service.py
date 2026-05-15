@@ -23,6 +23,9 @@ class ProfileInterpretation:
     economic_reading: str
     societal_reading: str
     strategic_reading: str
+    archetype: str
+    tension_reading: str
+    profile_highlights: list[str]
 
 
 AXIS_LABELS: dict[str, str] = {
@@ -94,6 +97,10 @@ def _safe_score(scores: Mapping[str, int], axis: str) -> int:
     return max(0, min(100, value))
 
 
+def _average(scores: Mapping[str, int], axes: list[str]) -> float:
+    return sum(_safe_score(scores, axis) for axis in axes) / len(axes)
+
+
 def _axis_interpretation(axis: str, score: int) -> AxisInterpretation:
     return AxisInterpretation(
         axis=axis,
@@ -150,19 +157,19 @@ def get_axis_pair_balances(scores: Mapping[str, int]) -> list[dict[str, object]]
     return balances
 
 
-def _average(scores: Mapping[str, int], axes: list[str]) -> float:
-    return sum(_safe_score(scores, axis) for axis in axes) / len(axes)
-
-
 def build_economic_reading(scores: Mapping[str, int]) -> str:
     left_avg = _average(scores, ["communisme", "regulation", "ecologie"])
     right_avg = _average(scores, ["capitalisme", "laissez_faire", "productivisme"])
 
     if abs(left_avg - right_avg) <= 8:
-        return "Economically, the profile is relatively balanced: interventionist and market-oriented signals coexist."
+        return "Economically, the profile combines interventionist and market-oriented signals rather than following a single economic direction."
     if left_avg > right_avg:
-        return "Economically, the profile leans toward intervention, redistribution, ecological constraint, or collective economic logic."
-    return "Economically, the profile leans toward market autonomy, private initiative, production, or lower intervention."
+        if _safe_score(scores, "ecologie") >= 65:
+            return "Economically, the profile leans interventionist with a strong ecological and regulatory component."
+        return "Economically, the profile leans toward redistribution, public intervention, and collective economic correction."
+    if _safe_score(scores, "productivisme") >= 65:
+        return "Economically, the profile leans market-oriented with a strong emphasis on production, growth, and capacity."
+    return "Economically, the profile leans toward market autonomy, private initiative, and lower intervention."
 
 
 def build_societal_reading(scores: Mapping[str, int]) -> str:
@@ -170,10 +177,14 @@ def build_societal_reading(scores: Mapping[str, int]) -> str:
     conservative_avg = _average(scores, ["essentialisme", "justice_punitive", "conservatisme", "nationalisme"])
 
     if abs(progressive_avg - conservative_avg) <= 8:
-        return "Societally, the profile is mixed or moderate: progressive and order-oriented signals coexist."
+        return "Societally, the profile combines progressive and order-oriented signals, producing a mixed social posture."
     if progressive_avg > conservative_avg:
-        return "Societally, the profile leans progressive, open to social change, rehabilitation, and broader cooperation."
-    return "Societally, the profile leans conservative or order-oriented, with stronger emphasis on stability, authority, or national cohesion."
+        if _safe_score(scores, "internationalisme") >= 65:
+            return "Societally, the profile leans progressive with a strong international and cooperative orientation."
+        return "Societally, the profile leans progressive, reform-oriented, and open to social change."
+    if _safe_score(scores, "nationalisme") >= 65:
+        return "Societally, the profile leans order-oriented with a pronounced national-sovereignty component."
+    return "Societally, the profile leans conservative or stability-oriented, with emphasis on continuity and order."
 
 
 def build_strategic_reading(scores: Mapping[str, int]) -> str:
@@ -181,18 +192,80 @@ def build_strategic_reading(scores: Mapping[str, int]) -> str:
     reformism = _safe_score(scores, "reformisme")
 
     if abs(revolution - reformism) <= 10:
-        return "Strategically, the profile balances systemic-change instincts with institutional or gradualist reform."
+        return "Strategically, the profile balances systemic-change instincts with gradual institutional reform."
     if revolution > reformism:
-        return "Strategically, the profile is more rupture-oriented and receptive to deeper systemic transformation."
+        return "Strategically, the profile is more rupture-oriented and receptive to deep systemic transformation."
     return "Strategically, the profile is more reformist, favoring gradual change through existing institutions."
 
 
+def build_profile_archetype(scores: Mapping[str, int]) -> str:
+    left_avg = _average(scores, ["communisme", "regulation", "ecologie"])
+    right_avg = _average(scores, ["capitalisme", "laissez_faire", "productivisme"])
+    progressive_avg = _average(scores, ["constructivisme", "justice_rehabilitative", "progressisme", "internationalisme"])
+    conservative_avg = _average(scores, ["essentialisme", "justice_punitive", "conservatisme", "nationalisme"])
+
+    economic_side = "left" if left_avg > right_avg + 8 else "right" if right_avg > left_avg + 8 else "center"
+    social_side = "progressive" if progressive_avg > conservative_avg + 8 else "conservative" if conservative_avg > progressive_avg + 8 else "mixed"
+
+    if economic_side == "left" and social_side == "progressive":
+        return "Progressive left profile"
+    if economic_side == "left" and social_side == "conservative":
+        return "Socially conservative left profile"
+    if economic_side == "right" and social_side == "progressive":
+        return "Liberal-market progressive profile"
+    if economic_side == "right" and social_side == "conservative":
+        return "Conservative market-oriented profile"
+    if economic_side == "center" and social_side == "progressive":
+        return "Social-progressive centrist profile"
+    if economic_side == "center" and social_side == "conservative":
+        return "Order-oriented centrist profile"
+    return "Balanced or composite profile"
+
+
+def build_tension_reading(scores: Mapping[str, int]) -> str:
+    balances = get_axis_pair_balances(scores)
+    strongest_tension = max(balances, key=lambda row: abs(int(row["delta"])))
+
+    if abs(int(strongest_tension["delta"])) <= 10:
+        return "The profile does not show a single dominant internal opposition; most axis pairs are relatively balanced."
+
+    return (
+        "The strongest internal contrast appears in "
+        f"{strongest_tension['dimension']}: {strongest_tension['leading_side']} dominates this pair."
+    )
+
+
+def build_profile_highlights(scores: Mapping[str, int]) -> list[str]:
+    highlights: list[str] = []
+
+    dominant = get_dominant_axes(scores, limit=4)
+    weak = get_weak_axes(scores, limit=2)
+
+    if dominant:
+        labels = ", ".join(axis.label for axis in dominant[:3])
+        highlights.append(f"Core drivers: {labels}.")
+
+    for axis in dominant[:4]:
+        if axis.score >= 75:
+            highlights.append(f"{axis.label} is a very strong marker of this profile ({axis.score}/100).")
+        elif axis.score >= 60:
+            highlights.append(f"{axis.label} clearly contributes to the profile direction ({axis.score}/100).")
+
+    if weak:
+        weak_labels = ", ".join(axis.label for axis in weak)
+        highlights.append(f"Low-impact dimensions in this profile: {weak_labels}.")
+
+    return highlights[:6]
+
+
 def build_profile_synthesis(profile_name: str, scores: Mapping[str, int]) -> str:
+    archetype = build_profile_archetype(scores)
     dominant_axes = get_dominant_axes(scores, limit=3)
     strongest_labels = ", ".join(axis.label for axis in dominant_axes)
 
     return (
-        f"{profile_name} is mainly characterized by strong scores in {strongest_labels}. "
+        f"{profile_name} is best read as a {archetype.lower()}. "
+        f"The strongest drivers are {strongest_labels}. "
         f"{build_economic_reading(scores)} "
         f"{build_societal_reading(scores)} "
         f"{build_strategic_reading(scores)}"
@@ -209,4 +282,7 @@ def interpret_profile(profile_name: str, scores: Mapping[str, int]) -> ProfileIn
         economic_reading=build_economic_reading(scores),
         societal_reading=build_societal_reading(scores),
         strategic_reading=build_strategic_reading(scores),
+        archetype=build_profile_archetype(scores),
+        tension_reading=build_tension_reading(scores),
+        profile_highlights=build_profile_highlights(scores),
     )

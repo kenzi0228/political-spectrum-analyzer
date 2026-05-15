@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from datetime import datetime
+
 import pandas as pd
 import streamlit as st
 
@@ -22,7 +25,7 @@ from political_spectrum_analyzer.web.plotly_plot import build_political_spectrum
 
 st.set_page_config(
     page_title="Political Spectrum Analyzer",
-    page_icon="ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â ",
+    page_icon=":bar_chart:",
     layout="wide",
 )
 
@@ -72,9 +75,9 @@ CUSTOM_CSS = """
 .warning-box {
     padding: 0.85rem 1rem;
     border-radius: 14px;
-    border-left: 4px solid #f59e0b;
-    background: #fffbeb;
-    color: #78350f;
+    border-left: 4px solid #2563EB;
+    background: #eff6ff;
+    color: #1e3a8a;
     margin: 1rem 0;
 }
 
@@ -89,10 +92,6 @@ div[data-testid="stMetric"] {
     padding: 0.8rem;
     border-radius: 14px;
     box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
-}
-
-section[data-testid="stSidebar"] {
-    background-color: #f8fafc;
 }
 
 /* Make metric cards readable when values are long, especially quadrant labels. */
@@ -118,6 +117,10 @@ div[data-testid="stMetricValue"] > div {
     overflow-wrap: anywhere;
     word-break: normal;
 }
+
+section[data-testid="stSidebar"] {
+    background-color: #f8fafc;
+}
 </style>
 """
 
@@ -139,6 +142,10 @@ def _default_scores() -> dict[str, int]:
     return {variable: 0 for variable in VARIABLE_NAMES}
 
 
+def _profile_state_prefix(profile_index: int) -> str:
+    return f"profile_{profile_index}"
+
+
 def _build_person_result(profile_name: str, scores: dict[str, int]) -> PersonResult:
     x, y = apply_transformations_and_get_coordinates(scores)
 
@@ -150,21 +157,45 @@ def _build_person_result(profile_name: str, scores: dict[str, int]) -> PersonRes
     )
 
 
+def _profile_payload(person: PersonResult) -> dict[str, object]:
+    return {
+        "schema": "political_spectrum_profile.v1",
+        "saved_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "name": person.name,
+        "scores": {axis: int(person.scores.get(axis, 0)) for axis in VARIABLE_NAMES},
+    }
+
+
+def _apply_profile_payload_to_state(profile_index: int, payload: dict[str, object]) -> None:
+    prefix = _profile_state_prefix(profile_index)
+    name = str(payload.get("name", f"Profile {profile_index + 1}"))
+    raw_scores = payload.get("scores", {})
+
+    if not isinstance(raw_scores, dict):
+        raise ValueError("Invalid profile file: 'scores' must be an object.")
+
+    st.session_state[f"{prefix}_name"] = name
+
+    for axis in VARIABLE_NAMES:
+        value = int(raw_scores.get(axis, 0))
+        st.session_state[f"{prefix}_{axis}"] = max(0, min(100, value))
+
+
 def _render_hero() -> None:
     st.markdown(
         """
         <div class="hero-card">
             <div class="hero-title">Political Spectrum Analyzer</div>
             <div class="hero-subtitle">
-                Interactive web version of the desktop application for ideological score projection,
-                multi-profile comparison, reference comparison, nearest-neighbor analysis, and CSV export.
+                Interactive web application for ideological score projection, multi-profile comparison,
+                reference comparison, personalized profile reading, and CSV export.
             </div>
             <div style="margin-top: 0.9rem;">
                 <span class="feature-pill">Python</span>
                 <span class="feature-pill">Streamlit</span>
                 <span class="feature-pill">Plotly</span>
                 <span class="feature-pill">Multi-profile comparison</span>
-                <span class="feature-pill">CSV export</span>
+                <span class="feature-pill">Profile save/import</span>
                 <span class="feature-pill">150 reference profiles</span>
             </div>
         </div>
@@ -175,12 +206,38 @@ def _render_hero() -> None:
     st.markdown(
         """
         <div class="warning-box">
-            This tool uses an explainable heuristic model. Reference positions are approximate and should
-            not be interpreted as objective political classifications.
+            Read the result through three layers: graph position, closest references, and the detailed
+            score-based profile reading.
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+
+def _render_single_profile_analysis(person: PersonResult, personalities) -> None:
+    analysis = analyze_profile(person=person, personalities=personalities, top_n=3)
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("x coordinate", f"{analysis.x:.3f}")
+    col2.metric("y coordinate", f"{analysis.y:.3f}")
+    col3.metric("Quadrant", analysis.quadrant)
+    col4.metric("Distance to center", f"{analysis.distance_to_center:.3f}")
+
+    closest_data = [
+        {
+            "Rank": index,
+            "Name": match.name,
+            "Group": match.display_group,
+            "Distance": match.distance,
+            "x": match.x,
+            "y": match.y,
+        }
+        for index, match in enumerate(analysis.closest_references, start=1)
+    ]
+
+    st.dataframe(pd.DataFrame(closest_data), use_container_width=True, hide_index=True)
+    _render_profile_interpretation(person)
 
 
 def _render_profile_interpretation(person: PersonResult) -> None:
@@ -190,12 +247,20 @@ def _render_profile_interpretation(person: PersonResult) -> None:
     )
 
     st.markdown("#### Personalized profile reading")
+    st.success(interpretation.archetype)
     st.write(interpretation.synthesis)
 
     reading_col1, reading_col2, reading_col3 = st.columns(3)
     reading_col1.info(interpretation.economic_reading)
     reading_col2.info(interpretation.societal_reading)
     reading_col3.info(interpretation.strategic_reading)
+
+    st.info(interpretation.tension_reading)
+
+    if interpretation.profile_highlights:
+        st.markdown("#### Profile highlights")
+        for highlight in interpretation.profile_highlights:
+            st.markdown(f"- {highlight}")
 
     dominant_rows = [
         {
@@ -240,40 +305,13 @@ def _render_profile_interpretation(person: PersonResult) -> None:
     st.dataframe(pd.DataFrame(balance_rows), use_container_width=True, hide_index=True)
 
 
-def _render_single_profile_analysis(person: PersonResult, personalities) -> None:
-    analysis = analyze_profile(person=person, personalities=personalities, top_n=3)
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric("x coordinate", f"{analysis.x:.3f}")
-    col2.metric("y coordinate", f"{analysis.y:.3f}")
-    col3.metric("Quadrant", analysis.quadrant)
-    col4.metric("Distance to center", f"{analysis.distance_to_center:.3f}")
-
-    closest_data = [
-        {
-            "Rank": index,
-            "Name": match.name,
-            "Group": match.display_group,
-            "Distance": match.distance,
-            "x": match.x,
-            "y": match.y,
-        }
-        for index, match in enumerate(analysis.closest_references, start=1)
-    ]
-
-    st.dataframe(pd.DataFrame(closest_data), use_container_width=True, hide_index=True)
-
-    _render_profile_interpretation(person)
-
-
 def _render_analysis(people: list[PersonResult], personalities) -> None:
     if not people:
         st.info("No profile available for analysis.")
         return
 
     if len(people) == 1:
-        st.subheader(f"Analysis ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â {people[0].name}")
+        st.subheader(f"Analysis - {people[0].name}")
         _render_single_profile_analysis(people[0], personalities)
         return
 
@@ -282,12 +320,14 @@ def _render_analysis(people: list[PersonResult], personalities) -> None:
     summary_rows = []
     for person in people:
         analysis = analyze_profile(person=person, personalities=personalities, top_n=3)
+        interpretation = interpret_profile(profile_name=person.name, scores=person.scores)
 
         closest = analysis.closest_references[0].name if analysis.closest_references else ""
 
         summary_rows.append(
             {
                 "Profile": analysis.name,
+                "Profile type": interpretation.archetype,
                 "x": analysis.x,
                 "y": analysis.y,
                 "Quadrant": analysis.quadrant,
@@ -376,12 +416,19 @@ def _render_sidebar_export_options():
         step=1,
     )
 
-    return export_mode, int(closest_count)
+    precise_input_mode = st.sidebar.toggle(
+        "Precise score entry",
+        value=False,
+        help="Off: adjust scores with sliders. On: type exact values for each axis.",
+    )
+
+    return export_mode, int(closest_count), precise_input_mode
 
 
 def _render_score_inputs(
     imported_scores: dict[str, int] | None,
     widget_prefix: str,
+    precise_input_mode: bool,
 ) -> dict[str, int]:
     scores = imported_scores or _default_scores()
 
@@ -419,15 +466,31 @@ def _render_score_inputs(
             cols = st.columns(2)
 
             for index, variable in enumerate(variables):
+                key = f"{widget_prefix}_{variable}"
+                if key not in st.session_state:
+                    st.session_state[key] = int(scores.get(variable, 0))
+
                 with cols[index % 2]:
-                    output_scores[variable] = st.slider(
-                        _format_variable_name(variable),
-                        min_value=0,
-                        max_value=100,
-                        value=int(scores.get(variable, 0)),
-                        step=1,
-                        key=f"{widget_prefix}_{variable}",
-                    )
+                    if precise_input_mode:
+                        output_scores[variable] = int(
+                            st.number_input(
+                                _format_variable_name(variable),
+                                min_value=0,
+                                max_value=100,
+                                step=1,
+                                key=key,
+                            )
+                        )
+                    else:
+                        output_scores[variable] = int(
+                            st.slider(
+                                _format_variable_name(variable),
+                                min_value=0,
+                                max_value=100,
+                                step=1,
+                                key=key,
+                            )
+                        )
 
     for variable in VARIABLE_NAMES:
         output_scores.setdefault(variable, int(scores.get(variable, 0)))
@@ -435,14 +498,53 @@ def _render_score_inputs(
     return output_scores
 
 
-def _render_profile_input(profile_index: int) -> PersonResult:
-    widget_prefix = f"profile_{profile_index}"
+def _render_profile_import_export(profile_index: int, current_person: PersonResult | None) -> None:
+    prefix = _profile_state_prefix(profile_index)
+
+    with st.expander("Save or import this profile", expanded=False):
+        uploaded_file = st.file_uploader(
+            "Import a saved profile JSON",
+            type=["json"],
+            key=f"{prefix}_json_upload",
+        )
+
+        if uploaded_file is not None:
+            if st.button("Load saved profile into this form", key=f"{prefix}_load_json"):
+                try:
+                    payload = json.loads(uploaded_file.getvalue().decode("utf-8"))
+                    _apply_profile_payload_to_state(profile_index, payload)
+                    st.success("Saved profile loaded. You can now edit the values before exporting again.")
+                    st.rerun()
+                except Exception as exc:
+                    st.error(f"Could not load this profile file: {exc}")
+
+        if current_person is not None:
+            payload = _profile_payload(current_person)
+            safe_name = current_person.name.lower().replace(" ", "_").replace("/", "_")
+            st.download_button(
+                label="Download this profile JSON",
+                data=json.dumps(payload, indent=2, ensure_ascii=False).encode("utf-8"),
+                file_name=f"{safe_name or 'profile'}_profile.json",
+                mime="application/json",
+                key=f"{prefix}_download_json",
+                use_container_width=True,
+            )
+
+            st.caption(
+                "Profile save/import is currently local and file-based. A future authenticated version can store profiles per user account."
+            )
+
+
+def _render_profile_input(profile_index: int, precise_input_mode: bool) -> PersonResult:
+    widget_prefix = _profile_state_prefix(profile_index)
 
     st.markdown(f"### Profile {profile_index + 1}")
 
+    if f"{widget_prefix}_name" not in st.session_state:
+        st.session_state[f"{widget_prefix}_name"] = f"Profile {profile_index + 1}"
+
     profile_name = st.text_input(
         "Profile name",
-        value=f"Profile {profile_index + 1}",
         key=f"{widget_prefix}_name",
     )
 
@@ -467,18 +569,27 @@ def _render_profile_input(profile_index: int) -> PersonResult:
             detected_count = sum(1 for value in imported_scores.values() if value != 0)
             st.success(f"{detected_count}/16 non-zero scores detected from copied text.")
 
+            if st.button("Apply copied-text scores to this profile", key=f"{widget_prefix}_apply_text"):
+                for axis in VARIABLE_NAMES:
+                    st.session_state[f"{widget_prefix}_{axis}"] = int(imported_scores.get(axis, 0))
+                st.rerun()
+
     scores = _render_score_inputs(
         imported_scores=imported_scores,
         widget_prefix=widget_prefix,
+        precise_input_mode=precise_input_mode,
     )
 
-    return _build_person_result(profile_name, scores)
+    person = _build_person_result(profile_name, scores)
+    _render_profile_import_export(profile_index, person)
+
+    return person
 
 
-def _render_multi_profile_inputs() -> list[PersonResult]:
+def _render_multi_profile_inputs(precise_input_mode: bool) -> list[PersonResult]:
     st.header("Profile input")
     st.markdown(
-        '<p class="small-muted">Add one or several profiles. Each profile can be entered manually or imported from copied Politiscales-style text. OCR is intentionally excluded from the web version for deployment reliability.</p>',
+        '<p class="small-muted">Add one or several profiles. Choose slider input or exact numeric input from the sidebar. Each profile can be saved and imported independently.</p>',
         unsafe_allow_html=True,
     )
 
@@ -494,14 +605,14 @@ def _render_multi_profile_inputs() -> list[PersonResult]:
     people: list[PersonResult] = []
 
     if int(profile_count) == 1:
-        people.append(_render_profile_input(0))
+        people.append(_render_profile_input(0, precise_input_mode))
         return people
 
     tabs = st.tabs([f"Profile {index + 1}" for index in range(int(profile_count))])
 
     for index, tab in enumerate(tabs):
         with tab:
-            people.append(_render_profile_input(index))
+            people.append(_render_profile_input(index, precise_input_mode))
 
     return people
 
@@ -641,9 +752,9 @@ def _render_methodology_tab() -> None:
         """
         Once the position is computed, the app gives three levels of reading:
 
-        1. **Graph position** â€” where the profile appears on the spectrum.
-        2. **Closest references** â€” which reference personalities are geometrically closest.
-        3. **Personalized profile reading** â€” which axes dominate, which axes are weakest, and which
+        1. **Graph position** - where the profile appears on the spectrum.
+        2. **Closest references** - which reference personalities are geometrically closest.
+        3. **Personalized profile reading** - which axes dominate, which axes are weakest, and which
            opposing pairs define the profile most strongly.
 
         The detailed profile analysis is based on the raw 16 scores, not only on the final `x/y`
@@ -668,7 +779,6 @@ def _render_methodology_tab() -> None:
     )
 
 
-
 def main() -> None:
     _inject_css()
 
@@ -677,14 +787,14 @@ def main() -> None:
     _render_hero()
 
     filtered_personalities = _render_reference_filters(personalities)
-    export_mode, closest_count = _render_sidebar_export_options()
+    export_mode, closest_count, precise_input_mode = _render_sidebar_export_options()
 
     input_tab, graph_tab, data_tab, methodology_tab = st.tabs(
         ["Input", "Visualization", "Reference data", "Methodology"]
     )
 
     with input_tab:
-        people = _render_multi_profile_inputs()
+        people = _render_multi_profile_inputs(precise_input_mode)
 
     with graph_tab:
         st.header("Political positioning")
@@ -738,6 +848,7 @@ def main() -> None:
 
     with methodology_tab:
         _render_methodology_tab()
+
 
 if __name__ == "__main__":
     main()
