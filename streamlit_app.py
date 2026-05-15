@@ -629,6 +629,112 @@ def _build_export_dataframe(
     return pd.DataFrame(rows)
 
 
+def _render_user_guide_tab() -> None:
+    st.header("User guide")
+
+    st.markdown(
+        """
+        Use this workflow to create, compare, save, and export political profiles.
+        The app is designed to be used without technical knowledge: start with one profile,
+        then add more profiles if you want to compare several people or scenarios.
+        """
+    )
+
+    step1, step2, step3 = st.columns(3)
+
+    with step1:
+        st.subheader("Step 1 - Enter scores")
+        st.markdown(
+            """
+            Choose the number of profiles to compare.
+
+            For each profile, you can either:
+
+            - type exact values with **Manual numeric entry**;
+            - disable it and use sliders;
+            - paste copied Politiscales-style text and apply detected scores.
+            """
+        )
+
+    with step2:
+        st.subheader("Step 2 - Read the graph")
+        st.markdown(
+            """
+            Open the **Visualization** tab.
+
+            You will see:
+
+            - the profile position on the spectrum;
+            - closest reference personalities;
+            - a detailed reading based on dominant and weak axes;
+            - axis-by-axis balance.
+            """
+        )
+
+    with step3:
+        st.subheader("Step 3 - Save or export")
+        st.markdown(
+            """
+            You can save each profile individually as JSON.
+
+            You can also export the full analysis as CSV for Excel, Power BI,
+            or later comparison.
+            """
+        )
+
+    st.subheader("Recommended workflow")
+
+    st.markdown(
+        """
+        1. Keep **Manual numeric entry** enabled for precise values.
+        2. Enter one profile first and check the result.
+        3. Save that profile as JSON if you want to reuse it later.
+        4. Increase the number of profiles if you want comparison.
+        5. Use filters only when you want reference personalities visible.
+        6. Export the CSV when you want a structured analysis file.
+        """
+    )
+
+    st.subheader("Profile save and import")
+
+    st.markdown(
+        """
+        Profile saving is currently file-based.
+
+        Each profile can be downloaded as a JSON file and imported again later into any profile form.
+        Once imported, the profile remains editable: you can change the name, adjust scores, and save a new version.
+
+        This design prepares the app for a future authenticated version where users can sign in and retrieve
+        their saved profiles directly from an account.
+        """
+    )
+
+    st.subheader("Input mode")
+
+    st.markdown(
+        """
+        **Manual numeric entry** is enabled by default.
+
+        - Keep it enabled when you want exact score values.
+        - Disable it when you prefer visual adjustment with sliders.
+        """
+    )
+
+    st.subheader("Reference filters")
+
+    st.markdown(
+        """
+        Reference personalities are hidden by default.
+
+        - `None` hides references for a cleaner graph.
+        - `Any` displays references for that filter dimension.
+        - A specific value displays only matching references.
+
+        This keeps the graph readable while still allowing deeper comparison when needed.
+        """
+    )
+
+
 def _render_methodology_tab() -> None:
     st.header("How the analyzer works")
 
@@ -853,12 +959,15 @@ def main() -> None:
     filtered_personalities = _render_reference_filters(personalities)
     export_mode, closest_count, precise_input_mode = _render_sidebar_export_options()
 
-    input_tab, graph_tab, data_tab, methodology_tab = st.tabs(
-        ["Input", "Visualization", "Reference data", "Methodology"]
+    input_tab, guide_tab, graph_tab, data_tab, methodology_tab = st.tabs(
+        ["Input", "Guide", "Visualization", "Reference data", "Methodology"]
     )
 
     with input_tab:
         people = _render_multi_profile_inputs(precise_input_mode)
+
+    with guide_tab:
+        _render_user_guide_tab()
 
     with graph_tab:
         st.header("Political positioning")
