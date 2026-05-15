@@ -16,11 +16,15 @@ outputs/ocr_debug/
 dist/
 build/
 
-
-# Build / packaging artifacts
-*.egg-info/
-dist/
-build/
-
 # Local helper scripts
 commit_*.ps1
+# Virtual environments
+# Python cache
+.pytest_cache/
+# IDE / OS files
+# OCR debug outputs and generated exports
+outputs/*.csv
+outputs/*.png
+!outputs/.gitkeep
+# Streamlit local secrets
+.streamlit/secrets.toml
