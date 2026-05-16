@@ -69,12 +69,12 @@ Expected behavior:
 
 ## Public URL
 
-After the app is deployed, copy the generated Streamlit URL and update the README.
+The app has been deployed and the public URL has been added to the README.
 
 Expected format:
 
 ```text
-https://<your-app-name>.streamlit.app
+https://political-spectrum-analyzer.streamlit.app
 ```
 
 Recommended final commit after deployment:
@@ -115,4 +115,18 @@ This ensures imports such as the following work in the deployed app:
 
 ```python
 from political_spectrum_analyzer.config import PERSONALITIES_CSV_PATH
+```
+## Live deployed app
+
+The Streamlit app is deployed here:
+
+```text
+https://political-spectrum-analyzer.streamlit.app/
+```
+## Deployment URL template
+
+For future deployments or forks, the expected public URL format is:
+
+```text
+https://<your-app-name>.streamlit.app
 ```
