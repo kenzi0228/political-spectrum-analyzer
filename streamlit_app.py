@@ -194,6 +194,19 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "profile_comparison_not_enough": "Add at least two profiles to generate a comparison analysis.",
         "profile_comparison_summary": "Summary",
         "profile_comparison_table": "Comparison table",
+        "tab_about": "About / How to use",
+        "about_header": "About this analyzer",
+        "about_intro": "Political Spectrum Analyzer is an interactive tool for turning political test scores into a readable profile, a graph position, and a comparison against reference personalities.",
+        "about_for_users_title": "What you can do here",
+        "about_for_users_body": "- Create one or several political profiles.\\n- Compare profiles on the same graph.\\n- Save and import profiles as JSON.\\n- Export structured results as CSV.\\n- Read a detailed interpretation based on the strongest and weakest axes.",
+        "about_how_to_use_title": "How to use it",
+        "about_how_to_use_body": "- Choose a language.\\n- Enter scores manually, use sliders, or paste copied Politiscales-style results.\\n- Add more profiles if you want comparison.\\n- Open the visualization tab to read the graph and the detailed analysis.\\n- Use filters only when you want to display reference personalities.\\n- Save individual profiles as JSON if you want to reuse them later.",
+        "about_score_title": "How to read the result",
+        "about_score_body": "The x-axis represents the economic position. The y-axis represents the societal position. The detailed interpretation uses the full 16-axis score set, so it gives more context than the graph alone.",
+        "about_privacy_title": "Data and privacy",
+        "about_privacy_body": "The app does not require an account. Profile saving is file-based: when you download a JSON profile, it stays on your device. The current web version does not store personal profiles in a database.",
+        "about_desktop_title": "Desktop and web versions",
+        "about_desktop_body": "The desktop version includes optional OCR for local screenshots. The Streamlit web version is lighter and uses copied-text import instead, which makes online deployment more reliable.",
         "formula_main_blocks_intro": "The analyzer does not use a black-box model. It builds four weighted blocks, then compares them.",
         "formula_coefficients_note": "A coefficient is a weight. The higher it is, the more that score influences the final coordinate. 0.90 is direct and strong, 0.75 is strong, 0.55 is moderate, and values around 0.20-0.35 are secondary.",
         "formula_left_block_title": "Economic-left block",
@@ -267,6 +280,19 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "profile_comparison_not_enough": "Ajoutez au moins deux profils pour generer une analyse comparative.",
         "profile_comparison_summary": "Resume",
         "profile_comparison_table": "Tableau comparatif",
+        "tab_about": "A propos / Mode d emploi",
+        "about_header": "A propos de cet analyseur",
+        "about_intro": "Political Spectrum Analyzer est un outil interactif qui transforme des scores politiques en profil lisible, en position sur un graphe et en comparaison avec des personnalites de reference.",
+        "about_for_users_title": "Ce que vous pouvez faire",
+        "about_for_users_body": "- Creer un ou plusieurs profils politiques.\\n- Comparer plusieurs profils sur le meme graphe.\\n- Sauvegarder et importer des profils en JSON.\\n- Exporter les resultats en CSV.\\n- Lire une interpretation detaillee basee sur les axes les plus forts et les plus faibles.",
+        "about_how_to_use_title": "Comment l utiliser",
+        "about_how_to_use_body": "- Choisissez une langue.\\n- Entrez les scores manuellement, utilisez les sliders ou collez des resultats de type Politiscales.\\n- Ajoutez plusieurs profils si vous voulez comparer.\\n- Ouvrez l onglet Visualisation pour lire le graphe et l analyse detaillee.\\n- Utilisez les filtres uniquement si vous voulez afficher les personnalites de reference.\\n- Sauvegardez les profils individuellement en JSON si vous voulez les reutiliser.",
+        "about_score_title": "Comment lire le resultat",
+        "about_score_body": "L axe x represente la position economique. L axe y represente la position societale. L interpretation detaillee utilise les 16 scores, ce qui donne plus de contexte que le graphe seul.",
+        "about_privacy_title": "Donnees et confidentialite",
+        "about_privacy_body": "L application ne demande pas de compte. La sauvegarde est basee sur des fichiers : quand vous telechargez un profil JSON, il reste sur votre appareil. La version web actuelle ne stocke pas les profils personnels dans une base de donnees.",
+        "about_desktop_title": "Versions desktop et web",
+        "about_desktop_body": "La version desktop inclut un OCR optionnel pour les captures locales. La version web Streamlit est plus legere et utilise plutot l import par texte copie, ce qui rend le deploiement en ligne plus fiable.",
         "formula_main_blocks_intro": "L'analyseur n'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
         "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
         "formula_left_block_title": "Bloc economique de gauche",
@@ -902,6 +928,30 @@ def _render_profile_comparison_analysis(people, language: str) -> None:
     st.dataframe(pd.DataFrame(build_comparison_rows(comparisons)), use_container_width=True, hide_index=True)
 
 
+def _render_about_tab(language: str) -> None:
+    st.header(_t(language, "about_header"))
+
+    st.markdown(_t(language, "about_intro"))
+
+    st.subheader(_t(language, "about_for_users_title"))
+    st.markdown(_md_text(language, "about_for_users_body"))
+
+    st.subheader(_t(language, "about_how_to_use_title"))
+    st.markdown(_md_text(language, "about_how_to_use_body"))
+
+    st.subheader(_t(language, "about_score_title"))
+    st.markdown(_t(language, "about_score_body"))
+
+    st.subheader(_t(language, "about_privacy_title"))
+    st.info(_t(language, "about_privacy_body"))
+
+    st.subheader(_t(language, "about_desktop_title"))
+    st.markdown(_t(language, "about_desktop_body"))
+
+    _render_politiscales_link(language)
+
+
+
 def _render_methodology_tab(language: str) -> None:
     st.header(_t(language, "methodology_header"))
 
@@ -1117,6 +1167,9 @@ def main() -> None:
         _render_methodology_tab(language)
 
 
+
+    with about_tab:
+        _render_about_tab(language)
 if __name__ == "__main__":
     main()
 # Profile comparison analysis is available through _render_profile_comparison_analysis(people_results, language).
