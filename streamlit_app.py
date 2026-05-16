@@ -21,6 +21,7 @@ from political_spectrum_analyzer.services.analysis_service import analyze_profil
 from political_spectrum_analyzer.services.export_results_service import build_export_rows
 from political_spectrum_analyzer.services.personalities_service import load_personalities
 from political_spectrum_analyzer.services.profile_interpretation_service import interpret_profile
+from political_spectrum_analyzer.services.profile_comparison_service import build_comparison_rows, build_profile_comparisons
 from political_spectrum_analyzer.services.personality_filter_service import (
     NONE_VALUE,
     filter_personalities,
@@ -188,6 +189,11 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "apply_copied_scores": "Apply copied-text scores to this profile",
         "profile_loaded": "Profile loaded. The fields have been filled and remain editable.",
         "profile_save_caption": "Profile save/import is currently local and file-based. A future authenticated version can store profiles per user account.",
+        "profile_comparison_header": "Profile comparison analysis",
+        "profile_comparison_intro": "This section compares profiles pair by pair using their map distance and their raw 16-axis scores.",
+        "profile_comparison_not_enough": "Add at least two profiles to generate a comparison analysis.",
+        "profile_comparison_summary": "Summary",
+        "profile_comparison_table": "Comparison table",
         "formula_main_blocks_intro": "The analyzer does not use a black-box model. It builds four weighted blocks, then compares them.",
         "formula_coefficients_note": "A coefficient is a weight. The higher it is, the more that score influences the final coordinate. 0.90 is direct and strong, 0.75 is strong, 0.55 is moderate, and values around 0.20-0.35 are secondary.",
         "formula_left_block_title": "Economic-left block",
@@ -256,6 +262,11 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "apply_copied_scores": "Appliquer les scores detectes a ce profil",
         "profile_loaded": "Profil charge. Les champs ont ete remplis et restent modifiables.",
         "profile_save_caption": "La sauvegarde est actuellement locale et basee sur des fichiers. Une future version authentifiee pourra stocker les profils par compte utilisateur.",
+        "profile_comparison_header": "Analyse comparative des profils",
+        "profile_comparison_intro": "Cette section compare les profils deux a deux a partir de leur distance sur le graphe et de leurs 16 scores bruts.",
+        "profile_comparison_not_enough": "Ajoutez au moins deux profils pour generer une analyse comparative.",
+        "profile_comparison_summary": "Resume",
+        "profile_comparison_table": "Tableau comparatif",
         "formula_main_blocks_intro": "L'analyseur n'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
         "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
         "formula_left_block_title": "Bloc economique de gauche",
@@ -850,6 +861,47 @@ def _render_user_guide_tab(language: str) -> None:
 
 
 
+def _render_profile_comparison_analysis(people, language: str) -> None:
+    st.subheader(_t(language, "profile_comparison_header"))
+    st.markdown(_t(language, "profile_comparison_intro"))
+
+    comparisons = build_profile_comparisons(people)
+
+    if not comparisons:
+        st.info(_t(language, "profile_comparison_not_enough"))
+        return
+
+    for comparison in comparisons:
+        with st.expander(f"{comparison.first_name} vs {comparison.second_name}", expanded=False):
+            metric_col_1, metric_col_2 = st.columns(2)
+            metric_col_1.metric("Distance", f"{comparison.coordinate_distance:.2f}")
+            metric_col_2.metric("Similarity", f"{comparison.ideological_similarity_score:.1f}/100")
+
+            st.markdown(f"**{_t(language, 'profile_comparison_summary')}**")
+            st.write(comparison.summary)
+
+            if comparison.shared_strong_axes:
+                st.caption("Shared dominant axes: " + ", ".join(comparison.shared_strong_axes))
+
+            if comparison.shared_weak_axes:
+                st.caption("Shared weak axes: " + ", ".join(comparison.shared_weak_axes))
+
+            gap_rows = [
+                {
+                    "axis": gap.axis,
+                    "first_score": gap.first_score,
+                    "second_score": gap.second_score,
+                    "absolute_gap": gap.absolute_gap,
+                }
+                for gap in comparison.largest_score_gaps
+            ]
+
+            st.dataframe(pd.DataFrame(gap_rows), use_container_width=True, hide_index=True)
+
+    st.markdown(f"**{_t(language, 'profile_comparison_table')}**")
+    st.dataframe(pd.DataFrame(build_comparison_rows(comparisons)), use_container_width=True, hide_index=True)
+
+
 def _render_methodology_tab(language: str) -> None:
     st.header(_t(language, "methodology_header"))
 
@@ -1067,3 +1119,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+# Profile comparison analysis is available through _render_profile_comparison_analysis(people_results, language).
