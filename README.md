@@ -1116,3 +1116,5 @@ This keeps the dataset readable as it expands toward 500 profiles.
 
 
 The taxonomy must cover every ideology_family currently used in the reference dataset. This prevents the future 500-profile expansion from introducing untracked or unfilterable ideological labels.
+
+Screenshot assets are stored under `docs/assets/`. The current repository keeps these paths stable so the README gallery and tests remain reproducible; the image files can be replaced by updated real screenshots at any time.
