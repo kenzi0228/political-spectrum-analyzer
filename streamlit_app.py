@@ -21,6 +21,7 @@ from political_spectrum_analyzer.services.analysis_service import analyze_profil
 from political_spectrum_analyzer.services.export_results_service import build_export_rows
 from political_spectrum_analyzer.services.personalities_service import load_personalities
 from political_spectrum_analyzer.services.profile_interpretation_service import interpret_profile
+from political_spectrum_analyzer.services.advanced_profile_interpretation_service import build_advanced_interpretation_rows, build_advanced_profile_interpretation
 from political_spectrum_analyzer.services.profile_comparison_service import build_comparison_rows, build_profile_comparisons
 from political_spectrum_analyzer.services.personality_filter_service import (
     NONE_VALUE,
@@ -207,6 +208,12 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "about_privacy_body": "The app does not require an account. Profile saving is file-based: when you download a JSON profile, it stays on your device. The current web version does not store personal profiles in a database.",
         "about_desktop_title": "Desktop and web versions",
         "about_desktop_body": "The desktop version includes optional OCR for local screenshots. The Streamlit web version is lighter and uses copied-text import instead, which makes online deployment more reliable.",
+        "advanced_interpretation_header": "Advanced profile interpretation",
+        "advanced_interpretation_intro": "This analysis uses the scoring model v2 secondary dimensions to explain the profile beyond its x/y position.",
+        "advanced_interpretation_dominant": "Dominant axes",
+        "advanced_interpretation_weak": "Weak axes",
+        "advanced_interpretation_secondary": "Secondary dimensions",
+        "advanced_interpretation_table": "Advanced interpretation table",
         "formula_main_blocks_intro": "The analyzer does not use a black-box model. It builds four weighted blocks, then compares them.",
         "formula_coefficients_note": "A coefficient is a weight. The higher it is, the more that score influences the final coordinate. 0.90 is direct and strong, 0.75 is strong, 0.55 is moderate, and values around 0.20-0.35 are secondary.",
         "formula_left_block_title": "Economic-left block",
@@ -293,6 +300,12 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "about_privacy_body": "L application ne demande pas de compte. La sauvegarde est basee sur des fichiers : quand vous telechargez un profil JSON, il reste sur votre appareil. La version web actuelle ne stocke pas les profils personnels dans une base de donnees.",
         "about_desktop_title": "Versions desktop et web",
         "about_desktop_body": "La version desktop inclut un OCR optionnel pour les captures locales. La version web Streamlit est plus legere et utilise plutot l import par texte copie, ce qui rend le deploiement en ligne plus fiable.",
+        "advanced_interpretation_header": "Interpretation avancee du profil",
+        "advanced_interpretation_intro": "Cette analyse utilise les dimensions secondaires du modele v2 pour expliquer le profil au-dela de sa position x/y.",
+        "advanced_interpretation_dominant": "Axes dominants",
+        "advanced_interpretation_weak": "Axes faibles",
+        "advanced_interpretation_secondary": "Dimensions secondaires",
+        "advanced_interpretation_table": "Tableau d interpretation avancee",
         "formula_main_blocks_intro": "L'analyseur n'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
         "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
         "formula_left_block_title": "Bloc economique de gauche",
@@ -887,6 +900,43 @@ def _render_user_guide_tab(language: str) -> None:
 
 
 
+def _render_advanced_profile_interpretations(people: list, language: str) -> None:
+    st.subheader(_t(language, "advanced_interpretation_header"))
+    st.markdown(_t(language, "advanced_interpretation_intro"))
+
+    interpretations = [
+        build_advanced_profile_interpretation(person.name, person.scores, person.x, person.y)
+        for person in people
+    ]
+
+    for interpretation in interpretations:
+        with st.expander(interpretation.profile_name, expanded=False):
+            st.write(interpretation.short_summary)
+            st.markdown(interpretation.detailed_summary)
+
+            metric_cols = st.columns(4)
+            metric_cols[0].metric("Coherence", f"{interpretation.coherence_score:.1f}/100")
+            metric_cols[1].metric("Intensity", f"{interpretation.intensity_score:.1f}/100")
+            metric_cols[2].metric("Moderation", f"{interpretation.moderation_score:.1f}/100")
+            metric_cols[3].metric("Radicality", f"{interpretation.radicality_score:.1f}/100")
+
+            st.markdown(f"**{_t(language, 'advanced_interpretation_dominant')}**")
+            st.dataframe(pd.DataFrame([axis.__dict__ for axis in interpretation.dominant_axes]), use_container_width=True, hide_index=True)
+
+            st.markdown(f"**{_t(language, 'advanced_interpretation_weak')}**")
+            st.dataframe(pd.DataFrame([axis.__dict__ for axis in interpretation.weak_axes]), use_container_width=True, hide_index=True)
+
+            st.markdown(f"**{_t(language, 'advanced_interpretation_secondary')}**")
+            st.dataframe(
+                pd.DataFrame([{"dimension": key, "value": value} for key, value in interpretation.secondary_dimensions.items()]),
+                use_container_width=True,
+                hide_index=True,
+            )
+
+    st.markdown(f"**{_t(language, 'advanced_interpretation_table')}**")
+    st.dataframe(pd.DataFrame(build_advanced_interpretation_rows(interpretations)), use_container_width=True, hide_index=True)
+
+
 def _render_profile_comparison_analysis(people, language: str) -> None:
     st.subheader(_t(language, "profile_comparison_header"))
     st.markdown(_t(language, "profile_comparison_intro"))
@@ -1173,3 +1223,6 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 # Profile comparison analysis is available through _render_profile_comparison_analysis(people_results, language).
+
+
+# Intended Streamlit render call: _render_advanced_profile_interpretations(people_results, language)

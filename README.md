@@ -995,3 +995,22 @@ compute_secondary_dimensions(scores)
 ```
 
 Secondary dimensions include `change_method`, `eco_productivism_balance`, `globalism_balance`, `justice_balance`, and `social_change_balance`.
+
+---
+
+
+## Advanced interpretation v2
+
+The advanced interpretation uses the scoring model v2 secondary dimensions.
+
+It adds:
+
+- coherence score;
+- intensity score;
+- moderation score;
+- radicality score;
+- dominant axes;
+- weak axes;
+- secondary dimensions such as `change_method`, `globalism_balance`, `justice_balance`, `eco_productivism_balance`, and `social_change_balance`.
+
+Unlike the graph position, this interpretation does not reduce the profile to x/y coordinates. It uses the full score vector to explain why a profile appears where it does and which ideological tensions define it.

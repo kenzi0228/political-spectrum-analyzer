@@ -496,3 +496,20 @@ y = tanh(0.016 * y_raw) * 4
 ```
 
 This keeps moderate profiles nuanced and prevents extreme raw scores from leaving the graph range.
+
+
+## Advanced interpretation v2
+
+The advanced interpretation uses the scoring model v2 secondary dimensions.
+
+It adds:
+
+- coherence score;
+- intensity score;
+- moderation score;
+- radicality score;
+- dominant axes;
+- weak axes;
+- secondary dimensions such as `change_method`, `globalism_balance`, `justice_balance`, `eco_productivism_balance`, and `social_change_balance`.
+
+Unlike the graph position, this interpretation does not reduce the profile to x/y coordinates. It uses the full score vector to explain why a profile appears where it does and which ideological tensions define it.
