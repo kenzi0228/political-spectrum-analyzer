@@ -943,3 +943,55 @@ This page is written for visitors and explains:
 - the difference between the desktop and web versions.
 
 The goal is to make the web app self-explanatory for users who discover it without reading the full repository documentation.
+
+---
+
+
+## Scoring model v2
+
+The revised positioning model separates ideological coordinates from the method of political change.
+
+`revolution` and `reformisme` are not included in the x/y projection anymore. They describe how political change is pursued, not whether a profile is economically left/right or socially authoritarian/libertarian.
+
+They are preserved as a secondary analytical dimension:
+
+```text
+change_method = revolution - reformisme
+```
+
+Economic coordinate:
+
+```text
+economic_left = communisme * 0.95 + regulation * 0.75 + ecologie * 0.38
+economic_right = capitalisme * 0.95 + laissez_faire * 0.80 + productivisme * 0.32
+x_raw = economic_right - economic_left
+x_raw += 0.10 * (productivisme - ecologie)
+```
+
+Societal coordinate:
+
+```text
+social_libertarian = constructivisme * 0.75 + justice_rehabilitative * 0.70 + progressisme * 0.75 + internationalisme * 0.45
+social_authoritarian = essentialisme * 0.65 + justice_punitive * 0.75 + conservatisme * 0.75 + nationalisme * 0.45
+y_raw = social_authoritarian - social_libertarian
+y_raw += 0.06 * (nationalisme - internationalisme)
+```
+
+Saturation:
+
+```text
+x = tanh(0.016 * x_raw) * 4
+y = tanh(0.016 * y_raw) * 4
+```
+
+This keeps moderate profiles nuanced and prevents extreme raw scores from leaving the graph range.
+
+The model exposes:
+
+```text
+compute_position(scores)
+compute_projection_breakdown(scores)
+compute_secondary_dimensions(scores)
+```
+
+Secondary dimensions include `change_method`, `eco_productivism_balance`, `globalism_balance`, `justice_balance`, and `social_change_balance`.

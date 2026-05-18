@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from political_spectrum_analyzer.model.scoring_model_v2 import compute_position as compute_position_v2, compute_projection_breakdown, compute_secondary_dimensions
+
 from typing import Dict, Tuple
 
 
@@ -110,3 +112,18 @@ def apply_transformations_and_get_coordinates(scores: Dict[str, int]) -> Tuple[f
     y = _scale_to_axis(societal_raw, max_societal_difference)
 
     return x, y
+
+# ---------------------------------------------------------------------------
+# Scoring model v2 public wrappers
+# ---------------------------------------------------------------------------
+
+def compute_position_from_scores_v2(scores):
+    return compute_position_v2(scores)
+
+
+def compute_projection_breakdown_v2(scores):
+    return compute_projection_breakdown(scores)
+
+
+def compute_secondary_dimensions_v2(scores):
+    return compute_secondary_dimensions(scores)

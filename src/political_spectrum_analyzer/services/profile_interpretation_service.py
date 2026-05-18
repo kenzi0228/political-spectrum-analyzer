@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from political_spectrum_analyzer.model.scoring_model_v2 import compute_secondary_dimensions
+
 from dataclasses import dataclass
 from typing import Mapping
 
@@ -286,3 +288,6 @@ def interpret_profile(profile_name: str, scores: Mapping[str, int]) -> ProfileIn
         tension_reading=build_tension_reading(scores),
         profile_highlights=build_profile_highlights(scores),
     )
+
+# Secondary dimensions from scoring model v2 are available for advanced interpretation.
+# Revolution and reformism stay outside x/y placement and are used as qualitative dimensions.
