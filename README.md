@@ -1065,3 +1065,27 @@ docs/reference_dataset_schema_v2.md
 ```
 
 The goal is to prepare the dataset for controlled expansion toward 500 profiles while preserving filtering quality, ideological readability, geographic diversity, and testable schema consistency.
+
+
+---
+
+## Reference dataset quality rules v2
+
+The reference dataset now has explicit quality gates before expansion.
+
+The tests verify:
+
+```text
+- schema v2 columns
+- no region column
+- no duplicate names
+- valid coordinate bounds
+- valid uncertainty values
+- valid confidence levels
+- valid estimated flags
+- populated country/country_codes/century/ideology/role/tags
+- controlled ideology family diversity
+- minimum diversity across countries, centuries, and roles
+```
+
+These rules protect the dataset before expanding it progressively toward 500 reference profiles.
