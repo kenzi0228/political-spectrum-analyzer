@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from political_spectrum_analyzer.services.advanced_profile_comparison_service import build_advanced_comparison_rows, build_advanced_profile_comparisons, build_similarity_matrix, compare_profiles_advanced
+
 from dataclasses import dataclass
 from itertools import combinations
 from math import sqrt

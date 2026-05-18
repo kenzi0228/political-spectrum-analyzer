@@ -23,6 +23,7 @@ from political_spectrum_analyzer.services.personalities_service import load_pers
 from political_spectrum_analyzer.services.profile_interpretation_service import interpret_profile
 from political_spectrum_analyzer.services.advanced_profile_interpretation_service import build_advanced_interpretation_rows, build_advanced_profile_interpretation
 from political_spectrum_analyzer.services.profile_comparison_service import build_comparison_rows, build_profile_comparisons
+from political_spectrum_analyzer.services.advanced_profile_comparison_service import build_advanced_comparison_rows, build_advanced_profile_comparisons, build_similarity_matrix
 from political_spectrum_analyzer.services.personality_filter_service import (
     NONE_VALUE,
     filter_personalities,
@@ -214,6 +215,12 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "advanced_interpretation_weak": "Weak axes",
         "advanced_interpretation_secondary": "Secondary dimensions",
         "advanced_interpretation_table": "Advanced interpretation table",
+        "advanced_comparison_header": "Advanced profile comparison",
+        "advanced_comparison_intro": "This comparison uses graph distance, economic similarity, societal similarity and scoring-model-v2 secondary dimensions.",
+        "advanced_comparison_not_enough": "Add at least two profiles to generate advanced comparison.",
+        "advanced_comparison_matrix": "Similarity matrix",
+        "advanced_comparison_table": "Advanced comparison table",
+        "advanced_comparison_gaps": "Largest axis and secondary-dimension gaps",
         "formula_main_blocks_intro": "The analyzer does not use a black-box model. It builds four weighted blocks, then compares them.",
         "formula_coefficients_note": "A coefficient is a weight. The higher it is, the more that score influences the final coordinate. 0.90 is direct and strong, 0.75 is strong, 0.55 is moderate, and values around 0.20-0.35 are secondary.",
         "formula_left_block_title": "Economic-left block",
@@ -306,6 +313,12 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "advanced_interpretation_weak": "Axes faibles",
         "advanced_interpretation_secondary": "Dimensions secondaires",
         "advanced_interpretation_table": "Tableau d interpretation avancee",
+        "advanced_comparison_header": "Comparaison avancee des profils",
+        "advanced_comparison_intro": "Cette comparaison utilise la distance sur le graphe, la similarite economique, la similarite societale et les dimensions secondaires du modele v2.",
+        "advanced_comparison_not_enough": "Ajoutez au moins deux profils pour generer une comparaison avancee.",
+        "advanced_comparison_matrix": "Matrice de similarite",
+        "advanced_comparison_table": "Tableau de comparaison avancee",
+        "advanced_comparison_gaps": "Principaux ecarts par axe et dimension secondaire",
         "formula_main_blocks_intro": "L'analyseur n'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
         "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
         "formula_left_block_title": "Bloc economique de gauche",
@@ -937,6 +950,67 @@ def _render_advanced_profile_interpretations(people: list, language: str) -> Non
     st.dataframe(pd.DataFrame(build_advanced_interpretation_rows(interpretations)), use_container_width=True, hide_index=True)
 
 
+def _render_advanced_profile_comparisons(people: list, language: str) -> None:
+    st.subheader(_t(language, "advanced_comparison_header"))
+    st.markdown(_t(language, "advanced_comparison_intro"))
+
+    comparisons = build_advanced_profile_comparisons(people)
+
+    if not comparisons:
+        st.info(_t(language, "advanced_comparison_not_enough"))
+        return
+
+    st.markdown(f"**{_t(language, 'advanced_comparison_matrix')}**")
+    st.dataframe(
+        pd.DataFrame(build_similarity_matrix(people)),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    for comparison in comparisons:
+        with st.expander(f"{comparison.first_name} vs {comparison.second_name}", expanded=False):
+            metric_cols = st.columns(4)
+            metric_cols[0].metric("Global", f"{comparison.global_similarity_score:.1f}/100")
+            metric_cols[1].metric("Economic", f"{comparison.economic_similarity_score:.1f}/100")
+            metric_cols[2].metric("Societal", f"{comparison.societal_similarity_score:.1f}/100")
+            metric_cols[3].metric("Secondary", f"{comparison.secondary_similarity_score:.1f}/100")
+
+            st.write(comparison.summary)
+            st.caption(comparison.detailed_summary)
+
+            st.markdown(f"**{_t(language, 'advanced_comparison_gaps')}**")
+
+            axis_gap_rows = [
+                {
+                    "axis": gap.axis,
+                    "first_score": gap.first_score,
+                    "second_score": gap.second_score,
+                    "absolute_gap": gap.absolute_gap,
+                }
+                for gap in comparison.largest_axis_gaps
+            ]
+            st.dataframe(pd.DataFrame(axis_gap_rows), use_container_width=True, hide_index=True)
+
+            secondary_gap_rows = [
+                {
+                    "dimension": gap.dimension,
+                    "first_value": gap.first_value,
+                    "second_value": gap.second_value,
+                    "absolute_gap": gap.absolute_gap,
+                }
+                for gap in comparison.secondary_dimension_gaps
+            ]
+            st.dataframe(pd.DataFrame(secondary_gap_rows), use_container_width=True, hide_index=True)
+
+    st.markdown(f"**{_t(language, 'advanced_comparison_table')}**")
+    st.dataframe(
+        pd.DataFrame(build_advanced_comparison_rows(comparisons)),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+
+
 def _render_profile_comparison_analysis(people, language: str) -> None:
     st.subheader(_t(language, "profile_comparison_header"))
     st.markdown(_t(language, "profile_comparison_intro"))
@@ -1226,3 +1300,5 @@ if __name__ == "__main__":
 
 
 # Intended Streamlit render call: _render_advanced_profile_interpretations(people_results, language)
+
+# Intended Streamlit render call: _render_advanced_profile_comparisons(people_results, language)

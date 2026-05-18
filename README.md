@@ -1014,3 +1014,25 @@ It adds:
 - secondary dimensions such as `change_method`, `globalism_balance`, `justice_balance`, `eco_productivism_balance`, and `social_change_balance`.
 
 Unlike the graph position, this interpretation does not reduce the profile to x/y coordinates. It uses the full score vector to explain why a profile appears where it does and which ideological tensions define it.
+
+---
+
+
+## Advanced comparison v2
+
+Advanced comparison v2 compares profiles beyond their two-dimensional position.
+
+It adds:
+
+- global map similarity;
+- economic similarity;
+- societal similarity;
+- secondary-dimension similarity;
+- similarity matrix;
+- shared dominant axes;
+- shared weak axes;
+- largest axis gaps;
+- largest secondary-dimension gaps;
+- a short summary and a detailed comparison summary.
+
+The comparison uses scoring model v2 secondary dimensions, including `change_method`, `eco_productivism_balance`, `globalism_balance`, `justice_balance`, and `social_change_balance`.
