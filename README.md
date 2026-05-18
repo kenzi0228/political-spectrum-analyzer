@@ -1138,3 +1138,21 @@ The reference dataset has been expanded from 250 to 350 political references.
 This stage adds more labor organizers, feminist theorists, civil-rights activists, anti-colonial thinkers, ecological references, religious-political thinkers, liberal theorists, socialist writers, and conservative or communitarian references.
 
 The expansion keeps schema v2 fields and quality rules active before moving toward 425 and 500 profiles.
+
+
+---
+## Reference dataset quality report
+
+The repository includes an automatically generated reference dataset quality report:
+
+```text
+docs/reference_dataset_quality_report.md
+```
+
+A machine-readable summary is also available:
+
+```text
+data/reference/reference_dataset_summary.csv
+```
+
+These files track dataset size, taxonomy coverage, confidence distribution, quadrant balance, role diversity, and country-code coverage.
