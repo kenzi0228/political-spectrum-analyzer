@@ -25,6 +25,7 @@ from political_spectrum_analyzer.services.advanced_profile_interpretation_servic
 from political_spectrum_analyzer.services.profile_comparison_service import build_comparison_rows, build_profile_comparisons
 from political_spectrum_analyzer.services.advanced_profile_comparison_service import build_advanced_comparison_rows, build_advanced_profile_comparisons, build_similarity_matrix
 from political_spectrum_analyzer.services.personality_filter_service import (
+
     NONE_VALUE,
     filter_personalities,
     get_unique_values,
@@ -950,6 +951,76 @@ def _render_advanced_profile_interpretations(people: list, language: str) -> Non
     st.dataframe(pd.DataFrame(build_advanced_interpretation_rows(interpretations)), use_container_width=True, hide_index=True)
 
 
+def _safe_reference_field_value(item, field_name: str):
+    if isinstance(item, dict):
+        return item.get(field_name, "")
+    return getattr(item, field_name, "")
+
+
+def _reference_multiselect_options(reference_items, field_name: str) -> list[str]:
+    values = set()
+
+    for item in reference_items:
+        for value in split_filter_values(_safe_reference_field_value(item, field_name)):
+            if value:
+                values.add(value)
+
+    return sorted(values)
+
+
+def _render_reference_multiselect_filters(reference_items, language: str):
+    st.markdown("### Reference multi-select filters")
+
+    country_values = st.multiselect(
+        "Countries",
+        options=_reference_multiselect_options(reference_items, "country"),
+        default=[],
+        help="Optional multi-selection. Empty means all countries.",
+    )
+
+    country_code_values = st.multiselect(
+        "Country codes",
+        options=_reference_multiselect_options(reference_items, "country_codes"),
+        default=[],
+        help="Optional multi-selection. Empty means all country codes.",
+    )
+
+    ideology_values = st.multiselect(
+        "Ideology families",
+        options=_reference_multiselect_options(reference_items, "ideology_family"),
+        default=[],
+        help="Optional multi-selection. Empty means all ideology families.",
+    )
+
+    role_values = st.multiselect(
+        "Role categories",
+        options=_reference_multiselect_options(reference_items, "role_category"),
+        default=[],
+        help="Optional multi-selection. Empty means all role categories.",
+    )
+
+    century_values = st.multiselect(
+        "Centuries",
+        options=_reference_multiselect_options(reference_items, "century"),
+        default=[],
+        help="Optional multi-selection. Empty means all periods.",
+    )
+
+    filtered_reference_items = filter_reference_items_multiselect(
+        reference_items,
+        countries=country_values,
+        country_codes=country_code_values,
+        ideology_families=ideology_values,
+        role_categories=role_values,
+        centuries=century_values,
+    )
+
+    st.caption(f"{len(filtered_reference_items)} reference profiles match the current multi-select filters.")
+
+    return filtered_reference_items
+
+
+
 def _render_advanced_profile_comparisons(people: list, language: str) -> None:
     st.subheader(_t(language, "advanced_comparison_header"))
     st.markdown(_t(language, "advanced_comparison_intro"))
@@ -1302,3 +1373,5 @@ if __name__ == "__main__":
 # Intended Streamlit render call: _render_advanced_profile_interpretations(people_results, language)
 
 # Intended Streamlit render call: _render_advanced_profile_comparisons(people_results, language)
+
+# Reference multi-select filters are available through _render_reference_multiselect_filters(reference_personalities_for_filters, language).

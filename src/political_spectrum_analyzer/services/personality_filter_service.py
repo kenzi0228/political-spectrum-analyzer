@@ -109,3 +109,92 @@ def filter_personalities(
         filtered.append(personality)
 
     return filtered
+
+# ---------------------------------------------------------------------------
+# Multi-select reference filtering helpers
+# ---------------------------------------------------------------------------
+
+def split_filter_values(value):
+    """Split semicolon/comma-separated filter values into normalized tokens."""
+
+    if value is None:
+        return []
+
+    if isinstance(value, (list, tuple, set)):
+        items = []
+        for item in value:
+            items.extend(split_filter_values(item))
+        return items
+
+    return [
+        item.strip()
+        for item in str(value).replace(",", ";").split(";")
+        if item and item.strip()
+    ]
+
+
+def _get_field_value(item, field_name):
+    if isinstance(item, dict):
+        return item.get(field_name, "")
+    return getattr(item, field_name, "")
+
+
+def matches_multiselect_filter(item, field_name, selected_values):
+    """Return True when an item matches a multi-select filter."""
+
+    selected = [str(value).strip() for value in (selected_values or []) if str(value).strip()]
+
+    if not selected:
+        return True
+
+    lowered_selected = {value.lower() for value in selected}
+
+    if lowered_selected & {"any", "all", "tous", "all values"}:
+        return True
+
+    field_value = _get_field_value(item, field_name)
+    field_tokens = {value.lower() for value in split_filter_values(field_value)}
+
+    if "none" in lowered_selected:
+        return not field_tokens
+
+    return bool(field_tokens & lowered_selected)
+
+
+def filter_reference_items_multiselect(
+    items,
+    *,
+    countries=None,
+    country_codes=None,
+    ideology_families=None,
+    ideology_subtypes=None,
+    role_categories=None,
+    centuries=None,
+    display_groups=None,
+    tags=None,
+):
+    """Filter reference personalities using independent multi-select filters."""
+
+    filtered = []
+
+    for item in items:
+        if not matches_multiselect_filter(item, "country", countries):
+            continue
+        if not matches_multiselect_filter(item, "country_codes", country_codes):
+            continue
+        if not matches_multiselect_filter(item, "ideology_family", ideology_families):
+            continue
+        if not matches_multiselect_filter(item, "ideology_subtype", ideology_subtypes):
+            continue
+        if not matches_multiselect_filter(item, "role_category", role_categories):
+            continue
+        if not matches_multiselect_filter(item, "century", centuries):
+            continue
+        if not matches_multiselect_filter(item, "display_group", display_groups):
+            continue
+        if not matches_multiselect_filter(item, "tags", tags):
+            continue
+
+        filtered.append(item)
+
+    return filtered

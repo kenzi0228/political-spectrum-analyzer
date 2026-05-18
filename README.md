@@ -1036,3 +1036,32 @@ It adds:
 - a short summary and a detailed comparison summary.
 
 The comparison uses scoring model v2 secondary dimensions, including `change_method`, `eco_productivism_balance`, `globalism_balance`, `justice_balance`, and `social_change_balance`.
+
+
+---
+
+## Reference dataset schema v2
+
+The reference dataset now includes normalized metadata fields designed for future expansion beyond 150 personalities.
+
+This schema intentionally avoids a `region` column. Filtering should rely on country, country codes, period, role category, ideology family, ideology subtype, and tags.
+
+New fields include:
+
+```text
+country_codes
+century
+ideology_subtype
+role_category
+tags
+```
+
+Supporting files:
+
+```text
+data/reference/ideology_taxonomy.csv
+data/reference/reference_sources.csv
+docs/reference_dataset_schema_v2.md
+```
+
+The goal is to prepare the dataset for controlled expansion toward 500 profiles while preserving filtering quality, ideological readability, geographic diversity, and testable schema consistency.
