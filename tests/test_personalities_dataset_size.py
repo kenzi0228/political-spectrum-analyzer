@@ -5,7 +5,7 @@ from political_spectrum_analyzer.services.personalities_service import load_pers
 
 def test_personalities_dataset_has_150_entries():
     personalities = load_personalities(PERSONALITIES_CSV_PATH)
-    assert len(personalities) == 250
+    assert len(personalities) == 350
 
 
 def test_personalities_dataset_has_unique_names():

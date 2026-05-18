@@ -43,7 +43,7 @@ def _split_multi(value: str) -> list[str]:
 def test_quality_rules_v2_dataset_has_expected_size_for_current_stage():
     rows = _rows()
 
-    assert len(rows) == 250
+    assert len(rows) == 350
 
 
 def test_quality_rules_v2_required_columns_exist_and_region_is_absent():
