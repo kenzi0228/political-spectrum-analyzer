@@ -1089,3 +1089,30 @@ The tests verify:
 ```
 
 These rules protect the dataset before expanding it progressively toward 500 reference profiles.
+
+
+---
+
+## Ideology taxonomy v2
+
+The reference dataset now includes a controlled ideology taxonomy.
+
+Files:
+
+```text
+data/reference/ideology_taxonomy.csv
+data/reference/ideology_aliases.csv
+docs/ideology_taxonomy.md
+```
+
+The taxonomy separates broad filterable families from precise subtypes:
+
+```text
+ideology_family  = broad family used for filtering
+ideology_subtype = precise label used for nuance
+```
+
+This keeps the dataset readable as it expands toward 500 profiles.
+
+
+The taxonomy must cover every ideology_family currently used in the reference dataset. This prevents the future 500-profile expansion from introducing untracked or unfilterable ideological labels.

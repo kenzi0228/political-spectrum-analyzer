@@ -1,0 +1,88 @@
+alias,ideology_family
+anarchism,Anarchism
+anarchist,Anarchism
+anarcho,Anarchism
+anti-colonial,Anti-colonialism
+anti-imperial,Anti-colonialism
+anticolonial,Anti-colonialism
+decolonial,Anti-colonialism
+baath,Arab nationalism
+baathism,Arab nationalism
+nasserism,Arab nationalism
+pan-arab,Arab nationalism
+authoritarian,Authoritarianism
+autocracy,Authoritarianism
+dictatorship,Authoritarianism
+strongman,Authoritarianism
+centrism,Centrism
+centrist,Centrism
+moderate,Centrism
+third way,Centrism
+communism,Communism
+communist,Communism
+leninism,Communism
+maoism,Communism
+marxism,Communism
+stalinism,Communism
+trotskyism,Communism
+conservatism,Conservatism
+conservative,Conservatism
+gaullist,Conservatism
+traditionalist,Conservatism
+critical theory,Critical theory
+degrowth,Ecologism
+ecologist,Ecologism
+ecology,Ecologism
+environmentalism,Ecologism
+green,Ecologism
+fascism,Fascism
+fascist,Fascism
+national socialism,Fascism
+nazi,Fascism
+nazism,Fascism
+feminism,Feminism
+feminist,Feminism
+gender equality,Feminism
+classical liberal,Liberalism
+liberal,Liberalism
+liberalism,Liberalism
+neoliberal,Liberalism
+libertarian,Libertarianism
+libertarianism,Libertarianism
+minarchism,Libertarianism
+objectivism,Libertarianism
+military leadership,Military leadership
+monarchism,Monarchism
+monarchist,Monarchism
+royalism,Monarchism
+royalist,Monarchism
+nationalism,Nationalism
+nationalist,Nationalism
+sovereignist,Nationalism
+sovereigntist,Nationalism
+other,Other
+political realism,Political realism
+christian democracy,Political religion
+islamism,Political religion
+political islam,Political religion
+religious politics,Political religion
+theocracy,Political religion
+anti-elite,Populism
+populism,Populism
+populist,Populism
+progressive,Progressivism
+progressivism,Progressivism
+civic republican,Republicanism
+republican,Republicanism
+republicanism,Republicanism
+laborism,Social democracy
+labourism,Social democracy
+social democracy,Social democracy
+social democrat,Social democracy
+democratic socialist,Socialism
+socialism,Socialism
+socialist,Socialism
+expert government,Technocracy
+technical planning,Technocracy
+technocracy,Technocracy
+technocrat,Technocracy
