@@ -14,7 +14,7 @@ def _country_tokens(country: str | None) -> set[str]:
 
 def test_reference_dataset_has_exactly_150_entries():
     personalities = load_personalities(PERSONALITIES_CSV_PATH)
-    assert len(personalities) == 150
+    assert len(personalities) == 250
 
 
 def test_reference_dataset_names_are_unique():

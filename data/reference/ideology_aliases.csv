@@ -1,4 +1,5 @@
 alias,ideology_family
+agrarianism,Agrarianism
 anarchism,Anarchism
 anarchist,Anarchism
 anarcho,Anarchism
@@ -18,6 +19,7 @@ centrism,Centrism
 centrist,Centrism
 moderate,Centrism
 third way,Centrism
+christian democracy,Christian democracy
 communism,Communism
 communist,Communism
 leninism,Communism
@@ -43,6 +45,7 @@ nazism,Fascism
 feminism,Feminism
 feminist,Feminism
 gender equality,Feminism
+institutionalism,Institutionalism
 classical liberal,Liberalism
 liberal,Liberalism
 liberalism,Liberalism
@@ -85,3 +88,4 @@ expert government,Technocracy
 technical planning,Technocracy
 technocracy,Technocracy
 technocrat,Technocracy
+ideology_family,ideology_family

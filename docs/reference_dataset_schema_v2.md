@@ -42,7 +42,7 @@ data/reference/reference_sources.csv
 
 ## Design principles
 
-- Preserve the 150-profile stable dataset before expanding it.
+- The dataset expansion stage now targets 250 reference profiles.
 - Avoid a `region` field to keep the schema neutral.
 - Use `country` and `country_codes` for geographic filtering.
 - Keep ideology families general enough for filtering.
@@ -60,3 +60,8 @@ data/reference/reference_sources.csv
 ```
 
 Each expansion step should preserve quality tests for geography, period, ideology diversity, confidence, and coordinate bounds.
+
+
+## Dataset expansion to 250 profiles
+
+The reference dataset has been expanded from 150 to 250 profiles while preserving schema v2 and quality-gate consistency.

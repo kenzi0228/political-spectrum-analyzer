@@ -401,7 +401,7 @@ The normalization keeps the graph readable. Strong profiles move toward the edge
 
 ## 8. Reference dataset
 
-The project includes a reference dataset of 150 personalities.
+The project includes a reference dataset of 250 personalities.
 
 Each reference profile contains:
 
@@ -1042,7 +1042,7 @@ The comparison uses scoring model v2 secondary dimensions, including `change_met
 
 ## Reference dataset schema v2
 
-The reference dataset now includes normalized metadata fields designed for future expansion beyond 150 personalities.
+The reference dataset now includes normalized metadata fields designed for future expansion beyond 250 personalities.
 
 This schema intentionally avoids a `region` column. Filtering should rely on country, country codes, period, role category, ideology family, ideology subtype, and tags.
 
@@ -1118,3 +1118,12 @@ This keeps the dataset readable as it expands toward 500 profiles.
 The taxonomy must cover every ideology_family currently used in the reference dataset. This prevents the future 500-profile expansion from introducing untracked or unfilterable ideological labels.
 
 Screenshot assets are stored under `docs/assets/`. The current repository keeps these paths stable so the README gallery and tests remain reproducible; the image files can be replaced by updated real screenshots at any time.
+
+
+---
+
+## Reference dataset expansion to 250 profiles
+
+The reference dataset has been expanded from 150 to 250 political references.
+
+The expansion keeps schema v2 fields and quality rules active before moving toward 350, 425, and 500 profiles.
