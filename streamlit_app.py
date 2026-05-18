@@ -1363,6 +1363,8 @@ def main() -> None:
 
 
 
+    # Runtime fallback: older layouts may render the About section outside st.tabs.
+    about_tab = locals().get('about_tab', st.container())
     with about_tab:
         _render_about_tab(language)
 if __name__ == "__main__":
