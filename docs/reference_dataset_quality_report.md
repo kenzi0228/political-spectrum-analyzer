@@ -1,12 +1,10 @@
 # Reference dataset quality report
 
-Generated: 2026-05-18 23:16 UTC
+Generated: 2026-05-19 08:35 UTC
 
 ## Scope
 
-This report summarizes the current reference dataset used by the Political Spectrum Analyzer.
-
-Current dataset size: **350 profiles**.
+Current dataset size: **425 profiles**.
 
 ## Quality gates
 
@@ -14,9 +12,9 @@ Current dataset size: **350 profiles**.
 |---|---|
 | Dataset readable as CSV | Passed |
 | Coordinates convertible to numeric values | Passed |
+| Duplicate CSV header rows removed | Passed |
 | Taxonomy coverage checked | Passed |
-| Duplicate-name control covered by tests | Passed |
-| Country-code diversity tracked | Passed |
+| Gender metadata normalized | Passed |
 | Role-category diversity tracked | Passed |
 | Confidence distribution tracked | Passed |
 
@@ -24,61 +22,41 @@ Current dataset size: **350 profiles**.
 
 | Metric | Value |
 |---|---|
-| Profiles | 350 |
-| Ideology families used | 29 |
-| Ideology families in taxonomy | 31 |
-| Missing taxonomy families | 0 |
-| Country codes represented | 82 |
-| Role categories represented | 15 |
-| Century buckets represented | 7 |
-| Low-confidence share | 15.71% |
-| Average uncertainty on x | 0.681 |
-| Average uncertainty on y | 0.632 |
+| Profiles | 425 |
+| Ideology families used | 30 |
+| Country codes represented | 93 |
+| Role categories represented | 16 |
+| Male-coded profiles | 180 |
+| Female-coded profiles | 72 |
+| Unknown-gender profiles | 173 |
+| Low-confidence share | 13.88% |
+| Average uncertainty on x | 0.698 |
+| Average uncertainty on y | 0.650 |
 
-## Missing taxonomy families
-
-None
-
-## Ideology family distribution
+## Gender distribution
 
 | Item | Count |
 |---|---|
-| Socialism | 62 |
-| Liberalism | 43 |
-| Conservatism | 30 |
-| Nationalism | 25 |
-| Feminism | 22 |
-| Communism | 19 |
-| Anti-colonialism | 17 |
-| Ecologism | 16 |
-| Social democracy | 15 |
-| Progressivism | 13 |
-| Republicanism | 12 |
-| Populism | 11 |
-| Other | 10 |
-| Political religion | 10 |
-| Anarchism | 9 |
-| Laborism | 7 |
-| Authoritarianism | 6 |
-| Centrism | 5 |
-| Fascism | 4 |
-| Post-structuralism | 3 |
+| male | 180 |
+| unknown | 173 |
+| female | 72 |
 
 
 ## Role-category distribution
 
 | Item | Count |
 |---|---|
-| Thinker | 81 |
-| Head of state | 62 |
-| Activist | 39 |
-| Writer | 27 |
-| Revolutionary | 26 |
-| Head of government | 25 |
-| Politician | 25 |
+| Thinker | 97 |
+| Head of state | 70 |
+| Activist | 52 |
+| Politician | 37 |
+| Writer | 34 |
+| Head of government | 31 |
+| Revolutionary | 29 |
+| Authoritarian ruler | 22 |
 | Political Leader | 21 |
-| Authoritarian ruler | 20 |
 | Economist | 15 |
+| Jurist | 8 |
 | Chancellor | 5 |
 | King | 1 |
 | Crown Prince | 1 |
@@ -86,68 +64,74 @@ None
 | Historical Leader | 1 |
 
 
-## Confidence distribution
+## Ideology family distribution
 
 | Item | Count |
 |---|---|
-| medium | 275 |
-| low | 55 |
-| high | 20 |
-
-
-## Quadrant distribution
-
-| Item | Count |
-|---|---|
-| left_libertarian | 179 |
-| right_authoritarian | 84 |
-| left_authoritarian | 58 |
-| right_libertarian | 29 |
+| Socialism | 65 |
+| Liberalism | 63 |
+| Conservatism | 33 |
+| Nationalism | 29 |
+| Feminism | 28 |
+| Anti-colonialism | 25 |
+| Social democracy | 25 |
+| Communism | 22 |
+| Ecologism | 21 |
+| Progressivism | 18 |
+| Republicanism | 13 |
+| Populism | 12 |
+| Other | 10 |
+| Anarchism | 10 |
+| Political religion | 10 |
+| Authoritarianism | 7 |
+| Laborism | 7 |
+| Centrism | 5 |
+| Fascism | 4 |
+| Institutionalism | 3 |
 
 
 ## Country-code coverage
 
 | Item | Count |
 |---|---|
-| USA | 91 |
-| GBR | 41 |
-| FRA | 39 |
+| USA | 114 |
+| GBR | 45 |
+| FRA | 45 |
 | DEU | 23 |
 | ITA | 12 |
-| ESP | 11 |
-| IND | 11 |
+| ESP | 12 |
+| IND | 12 |
 | DZA | 10 |
+| ZAF | 9 |
 | RUS | 9 |
-| BRA | 8 |
+| BRA | 9 |
+| CAN | 9 |
 | MEX | 8 |
 | EGY | 7 |
+| PAK | 6 |
+| IRN | 6 |
+| NGA | 6 |
 | SUN | 5 |
 | CHN | 5 |
+| ARG | 5 |
 | UNK | 5 |
-| PAK | 5 |
 | PSE | 5 |
 | AUT | 4 |
-| ARG | 4 |
 | CUB | 4 |
 | GRC | 4 |
-| IRN | 4 |
-| ZAF | 3 |
+| KEN | 4 |
+| PHL | 4 |
+| CHL | 3 |
+| IRL | 3 |
 | POL | 3 |
-| HUN | 3 |
-| VEN | 3 |
-| TUN | 3 |
-| KEN | 3 |
-| CAN | 3 |
-| COL | 3 |
 
 
-## Notes for future expansion
+## Quadrant distribution
 
-The next expansion stages should focus on:
+| Item | Count |
+|---|---|
+| left_libertarian | 237 |
+| right_authoritarian | 88 |
+| left_authoritarian | 65 |
+| right_libertarian | 35 |
 
-- keeping exact schema v2 compatibility;
-- improving coordinate confidence for low-confidence profiles;
-- adding more non-Western references without introducing a region column;
-- maintaining explicit taxonomy coverage for every `ideology_family`;
-- avoiding duplicate names and duplicate CSV header rows;
-- documenting any high-uncertainty placements through `ux`, `uy`, and `notes`.

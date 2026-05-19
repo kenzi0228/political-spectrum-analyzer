@@ -1,4 +1,8 @@
 from __future__ import annotations
+# Reference chart tooltip contract: display_group is descriptive hover metadata, while role_category is the user-facing filter dimension.
+# Role category is the user-facing reference filter.
+REFERENCE_TOOLTIP_FIELDS = ['name', 'display_group', 'role_category', 'ideology_family', 'ideology_subtype']
+
 
 import sys
 from pathlib import Path

@@ -42,7 +42,7 @@ data/reference/reference_sources.csv
 
 ## Design principles
 
-- The dataset expansion stage now targets 350 reference profiles.
+- The dataset expansion stage now targets 425 reference profiles.
 - Avoid a `region` field to keep the schema neutral.
 - Use `country` and `country_codes` for geographic filtering.
 - Keep ideology families general enough for filtering.
@@ -53,8 +53,8 @@ data/reference/reference_sources.csv
 ## Expansion target
 
 ```text
-350 profiles
-350 profiles
+425 profiles
+425 profiles
 425 profiles
 500 profiles
 ```
@@ -62,6 +62,11 @@ data/reference/reference_sources.csv
 Each expansion step should preserve quality tests for geography, period, ideology diversity, confidence, and coordinate bounds.
 
 
-## Dataset expansion to 350 profiles
+## Dataset expansion to 425 profiles
 
-The reference dataset has been expanded from 150 to 350 profiles while preserving schema v2 and quality-gate consistency.
+The reference dataset has been expanded from 150 to 425 profiles while preserving schema v2 and quality-gate consistency.
+
+
+## Gender metadata
+
+The reference dataset includes a `gender` column with normalized values `male`, `female`, or `unknown`. It is used for dataset auditing and optional future UI filtering.

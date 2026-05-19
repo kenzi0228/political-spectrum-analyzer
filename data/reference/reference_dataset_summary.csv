@@ -1,22 +1,24 @@
 metric,value,description
-profile_count,350,Total number of reference profiles.
-ideology_family_count,29,Number of ideology families used by profiles.
-taxonomy_family_count,31,Number of ideology families covered by the taxonomy.
+profile_count,425,Total number of reference profiles.
+ideology_family_count,30,Number of ideology families used by profiles.
+taxonomy_family_count,32,Number of ideology families covered by the taxonomy.
 missing_taxonomy_family_count,0,Profile ideology families missing from taxonomy.
-role_category_count,15,Number of role categories represented.
-country_code_count,82,Number of country codes represented.
+role_category_count,16,Number of role categories represented.
+country_code_count,93,Number of country codes represented.
 century_count,7,Number of century buckets represented.
-alias_count,94,Number of ideology alias mappings.
-estimated_true_count,350,Profiles marked as estimated.
-high_confidence_count,20,Profiles marked as high confidence.
-medium_confidence_count,275,Profiles marked as medium confidence.
-low_confidence_count,55,Profiles marked as low confidence.
-low_confidence_share_percent,15.71,Share of low-confidence profiles.
-average_x,-0.775,Average economic coordinate.
-average_y,-0.389,Average social-authority coordinate.
-average_ux,0.681,Average x-axis uncertainty.
-average_uy,0.632,Average y-axis uncertainty.
-left_libertarian_count,179,Profiles in the left-libertarian quadrant.
-left_authoritarian_count,58,Profiles in the left-authoritarian quadrant.
-right_libertarian_count,29,Profiles in the right-libertarian quadrant.
-right_authoritarian_count,84,Profiles in the right-authoritarian quadrant.
+alias_count,95,Number of ideology alias mappings.
+male_count,180,Profiles coded as male.
+female_count,72,Profiles coded as female.
+unknown_gender_count,173,Profiles coded as unknown gender.
+high_confidence_count,22,Profiles marked as high confidence.
+medium_confidence_count,344,Profiles marked as medium confidence.
+low_confidence_count,59,Profiles marked as low confidence.
+low_confidence_share_percent,13.88,Share of low-confidence profiles.
+average_x,-0.824,Average economic coordinate.
+average_y,-0.540,Average social-authority coordinate.
+average_ux,0.698,Average x-axis uncertainty.
+average_uy,0.650,Average y-axis uncertainty.
+left_libertarian_count,237,Profiles in the left-libertarian quadrant.
+left_authoritarian_count,65,Profiles in the left-authoritarian quadrant.
+right_libertarian_count,35,Profiles in the right-libertarian quadrant.
+right_authoritarian_count,88,Profiles in the right-authoritarian quadrant.

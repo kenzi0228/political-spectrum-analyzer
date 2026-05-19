@@ -401,7 +401,7 @@ The normalization keeps the graph readable. Strong profiles move toward the edge
 
 ## 8. Reference dataset
 
-The project includes a reference dataset of 350 personalities.
+The project includes a reference dataset of 425 personalities.
 
 Each reference profile contains:
 
@@ -1042,7 +1042,7 @@ The comparison uses scoring model v2 secondary dimensions, including `change_met
 
 ## Reference dataset schema v2
 
-The reference dataset now includes normalized metadata fields designed for future expansion beyond 350 personalities.
+The reference dataset now includes normalized metadata fields designed for future expansion beyond 425 personalities.
 
 This schema intentionally avoids a `region` column. Filtering should rely on country, country codes, period, role category, ideology family, ideology subtype, and tags.
 
@@ -1124,7 +1124,7 @@ Screenshot assets are stored under `docs/assets/`. The current repository keeps 
 
 ## Reference dataset expansion to 250 profiles
 
-The reference dataset has been expanded from 150 to 350 political references.
+The reference dataset has been expanded from 150 to 425 political references.
 
 The expansion keeps schema v2 fields and quality rules active before moving toward 350, 425, and 500 profiles.
 
@@ -1133,7 +1133,7 @@ The expansion keeps schema v2 fields and quality rules active before moving towa
 
 ## Reference dataset expansion to 350 profiles
 
-The reference dataset has been expanded from 250 to 350 political references.
+The reference dataset has been expanded from 250 to 425 political references.
 
 This stage adds more labor organizers, feminist theorists, civil-rights activists, anti-colonial thinkers, ecological references, religious-political thinkers, liberal theorists, socialist writers, and conservative or communitarian references.
 
@@ -1156,3 +1156,10 @@ data/reference/reference_dataset_summary.csv
 ```
 
 These files track dataset size, taxonomy coverage, confidence distribution, quadrant balance, role diversity, and country-code coverage.
+
+
+---
+
+## Reference dataset expansion to 425 profiles
+
+The reference dataset has been expanded from 350 to 425 political references. This stage also introduces a normalized `gender` column and changes the Streamlit reference filter to use `role_category` instead of `display_group`. The `display_group` field remains available as descriptive hover metadata in chart tooltips.
