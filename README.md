@@ -1219,3 +1219,10 @@ The interpretation layer now includes a v3 helper that reduces repeated text, us
 ## Advanced profile comparison v3
 
 The comparison layer now includes v3 helpers for ideological distance, compatibility scoring, ranked differences, convergence/divergence explanations, secondary-dimension comparison, and non-repetitive comparison text.
+
+
+---
+
+## Real Streamlit UI integration
+
+The recent UI helpers are now wired into the actual Streamlit runtime path. The active app uses real multi-select reference filters, including gender and confidence, applies them to the graph and dataset table, displays the score-input mode label, and uses the v3 non-repetitive analysis block instead of the old repeated analysis path.

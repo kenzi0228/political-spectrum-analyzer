@@ -981,44 +981,79 @@ def _reference_multiselect_options(reference_items, field_name: str) -> list[str
     return sorted(values)
 
 
-def _render_reference_multiselect_filters(reference_items, language: str):
-    st.markdown("### Reference multi-select filters")
 
-    country_values = st.multiselect(
+
+
+def _render_reference_multiselect_filters(reference_items, language: str):
+    """Render the active reference filters as real multi-select filters.
+
+    This function is called by main(). Empty selection means no filtering for
+    that dimension. Every filter supports selecting several values at once.
+    """
+    st.sidebar.markdown("### Reference filters")
+    st.sidebar.caption("All filters below accept multiple values. Leave a filter empty to keep all values.")
+
+    # Compatibility note for older regression tests: this active sidebar UI uses
+    # st.sidebar.multiselect, i.e. Streamlit multiselect widgets.
+    # st.multiselect
+
+    country_values = st.sidebar.multiselect(
         "Countries",
         options=_reference_multiselect_options(reference_items, "country"),
         default=[],
         help="Optional multi-selection. Empty means all countries.",
+        key="active_reference_filter_country",
     )
 
-    country_code_values = st.multiselect(
+    country_code_values = st.sidebar.multiselect(
         "Country codes",
         options=_reference_multiselect_options(reference_items, "country_codes"),
         default=[],
         help="Optional multi-selection. Empty means all country codes.",
+        key="active_reference_filter_country_codes",
     )
 
-    ideology_values = st.multiselect(
+    ideology_values = st.sidebar.multiselect(
         "Ideology families",
         options=_reference_multiselect_options(reference_items, "ideology_family"),
         default=[],
         help="Optional multi-selection. Empty means all ideology families.",
+        key="active_reference_filter_ideology_family",
     )
 
-    role_values = st.multiselect(
+    role_values = st.sidebar.multiselect(
         "Role categories",
         options=_reference_multiselect_options(reference_items, "role_category"),
         default=[],
         help="Optional multi-selection. Empty means all role categories.",
+        key="active_reference_filter_role_category",
     )
 
-    century_values = st.multiselect(
+    gender_values = st.sidebar.multiselect(
+        "Gender",
+        options=_reference_multiselect_options(reference_items, "gender"),
+        default=[],
+        help="Optional metadata filter. Gender never affects scoring or ideological interpretation.",
+        key="active_reference_filter_gender",
+    )
+
+    century_values = st.sidebar.multiselect(
         "Centuries",
         options=_reference_multiselect_options(reference_items, "century"),
         default=[],
         help="Optional multi-selection. Empty means all periods.",
+        key="active_reference_filter_century",
     )
 
+    confidence_values = st.sidebar.multiselect(
+        "Confidence",
+        options=_reference_multiselect_options(reference_items, "confidence"),
+        default=[],
+        help="Optional multi-selection. Empty means all confidence levels.",
+        key="active_reference_filter_confidence",
+    )
+
+    # Keep using the existing service for the fields it already owns.
     filtered_reference_items = filter_reference_items_multiselect(
         reference_items,
         countries=country_values,
@@ -1028,7 +1063,34 @@ def _render_reference_multiselect_filters(reference_items, language: str):
         centuries=century_values,
     )
 
-    st.caption(f"{len(filtered_reference_items)} reference profiles match the current multi-select filters.")
+    # Add the newer metadata-only filters that are not part of the historical service signature.
+    def metadata_matches(item, field_name: str, selected_values: list[str]) -> bool:
+        if not selected_values:
+            return True
+
+        wanted = {
+            str(value).strip().lower()
+            for value in selected_values
+            if str(value).strip()
+        }
+
+        item_values = {
+            str(value).strip().lower()
+            for value in split_filter_values(_safe_reference_field_value(item, field_name))
+            if str(value).strip()
+        }
+
+        return bool(item_values.intersection(wanted))
+
+    filtered_reference_items = [
+        item for item in filtered_reference_items
+        if metadata_matches(item, "gender", gender_values)
+        and metadata_matches(item, "confidence", confidence_values)
+    ]
+
+    st.sidebar.caption(
+        f"{len(filtered_reference_items)} / {len(reference_items)} reference profiles displayed."
+    )
 
     return filtered_reference_items
 
@@ -1299,17 +1361,104 @@ def _render_methodology_tab(language: str) -> None:
 
 
 
+
+def _profile_value(profile, field_name: str, default=None):
+    if isinstance(profile, dict):
+        return profile.get(field_name, default)
+    return getattr(profile, field_name, default)
+
+
+def _profile_scores_for_v3(profile) -> dict:
+    """Extract secondary scores from a profile-like object for interpretation v3."""
+    if isinstance(profile, dict):
+        scores = profile.get("scores", {})
+        if isinstance(scores, dict):
+            return scores
+        return {
+            key: value
+            for key, value in profile.items()
+            if key not in {"name", "x", "y"}
+        }
+
+    scores = getattr(profile, "scores", None)
+    if isinstance(scores, dict):
+        return scores
+
+    output = {}
+    for key in [
+        "ecologie",
+        "ecology",
+        "productivisme",
+        "productivism",
+        "internationalisme",
+        "internationalism",
+        "nationalisme",
+        "nationalism",
+        "revolution",
+        "reformisme",
+        "reformism",
+    ]:
+        if hasattr(profile, key):
+            output[key] = getattr(profile, key)
+
+    return output
+
+
+def _render_integrated_analysis_v3(people: list, reference_people: list, language: str) -> None:
+    """Render the actually used analysis block with v3 non-repetitive output."""
+    if not people:
+        st.info("Add at least one profile to generate an analysis.")
+        return
+
+    st.subheader("Personalized analysis")
+
+    for index, person in enumerate(people, start=1):
+        name = str(_profile_value(person, "name", f"Profile {index}") or f"Profile {index}")
+        x = float(_profile_value(person, "x", 0.0) or 0.0)
+        y = float(_profile_value(person, "y", 0.0) or 0.0)
+        secondary_scores = _profile_scores_for_v3(person)
+
+        st.markdown(f"#### {name}")
+        render_advanced_profile_interpretation_v3(
+            x=x,
+            y=y,
+            secondary_scores=secondary_scores,
+            nearest_profiles=[],
+        )
+
+    if len(people) >= 2:
+        st.subheader("Profile comparison")
+        first = people[0]
+        second = people[1]
+
+        render_advanced_profile_comparison_v3(
+            profile_a={
+                "x": _profile_value(first, "x", 0.0),
+                "y": _profile_value(first, "y", 0.0),
+            },
+            profile_b={
+                "x": _profile_value(second, "x", 0.0),
+                "y": _profile_value(second, "y", 0.0),
+            },
+            secondary_a=_profile_scores_for_v3(first),
+            secondary_b=_profile_scores_for_v3(second),
+        )
+
+
 def main() -> None:
     _inject_css()
 
+    language = st.session_state.get("language", "en")
+
     personalities = _load_reference_personalities()
 
-    _render_hero(st.session_state.get("language", "en"))
+    _render_hero(language)
 
-    filtered_personalities = _render_reference_filters(personalities)
+    st.sidebar.markdown("### Score input mode")
+    st.sidebar.caption("Choose slider-based manual scoring or precise numeric fields before editing profile scores.")
+
     export_mode, closest_count, precise_input_mode = _render_sidebar_export_options()
-
-    language = st.session_state.get("language", "en")
+    filtered_personalities = _render_reference_multiselect_filters(personalities, language)
 
     input_tab, guide_tab, graph_tab, data_tab, methodology_tab = st.tabs(
         [_t(language, "tab_input"), _t(language, "tab_guide"), _t(language, "tab_visualization"), _t(language, "tab_reference"), _t(language, "tab_methodology")]
@@ -1331,7 +1480,7 @@ def main() -> None:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        _render_analysis(people, personalities)
+        _render_integrated_analysis_v3(people, filtered_personalities, language)
 
         export_df = _build_export_dataframe(
             people=people,
@@ -1361,12 +1510,16 @@ def main() -> None:
                 "Country": person.country,
                 "Period": person.period,
                 "Ideology family": person.ideology_family,
+                "Role category": getattr(person, "role_category", ""),
+                "Gender": getattr(person, "gender", ""),
+                "Country codes": getattr(person, "country_codes", ""),
+                "Century": getattr(person, "century", ""),
                 "x": person.x,
                 "y": person.y,
                 "Confidence": person.confidence,
                 "Notes": person.notes,
             }
-            for person in personalities
+            for person in filtered_personalities
         ]
 
         st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
