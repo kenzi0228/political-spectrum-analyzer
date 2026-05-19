@@ -1205,3 +1205,10 @@ The Streamlit interface now includes a user-controlled light/dark theme selector
 ## Plotly default reference map and multi-select reference filters
 
 The Streamlit UI now provides a Plotly-first reference map renderer and shared multi-select reference filters for ideology family, role category, gender, country code, century, and confidence. Gender remains metadata-only and is never used for scoring or interpretation.
+
+
+---
+
+## Advanced personalized interpretation v3
+
+The interpretation layer now includes a v3 helper that reduces repeated text, uses secondary dimensions more explicitly, identifies internal tensions, and produces a more personalized profile reading.

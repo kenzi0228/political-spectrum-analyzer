@@ -1847,3 +1847,234 @@ def render_default_reference_map(reference_rows) -> str:
         "The app kept the reference data available through the legacy view."
     )
     return "fallback"
+
+
+ADVANCED_INTERPRETATION_V3_VERSION = "v3"
+
+INTERPRETATION_V3_DIMENSION_LABELS = {
+    "economic": "economic orientation",
+    "social": "social authority orientation",
+    "international": "international orientation",
+    "ecology": "ecology / productivism",
+    "revolution": "change strategy",
+}
+
+
+def _interpretation_v3_float(value, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _interpretation_v3_band(value: float) -> str:
+    absolute = abs(value)
+
+    if absolute >= 3.2:
+        return "very strong"
+    if absolute >= 2.2:
+        return "strong"
+    if absolute >= 1.2:
+        return "moderate"
+    if absolute >= 0.45:
+        return "light"
+    return "balanced"
+
+
+def _interpretation_v3_axis_label(axis: str, value: float) -> str:
+    if axis == "x":
+        if value < -0.45:
+            return "economically left"
+        if value > 0.45:
+            return "economically right"
+        return "economically mixed"
+
+    if axis == "y":
+        if value < -0.45:
+            return "socially libertarian"
+        if value > 0.45:
+            return "socially authoritarian"
+        return "socially mixed"
+
+    return "mixed"
+
+
+def _interpretation_v3_quadrant(x: float, y: float) -> str:
+    if x < -0.45 and y < -0.45:
+        return "left-libertarian"
+    if x < -0.45 and y > 0.45:
+        return "left-authoritarian"
+    if x > 0.45 and y < -0.45:
+        return "right-libertarian"
+    if x > 0.45 and y > 0.45:
+        return "right-authoritarian"
+    return "hybrid / centrist"
+
+
+def _interpretation_v3_tension_sentences(x: float, y: float, secondary_scores: dict | None = None) -> list[str]:
+    secondary_scores = secondary_scores or {}
+    sentences: list[str] = []
+
+    ecology = _interpretation_v3_float(
+        secondary_scores.get("ecology", secondary_scores.get("ecologie", secondary_scores.get("environment", 0.0)))
+    )
+    productivism = _interpretation_v3_float(
+        secondary_scores.get("productivism", secondary_scores.get("productivisme", 0.0))
+    )
+    internationalism = _interpretation_v3_float(
+        secondary_scores.get("internationalism", secondary_scores.get("internationalisme", 0.0))
+    )
+    nationalism = _interpretation_v3_float(
+        secondary_scores.get("nationalism", secondary_scores.get("nationalisme", 0.0))
+    )
+    revolution = _interpretation_v3_float(
+        secondary_scores.get("revolution", secondary_scores.get("revolutionary", 0.0))
+    )
+    reformism = _interpretation_v3_float(
+        secondary_scores.get("reformism", secondary_scores.get("reformisme", 0.0))
+    )
+
+    if x < -1.2 and y > 1.2:
+        sentences.append(
+            "Your profile combines economic interventionism with a stronger preference for order, hierarchy, or collective discipline."
+        )
+    elif x > 1.2 and y < -1.2:
+        sentences.append(
+            "Your profile combines market-oriented economics with a strong preference for individual autonomy and civil liberties."
+        )
+    elif x < -1.2 and y < -1.2:
+        sentences.append(
+            "Your profile is coherent around egalitarian economics, social openness, and resistance to concentrated authority."
+        )
+    elif x > 1.2 and y > 1.2:
+        sentences.append(
+            "Your profile is coherent around market-oriented economics, social order, and institutional authority."
+        )
+    else:
+        sentences.append(
+            "Your profile is mixed enough that the most important information is found in the secondary dimensions rather than in a single quadrant label."
+        )
+
+    if ecology - productivism >= 1.0:
+        sentences.append(
+            "Ecology appears as a real structuring dimension: environmental limits probably matter more to you than pure growth or productivity."
+        )
+    elif productivism - ecology >= 1.0:
+        sentences.append(
+            "Productivism appears stronger than ecological restraint: you probably give high priority to infrastructure, growth, output, or technological capacity."
+        )
+
+    if internationalism - nationalism >= 1.0:
+        sentences.append(
+            "Your internationalist tendency suggests openness to cross-border cooperation, universalist norms, or reduced emphasis on national sovereignty."
+        )
+    elif nationalism - internationalism >= 1.0:
+        sentences.append(
+            "Your nationalist tendency suggests stronger attachment to sovereignty, borders, national cohesion, or strategic autonomy."
+        )
+
+    if revolution - reformism >= 1.0:
+        sentences.append(
+            "Your change strategy is more rupture-oriented: you are likely less satisfied with gradual institutional reform when core structures are seen as defective."
+        )
+    elif reformism - revolution >= 1.0:
+        sentences.append(
+            "Your change strategy is more reformist: you likely prefer institutional correction, legal continuity, and gradual transformation."
+        )
+
+    return sentences
+
+
+def deduplicate_interpretation_sentences(text: str) -> str:
+    """Remove repeated sentences and repeated adjacent interpretation fragments."""
+    if not text:
+        return text
+
+    parts = re.split(r"(?<=[.!?])\s+", str(text).strip())
+    seen = set()
+    output: list[str] = []
+
+    for part in parts:
+        normalized = re.sub(r"\s+", " ", part).strip().lower()
+        normalized = normalized.replace("**", "").replace("__", "")
+
+        if not normalized or normalized in seen:
+            continue
+
+        seen.add(normalized)
+        output.append(part.strip())
+
+    return " ".join(output)
+
+
+def build_advanced_profile_interpretation_v3(
+    x: float,
+    y: float,
+    secondary_scores: dict | None = None,
+    nearest_profiles: list[dict] | None = None,
+) -> dict[str, object]:
+    """Build a richer, non-repetitive personalized interpretation payload."""
+    x = _interpretation_v3_float(x)
+    y = _interpretation_v3_float(y)
+    secondary_scores = secondary_scores or {}
+    nearest_profiles = nearest_profiles or []
+
+    economic_label = _interpretation_v3_axis_label("x", x)
+    social_label = _interpretation_v3_axis_label("y", y)
+    quadrant = _interpretation_v3_quadrant(x, y)
+
+    summary = (
+        f"Your position is best described as {quadrant}: "
+        f"{_interpretation_v3_band(x)} {economic_label} and "
+        f"{_interpretation_v3_band(y)} {social_label}."
+    )
+
+    analysis_parts = [
+        summary,
+        *(_interpretation_v3_tension_sentences(x, y, secondary_scores)),
+    ]
+
+    if nearest_profiles:
+        names = [
+            str(profile.get("name", "")).strip()
+            for profile in nearest_profiles[:3]
+            if str(profile.get("name", "")).strip()
+        ]
+        if names:
+            analysis_parts.append(
+                "The closest reference profiles should be read as analytical neighbors, not as exact ideological equivalents: "
+                + ", ".join(names)
+                + "."
+            )
+
+    analysis = deduplicate_interpretation_sentences(" ".join(analysis_parts))
+
+    return {
+        "version": ADVANCED_INTERPRETATION_V3_VERSION,
+        "quadrant": quadrant,
+        "economic_label": economic_label,
+        "social_label": social_label,
+        "summary": summary,
+        "analysis": analysis,
+        "secondary_dimensions_used": sorted(secondary_scores.keys()),
+    }
+
+
+def render_advanced_profile_interpretation_v3(
+    x: float,
+    y: float,
+    secondary_scores: dict | None = None,
+    nearest_profiles: list[dict] | None = None,
+) -> dict[str, object]:
+    """Render advanced interpretation v3 and return the payload for tests/export."""
+    payload = build_advanced_profile_interpretation_v3(
+        x=x,
+        y=y,
+        secondary_scores=secondary_scores,
+        nearest_profiles=nearest_profiles,
+    )
+
+    st.markdown("### Advanced personalized interpretation v3")
+    st.write(payload["analysis"])
+
+    return payload
