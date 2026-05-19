@@ -18,7 +18,7 @@ The dataset must remain:
 The reference dataset must satisfy:
 
 - no duplicate names;
-- exactly 425 profiles at the current stage;
+- exactly 500 profiles at the current stage;
 - no `region` column;
 - required schema v2 columns present;
 - non-empty country, country codes, period, century, ideology family, ideology subtype, role category, confidence, notes, and tags;
@@ -33,12 +33,12 @@ The reference dataset must satisfy:
 
 ## Expansion rule
 
-Before moving from 425 to 500 profiles, these tests must continue passing.
+The 500-profile milestone is the current reference stage, these tests must continue passing.
 
 
-## Dataset expansion to 425 profiles
+## Dataset expansion to 500 profiles
 
-The reference dataset has been expanded from 150 to 425 profiles while preserving schema v2 and quality-gate consistency.
+The reference dataset has been expanded from 150 to 500 profiles while preserving schema v2 and quality-gate consistency.
 
 
 ## Gender metadata

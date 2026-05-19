@@ -39,7 +39,7 @@ def test_reference_dataset_schema_v2_fields_are_populated():
 
 def test_reference_dataset_schema_v2_preserves_dataset_size():
     rows = _rows(PERSONALITIES)
-    assert len(rows) == 425
+    assert len(rows) == 500
 
 
 def test_ideology_family_count_is_filterable_not_excessive():

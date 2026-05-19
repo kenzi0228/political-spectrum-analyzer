@@ -9,7 +9,7 @@ def _rows() -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 def test_reference_dataset_has_250_profiles():
-    assert len(_rows()) == 425
+    assert len(_rows()) == 500
 
 def test_reference_dataset_contains_no_duplicate_header_rows():
     for row in _rows():

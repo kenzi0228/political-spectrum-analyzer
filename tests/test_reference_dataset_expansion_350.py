@@ -11,7 +11,7 @@ def _rows() -> list[dict[str, str]]:
 
 
 def test_reference_dataset_has_350_profiles():
-    assert len(_rows()) == 425
+    assert len(_rows()) == 500
 
 
 def test_reference_dataset_350_includes_new_expansion_profiles():

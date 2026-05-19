@@ -8,7 +8,7 @@ def test_homepage_does_not_show_technology_tags():
     assert "Python</span>" not in content
     assert "Streamlit</span>" not in content
     assert "Plotly</span>" not in content
-    assert "425 reference profiles</span>" not in content
+    assert "500 reference profiles</span>" not in content
 
 
 def test_manual_numeric_entry_is_default():
