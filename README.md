@@ -1184,3 +1184,10 @@ Gender is metadata only. It does not affect scoring, coordinates, interpretation
 ## Reference dataset expansion to 500 profiles
 
 The reference dataset has reached 500 political references. The milestone preserves schema v2, normalized gender metadata, role-category filtering, display-group hover metadata, taxonomy coverage, and quality-report generation.
+
+
+---
+
+## Streamlit visual design upgrade
+
+The web app includes a custom dark Streamlit theme, a lightweight CSS layer, and an optional Plotly reference-map helper for interactive exploration. Plotly improves the deployed experience through hover metadata, zooming, panning, and legend filtering while preserving compatibility with existing rendering paths.

@@ -37,6 +37,13 @@ from political_spectrum_analyzer.services.personality_filter_service import (
 from political_spectrum_analyzer.services.text_import_service import extract_scores_from_text
 from political_spectrum_analyzer.web.plotly_plot import build_political_spectrum_figure
 
+try:
+    import plotly.express as px
+except Exception:  # pragma: no cover - Plotly is optional at import time.
+    px = None
+
+
+
 
 st.set_page_config(
     page_title="Political Spectrum Analyzer",
@@ -339,6 +346,202 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "formula_normalization_explanation": "Les scores bruts sont divises par 120 puis passes dans une sigmoide. Les profils marques se rapprochent des bords, mais le graphe reste lisible.",
     },
 }
+
+
+
+STREAMLIT_THEME_CSS = """
+<style>
+:root {
+    --psa-primary: #6C63FF;
+    --psa-bg: #0E1117;
+    --psa-surface: #1A1D2E;
+    --psa-text: #FAFAFA;
+    --psa-muted: #B8BCCB;
+}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+    max-width: 1280px;
+}
+
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #111522 0%, #0E1117 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-testid="stMetric"] {
+    background: rgba(26, 29, 46, 0.78);
+    border: 1px solid rgba(108, 99, 255, 0.22);
+    border-radius: 18px;
+    padding: 1rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+
+div[data-testid="stTabs"] button {
+    border-radius: 999px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    background: rgba(108, 99, 255, 0.22);
+    color: #FAFAFA;
+}
+
+.stButton > button,
+.stDownloadButton > button {
+    border-radius: 999px;
+    border: 1px solid rgba(108, 99, 255, 0.42);
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.98), rgba(121, 86, 255, 0.78));
+    color: #FAFAFA;
+    font-weight: 650;
+    box-shadow: 0 10px 26px rgba(108, 99, 255, 0.24);
+}
+
+div[data-testid="stExpander"] {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(26, 29, 46, 0.42);
+}
+
+.psa-hero {
+    padding: 1.25rem 1.4rem;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top left, rgba(108, 99, 255, 0.28), transparent 34%),
+        linear-gradient(135deg, rgba(26, 29, 46, 0.96), rgba(14, 17, 23, 0.98));
+    border: 1px solid rgba(108, 99, 255, 0.22);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+    margin-bottom: 1.2rem;
+}
+
+.psa-hero h1 {
+    margin: 0;
+    font-size: 2.25rem;
+    line-height: 1.05;
+}
+
+.psa-hero p {
+    color: var(--psa-muted);
+    margin-top: 0.65rem;
+    margin-bottom: 0;
+    font-size: 1.02rem;
+}
+</style>
+"""
+
+PLOTLY_REFERENCE_TOOLTIP_FIELDS = [
+    "name",
+    "display_group",
+    "role_category",
+    "gender",
+    "country",
+    "country_codes",
+    "period",
+    "ideology_family",
+    "ideology_subtype",
+    "confidence",
+    "notes",
+]
+
+
+def apply_professional_streamlit_theme() -> None:
+    """Apply the project's custom Streamlit visual layer."""
+    st.markdown(STREAMLIT_THEME_CSS, unsafe_allow_html=True)
+
+
+def render_streamlit_hero(title: str, subtitle: str) -> None:
+    """Render a compact hero block used by the Streamlit app."""
+    st.markdown(
+        f"""
+        <div class="psa-hero">
+            <h1>{title}</h1>
+            <p>{subtitle}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def build_reference_plotly_figure(reference_data):
+    """Build an interactive Plotly reference-map figure when Plotly is available."""
+    if px is None:
+        return None
+
+    dataframe = pd.DataFrame(reference_data)
+    if dataframe.empty or not {"x", "y", "name"}.issubset(dataframe.columns):
+        return None
+
+    dataframe = dataframe.copy()
+    dataframe["x"] = pd.to_numeric(dataframe["x"], errors="coerce")
+    dataframe["y"] = pd.to_numeric(dataframe["y"], errors="coerce")
+    dataframe = dataframe.dropna(subset=["x", "y"])
+
+    if dataframe.empty:
+        return None
+
+    color_column = "ideology_family" if "ideology_family" in dataframe.columns else None
+    hover_columns = [column for column in PLOTLY_REFERENCE_TOOLTIP_FIELDS if column in dataframe.columns]
+
+    figure = px.scatter(
+        dataframe,
+        x="x",
+        y="y",
+        color=color_column,
+        hover_name="name",
+        hover_data=hover_columns,
+        template="plotly_dark",
+        height=720,
+    )
+
+    figure.update_traces(
+        marker={
+            "size": 9,
+            "opacity": 0.82,
+            "line": {"width": 0.7, "color": "rgba(255,255,255,0.42)"},
+        }
+    )
+
+    figure.update_layout(
+        title="Interactive reference map",
+        paper_bgcolor="#0E1117",
+        plot_bgcolor="#0E1117",
+        font={"color": "#FAFAFA"},
+        legend_title_text="Ideology family",
+        margin={"l": 42, "r": 28, "t": 68, "b": 42},
+        xaxis={
+            "title": "Economic axis: left ← 0 → right",
+            "range": [-4.2, 4.2],
+            "zeroline": True,
+            "zerolinewidth": 1,
+            "zerolinecolor": "rgba(250,250,250,0.35)",
+            "gridcolor": "rgba(250,250,250,0.08)",
+        },
+        yaxis={
+            "title": "Social axis: libertarian ← 0 → authoritarian",
+            "range": [-4.2, 4.2],
+            "zeroline": True,
+            "zerolinewidth": 1,
+            "zerolinecolor": "rgba(250,250,250,0.35)",
+            "gridcolor": "rgba(250,250,250,0.08)",
+        },
+    )
+
+    figure.add_hline(y=0, line_width=1, line_color="rgba(250,250,250,0.35)")
+    figure.add_vline(x=0, line_width=1, line_color="rgba(250,250,250,0.35)")
+
+    return figure
+
+
+def render_reference_plotly_chart(reference_data) -> bool:
+    """Render the interactive reference map and return whether Plotly was used."""
+    figure = build_reference_plotly_figure(reference_data)
+    if figure is None:
+        return False
+
+    st.plotly_chart(figure, use_container_width=True, config={"displaylogo": False})
+    return True
 
 
 def _t(language: str, key: str) -> str:
