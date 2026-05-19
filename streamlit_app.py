@@ -1726,3 +1726,124 @@ def render_reference_plotly_chart(reference_data) -> bool:
         return False
     st.plotly_chart(figure, use_container_width=True, config={"displaylogo": False})
     return True
+
+
+DEFAULT_REFERENCE_RENDERER = "plotly"
+
+REFERENCE_MULTISELECT_FILTER_FIELDS = {
+    "ideology_family": "Ideology family",
+    "role_category": "Role category",
+    "gender": "Gender",
+    "country_codes": "Country code",
+    "century": "Century",
+    "confidence": "Confidence",
+}
+
+
+def _split_reference_filter_values(value) -> list[str]:
+    """Split scalar or semi-colon separated reference metadata values."""
+    if value is None:
+        return []
+
+    raw = str(value).replace(",", ";")
+    return [item.strip() for item in raw.split(";") if item.strip()]
+
+
+def _unique_reference_filter_options(reference_rows, field: str) -> list[str]:
+    """Collect sorted unique options for one reference metadata field."""
+    values = set()
+
+    if reference_rows is None:
+        return []
+
+    if hasattr(reference_rows, "to_dict"):
+        iterable = reference_rows.to_dict("records")
+    else:
+        iterable = reference_rows
+
+    for row in iterable:
+        if not isinstance(row, dict):
+            continue
+
+        for value in _split_reference_filter_values(row.get(field, "")):
+            values.add(value)
+
+    return sorted(values, key=lambda item: item.lower())
+
+
+def render_reference_multiselect_filters(reference_rows) -> dict[str, list[str]]:
+    """Render every reference filter as a multi-select widget."""
+    selected_filters: dict[str, list[str]] = {}
+
+    for field, label in REFERENCE_MULTISELECT_FILTER_FIELDS.items():
+        options = _unique_reference_filter_options(reference_rows, field)
+
+        selected_filters[field] = st.sidebar.multiselect(
+            label,
+            options=options,
+            default=[],
+            help=(
+                "Optional multi-select filter. Leave empty to keep all values "
+                f"for {label.lower()}."
+            ),
+            key=f"reference_multiselect_{field}",
+        )
+
+    st.session_state["reference_multiselect_filters"] = selected_filters
+    return selected_filters
+
+
+def _row_matches_multiselect_filter(row: dict, field: str, selected_values: list[str]) -> bool:
+    if not selected_values:
+        return True
+
+    wanted = {str(value).strip().lower() for value in selected_values if str(value).strip()}
+    if not wanted:
+        return True
+
+    row_values = {
+        value.lower()
+        for value in _split_reference_filter_values(row.get(field, ""))
+    }
+
+    return bool(row_values & wanted)
+
+
+def apply_reference_multiselect_filters(reference_rows, selected_filters: dict[str, list[str]]):
+    """Apply all reference multi-select filters to rows or a dataframe."""
+    if reference_rows is None or not selected_filters:
+        return reference_rows
+
+    is_dataframe = hasattr(reference_rows, "to_dict")
+    rows = reference_rows.to_dict("records") if is_dataframe else list(reference_rows)
+
+    filtered_rows = [
+        row for row in rows
+        if all(
+            _row_matches_multiselect_filter(row, field, selected_values)
+            for field, selected_values in selected_filters.items()
+        )
+    ]
+
+    if is_dataframe:
+        return pd.DataFrame(filtered_rows, columns=reference_rows.columns)
+
+    return filtered_rows
+
+
+def render_reference_filters_and_apply(reference_rows):
+    """Render all reference filters as multi-select widgets and return filtered rows."""
+    selected_filters = render_reference_multiselect_filters(reference_rows)
+    return apply_reference_multiselect_filters(reference_rows, selected_filters)
+
+
+def render_default_reference_map(reference_rows) -> str:
+    """Render the reference map with Plotly first, then fall back to legacy rendering."""
+    if render_reference_plotly_chart(reference_rows):
+        return "plotly"
+
+    st.info(
+        "Interactive Plotly rendering is unavailable in this environment. "
+        "The app kept the reference data available through the legacy view."
+    )
+    return "fallback"

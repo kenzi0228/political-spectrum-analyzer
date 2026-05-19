@@ -1198,3 +1198,10 @@ The web app includes a custom dark Streamlit theme, a lightweight CSS layer, and
 ## Streamlit UI review fixes
 
 The Streamlit interface now includes a user-controlled light/dark theme selector, mode-aware sidebar styling, gender-filter helper support for reference exploration, profile-reading deduplication utilities, and clearer score-input mode labeling.
+
+
+---
+
+## Plotly default reference map and multi-select reference filters
+
+The Streamlit UI now provides a Plotly-first reference map renderer and shared multi-select reference filters for ideology family, role category, gender, country code, century, and confidence. Gender remains metadata-only and is never used for scoring or interpretation.
