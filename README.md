@@ -1212,3 +1212,10 @@ The Streamlit UI now provides a Plotly-first reference map renderer and shared m
 ## Advanced personalized interpretation v3
 
 The interpretation layer now includes a v3 helper that reduces repeated text, uses secondary dimensions more explicitly, identifies internal tensions, and produces a more personalized profile reading.
+
+
+---
+
+## Advanced profile comparison v3
+
+The comparison layer now includes v3 helpers for ideological distance, compatibility scoring, ranked differences, convergence/divergence explanations, secondary-dimension comparison, and non-repetitive comparison text.

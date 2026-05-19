@@ -2078,3 +2078,220 @@ def render_advanced_profile_interpretation_v3(
     st.write(payload["analysis"])
 
     return payload
+
+
+ADVANCED_COMPARISON_V3_VERSION = "v3"
+
+COMPARISON_V3_AXIS_LABELS = {
+    "x": "economic axis",
+    "y": "social-authority axis",
+    "ecology": "ecology / productivism",
+    "internationalism": "internationalism / nationalism",
+    "reformism": "reformism / rupture",
+}
+
+
+def _comparison_v3_float(value, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _comparison_v3_gap_band(value: float) -> str:
+    absolute = abs(value)
+
+    if absolute >= 3.0:
+        return "very large"
+    if absolute >= 2.0:
+        return "large"
+    if absolute >= 1.0:
+        return "moderate"
+    if absolute >= 0.35:
+        return "small"
+    return "minimal"
+
+
+def _comparison_v3_distance(x1: float, y1: float, x2: float, y2: float) -> float:
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+
+def _comparison_v3_compatibility_score(distance: float) -> int:
+    # Coordinates live roughly in [-4, 4]. Max diagonal is about 11.31.
+    normalized = max(0.0, min(1.0, 1.0 - (distance / 8.0)))
+    return round(normalized * 100)
+
+
+def _comparison_v3_axis_sentence(axis: str, gap: float) -> str:
+    band = _comparison_v3_gap_band(gap)
+
+    if axis == "x":
+        if abs(gap) < 0.35:
+            return "Both profiles are very close on the economic axis."
+        if gap > 0:
+            return f"Profile B is more economically right-wing than Profile A; the gap is {band}."
+        return f"Profile B is more economically left-wing than Profile A; the gap is {band}."
+
+    if axis == "y":
+        if abs(gap) < 0.35:
+            return "Both profiles are very close on the social-authority axis."
+        if gap > 0:
+            return f"Profile B is more authoritarian or order-oriented than Profile A; the gap is {band}."
+        return f"Profile B is more libertarian or autonomy-oriented than Profile A; the gap is {band}."
+
+    return f"The gap on {COMPARISON_V3_AXIS_LABELS.get(axis, axis)} is {band}."
+
+
+def _comparison_v3_secondary_gap_sentences(
+    secondary_a: dict | None,
+    secondary_b: dict | None,
+) -> list[str]:
+    secondary_a = secondary_a or {}
+    secondary_b = secondary_b or {}
+    sentences: list[str] = []
+
+    pairs = [
+        ("ecology", "productivism", "ecology / productivism"),
+        ("internationalism", "nationalism", "internationalism / nationalism"),
+        ("reformism", "revolution", "reformism / rupture"),
+    ]
+
+    for positive_key, negative_key, label in pairs:
+        a_score = _comparison_v3_float(secondary_a.get(positive_key, 0.0)) - _comparison_v3_float(secondary_a.get(negative_key, 0.0))
+        b_score = _comparison_v3_float(secondary_b.get(positive_key, 0.0)) - _comparison_v3_float(secondary_b.get(negative_key, 0.0))
+        gap = b_score - a_score
+
+        if abs(gap) < 0.75:
+            continue
+
+        direction = "stronger" if gap > 0 else "weaker"
+        sentences.append(
+            f"On {label}, Profile B is {direction} than Profile A; this adds a secondary nuance beyond the main x/y coordinates."
+        )
+
+    return sentences
+
+
+def _comparison_v3_ranked_gaps(x_gap: float, y_gap: float, secondary_a: dict | None, secondary_b: dict | None) -> list[dict[str, object]]:
+    secondary_a = secondary_a or {}
+    secondary_b = secondary_b or {}
+
+    gaps = [
+        {"axis": "x", "label": "economic axis", "gap": x_gap, "absolute_gap": abs(x_gap)},
+        {"axis": "y", "label": "social-authority axis", "gap": y_gap, "absolute_gap": abs(y_gap)},
+    ]
+
+    for key in sorted(set(secondary_a) | set(secondary_b)):
+        a_value = _comparison_v3_float(secondary_a.get(key, 0.0))
+        b_value = _comparison_v3_float(secondary_b.get(key, 0.0))
+        gap = b_value - a_value
+        if abs(gap) >= 0.35:
+            gaps.append(
+                {
+                    "axis": key,
+                    "label": key.replace("_", " "),
+                    "gap": gap,
+                    "absolute_gap": abs(gap),
+                }
+            )
+
+    return sorted(gaps, key=lambda item: item["absolute_gap"], reverse=True)
+
+
+def deduplicate_comparison_sentences(text: str) -> str:
+    """Remove repeated sentences from comparison text."""
+    if not text:
+        return text
+
+    parts = re.split(r"(?<=[.!?])\s+", str(text).strip())
+    seen = set()
+    output: list[str] = []
+
+    for part in parts:
+        normalized = re.sub(r"\s+", " ", part).strip().lower()
+        normalized = normalized.replace("**", "").replace("__", "")
+
+        if not normalized or normalized in seen:
+            continue
+
+        seen.add(normalized)
+        output.append(part.strip())
+
+    return " ".join(output)
+
+
+def build_advanced_profile_comparison_v3(
+    profile_a: dict,
+    profile_b: dict,
+    secondary_a: dict | None = None,
+    secondary_b: dict | None = None,
+) -> dict[str, object]:
+    """Build a richer comparison between two ideological profiles."""
+    x_a = _comparison_v3_float(profile_a.get("x", 0.0))
+    y_a = _comparison_v3_float(profile_a.get("y", 0.0))
+    x_b = _comparison_v3_float(profile_b.get("x", 0.0))
+    y_b = _comparison_v3_float(profile_b.get("y", 0.0))
+
+    x_gap = x_b - x_a
+    y_gap = y_b - y_a
+    distance = _comparison_v3_distance(x_a, y_a, x_b, y_b)
+    compatibility = _comparison_v3_compatibility_score(distance)
+
+    ranked_gaps = _comparison_v3_ranked_gaps(x_gap, y_gap, secondary_a, secondary_b)
+
+    convergence_sentences = []
+    divergence_sentences = [
+        _comparison_v3_axis_sentence("x", x_gap),
+        _comparison_v3_axis_sentence("y", y_gap),
+        *(_comparison_v3_secondary_gap_sentences(secondary_a, secondary_b)),
+    ]
+
+    if abs(x_gap) < 0.35:
+        convergence_sentences.append("The two profiles converge economically.")
+    if abs(y_gap) < 0.35:
+        convergence_sentences.append("The two profiles converge on the social-authority axis.")
+
+    if not convergence_sentences:
+        convergence_sentences.append("The two profiles do not strongly converge on the two main axes.")
+
+    summary = (
+        f"The ideological distance between the two profiles is {distance:.2f}, "
+        f"with an estimated compatibility score of {compatibility}/100."
+    )
+
+    comparison_text = deduplicate_comparison_sentences(
+        " ".join([summary, *convergence_sentences, *divergence_sentences])
+    )
+
+    return {
+        "version": ADVANCED_COMPARISON_V3_VERSION,
+        "distance": round(distance, 3),
+        "compatibility_score": compatibility,
+        "x_gap": round(x_gap, 3),
+        "y_gap": round(y_gap, 3),
+        "ranked_gaps": ranked_gaps,
+        "summary": summary,
+        "comparison": comparison_text,
+    }
+
+
+def render_advanced_profile_comparison_v3(
+    profile_a: dict,
+    profile_b: dict,
+    secondary_a: dict | None = None,
+    secondary_b: dict | None = None,
+) -> dict[str, object]:
+    """Render comparison v3 and return its payload for export/tests."""
+    payload = build_advanced_profile_comparison_v3(
+        profile_a=profile_a,
+        profile_b=profile_b,
+        secondary_a=secondary_a,
+        secondary_b=secondary_b,
+    )
+
+    st.markdown("### Advanced profile comparison v3")
+    st.metric("Ideological distance", f"{payload['distance']:.2f}")
+    st.metric("Compatibility score", f"{payload['compatibility_score']}/100")
+    st.write(payload["comparison"])
+
+    return payload
