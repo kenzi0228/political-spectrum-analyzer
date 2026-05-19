@@ -1163,3 +1163,17 @@ These files track dataset size, taxonomy coverage, confidence distribution, quad
 ## Reference dataset expansion to 425 profiles
 
 The reference dataset has been expanded from 350 to 425 political references. This stage also introduces a normalized `gender` column and changes the Streamlit reference filter to use `role_category` instead of `display_group`. The `display_group` field remains available as descriptive hover metadata in chart tooltips.
+
+
+---
+
+## Gender-aware dataset quality report
+
+The reference dataset includes normalized gender metadata for representational auditing:
+
+```text
+data/reference/reference_dataset_gender_role_summary.csv
+docs/gender_metadata.md
+```
+
+Gender is metadata only. It does not affect scoring, coordinates, interpretation, or profile comparison.

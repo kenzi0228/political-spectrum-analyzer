@@ -1,6 +1,6 @@
 metric,value,description
 profile_count,425,Total number of reference profiles.
-ideology_family_count,30,Number of ideology families used by profiles.
+ideology_family_count,30,Number of ideology families represented.
 taxonomy_family_count,32,Number of ideology families covered by the taxonomy.
 missing_taxonomy_family_count,0,Profile ideology families missing from taxonomy.
 role_category_count,16,Number of role categories represented.
@@ -10,6 +10,9 @@ alias_count,95,Number of ideology alias mappings.
 male_count,180,Profiles coded as male.
 female_count,72,Profiles coded as female.
 unknown_gender_count,173,Profiles coded as unknown gender.
+male_share_percent,42.35,Share of profiles coded as male.
+female_share_percent,16.94,Share of profiles coded as female.
+unknown_gender_share_percent,40.71,Share of profiles coded as unknown gender.
 high_confidence_count,22,Profiles marked as high confidence.
 medium_confidence_count,344,Profiles marked as medium confidence.
 low_confidence_count,59,Profiles marked as low confidence.
