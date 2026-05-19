@@ -1191,3 +1191,10 @@ The reference dataset has reached 500 political references. The milestone preser
 ## Streamlit visual design upgrade
 
 The web app includes a custom dark Streamlit theme, a lightweight CSS layer, and an optional Plotly reference-map helper for interactive exploration. Plotly improves the deployed experience through hover metadata, zooming, panning, and legend filtering while preserving compatibility with existing rendering paths.
+
+
+---
+
+## Streamlit UI review fixes
+
+The Streamlit interface now includes a user-controlled light/dark theme selector, mode-aware sidebar styling, gender-filter helper support for reference exploration, profile-reading deduplication utilities, and clearer score-input mode labeling.
