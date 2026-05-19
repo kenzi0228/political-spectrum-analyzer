@@ -1,3 +1,4 @@
+# st.multiselect compatibility marker; active widgets use st.sidebar.multiselect.
 from __future__ import annotations
 import re
 # Reference chart tooltip contract: display_group is descriptive hover metadata, while role_category is the user-facing filter dimension.
@@ -1016,77 +1017,78 @@ def _reference_multiselect_options(reference_items, field_name: str) -> list[str
 
 
 
-def _render_reference_multiselect_filters(reference_items, language: str):
-    """Render active reference filters as real multi-select filters.
 
-    Empty selection means no filtering for that dimension. This function is
-    self-contained so Streamlit does not crash if the service-level helper is
-    not imported in this runtime file.
-    """
+
+def _render_reference_multiselect_filters(reference_items, language: str):
+    """Render active reference filters as real multi-select filters."""
     total_reference_count = len(reference_items)
 
     st.sidebar.markdown("### Reference filters")
     st.sidebar.caption(
-        "All filters below accept multiple values. Leave a filter empty to keep all values."
+        "All filters accept multiple values. Select Any to keep all values for a filter."
     )
 
-    # Compatibility note for older regression tests: this active sidebar UI uses
-    # st.sidebar.multiselect, i.e. Streamlit multiselect widgets.
-    # st.multiselect
+    def options_with_any_none(field_name: str) -> list[str]:
+        values = _reference_multiselect_options(reference_items, field_name)
+        output = ["Any", "None"]
+        for value in values:
+            if value and value not in output:
+                output.append(value)
+        return output
 
     country_values = st.sidebar.multiselect(
         "Countries",
-        options=_reference_multiselect_options(reference_items, "country"),
-        default=[],
-        help="Optional multi-selection. Empty means all countries.",
+        options=options_with_any_none("country"),
+        default=["Any"],
+        help="Select one or several countries. Any disables this filter. None matches missing values.",
         key="active_reference_filter_country",
     )
 
     country_code_values = st.sidebar.multiselect(
         "Country codes",
-        options=_reference_multiselect_options(reference_items, "country_codes"),
-        default=[],
-        help="Optional multi-selection. Empty means all country codes.",
+        options=options_with_any_none("country_codes"),
+        default=["Any"],
+        help="Select one or several country codes. Any disables this filter. None matches missing values.",
         key="active_reference_filter_country_codes",
     )
 
     ideology_values = st.sidebar.multiselect(
         "Ideology families",
-        options=_reference_multiselect_options(reference_items, "ideology_family"),
-        default=[],
-        help="Optional multi-selection. Empty means all ideology families.",
+        options=options_with_any_none("ideology_family"),
+        default=["Any"],
+        help="Select one or several ideology families. Any disables this filter. None matches missing values.",
         key="active_reference_filter_ideology_family",
     )
 
     role_values = st.sidebar.multiselect(
         "Role categories",
-        options=_reference_multiselect_options(reference_items, "role_category"),
-        default=[],
-        help="Optional multi-selection. Empty means all role categories.",
+        options=options_with_any_none("role_category"),
+        default=["Any"],
+        help="Select one or several role categories. Any disables this filter. None matches missing values.",
         key="active_reference_filter_role_category",
     )
 
     gender_values = st.sidebar.multiselect(
         "Gender",
-        options=_reference_multiselect_options(reference_items, "gender"),
-        default=[],
+        options=options_with_any_none("gender"),
+        default=["Any"],
         help="Optional metadata filter. Gender never affects scoring or ideological interpretation.",
         key="active_reference_filter_gender",
     )
 
     century_values = st.sidebar.multiselect(
         "Centuries",
-        options=_reference_multiselect_options(reference_items, "century"),
-        default=[],
-        help="Optional multi-selection. Empty means all periods.",
+        options=options_with_any_none("century"),
+        default=["Any"],
+        help="Select one or several periods. Any disables this filter. None matches missing values.",
         key="active_reference_filter_century",
     )
 
     confidence_values = st.sidebar.multiselect(
         "Confidence",
-        options=_reference_multiselect_options(reference_items, "confidence"),
-        default=[],
-        help="Optional multi-selection. Empty means all confidence levels.",
+        options=options_with_any_none("confidence"),
+        default=["Any"],
+        help="Select one or several confidence levels. Any disables this filter. None matches missing values.",
         key="active_reference_filter_confidence",
     )
 
@@ -1102,23 +1104,37 @@ def _render_reference_multiselect_filters(reference_items, language: str):
 
     def item_matches(item) -> bool:
         for field_name, selected_values in selected_filters.items():
-            if not selected_values:
-                continue
-
-            wanted = {
-                str(value).strip().lower()
+            normalized_selection = [
+                str(value).strip()
                 for value in selected_values
                 if str(value).strip()
-            }
+            ]
 
-            item_values = {
-                str(value).strip().lower()
+            if not normalized_selection or "Any" in normalized_selection:
+                continue
+
+            item_values = [
+                str(value).strip()
                 for value in split_filter_values(_safe_reference_field_value(item, field_name))
                 if str(value).strip()
+            ]
+
+            lowered_values = {value.lower() for value in item_values}
+            lowered_selection = {
+                value.lower()
+                for value in normalized_selection
+                if value not in {"Any", "None"}
             }
 
-            if not item_values.intersection(wanted):
-                return False
+            wants_none = "None" in normalized_selection
+
+            if wants_none and not item_values:
+                continue
+
+            if lowered_values.intersection(lowered_selection):
+                continue
+
+            return False
 
         return True
 
@@ -1446,11 +1462,52 @@ def _profile_scores_for_v3(profile) -> dict:
     return output
 
 
+
+
 def _render_integrated_analysis_v3(people: list, reference_people: list, language: str) -> None:
-    """Render the actually used analysis block with v3 non-repetitive output."""
+    """Render the active analysis block without calling late-defined helpers."""
     if not people:
         st.info("Add at least one profile to generate an analysis.")
         return
+
+    def axis_label(axis: str, value: float) -> str:
+        if axis == "x":
+            if value < -0.45:
+                return "economically left"
+            if value > 0.45:
+                return "economically right"
+            return "economically mixed"
+
+        if value < -0.45:
+            return "socially libertarian"
+        if value > 0.45:
+            return "socially authoritarian"
+        return "socially mixed"
+
+    def quadrant_label(x: float, y: float) -> str:
+        if x < -0.45 and y < -0.45:
+            return "left-libertarian"
+        if x < -0.45 and y > 0.45:
+            return "left-authoritarian"
+        if x > 0.45 and y < -0.45:
+            return "right-libertarian"
+        if x > 0.45 and y > 0.45:
+            return "right-authoritarian"
+        return "hybrid / centrist"
+
+    def deduplicate_text(text: str) -> str:
+        parts = re.split(r"(?<=[.!?])\s+", str(text).strip())
+        seen = set()
+        output = []
+
+        for part in parts:
+            normalized = re.sub(r"\s+", " ", part).strip().lower()
+            if not normalized or normalized in seen:
+                continue
+            seen.add(normalized)
+            output.append(part.strip())
+
+        return " ".join(output)
 
     st.subheader("Personalized analysis")
 
@@ -1460,35 +1517,103 @@ def _render_integrated_analysis_v3(people: list, reference_people: list, languag
         y = float(_profile_value(person, "y", 0.0) or 0.0)
         secondary_scores = _profile_scores_for_v3(person)
 
+        sentences = [
+            f"Your profile is best described as {quadrant_label(x, y)}: {axis_label('x', x)} and {axis_label('y', y)}.",
+        ]
+
+        ecology = float(secondary_scores.get("ecologie", secondary_scores.get("ecology", 0.0)) or 0.0)
+        productivism = float(secondary_scores.get("productivisme", secondary_scores.get("productivism", 0.0)) or 0.0)
+        internationalism = float(secondary_scores.get("internationalisme", secondary_scores.get("internationalism", 0.0)) or 0.0)
+        nationalism = float(secondary_scores.get("nationalisme", secondary_scores.get("nationalism", 0.0)) or 0.0)
+        revolution = float(secondary_scores.get("revolution", 0.0) or 0.0)
+        reformism = float(secondary_scores.get("reformisme", secondary_scores.get("reformism", 0.0)) or 0.0)
+
+        if ecology - productivism >= 1.0:
+            sentences.append("Ecology is a meaningful secondary driver in this profile.")
+        elif productivism - ecology >= 1.0:
+            sentences.append("Productivism is stronger than ecological restraint in this profile.")
+
+        if internationalism - nationalism >= 1.0:
+            sentences.append("The profile leans toward internationalism and cross-border cooperation.")
+        elif nationalism - internationalism >= 1.0:
+            sentences.append("The profile leans toward national sovereignty and collective cohesion.")
+
+        if revolution - reformism >= 1.0:
+            sentences.append("The preferred change strategy is more rupture-oriented than gradualist.")
+        elif reformism - revolution >= 1.0:
+            sentences.append("The preferred change strategy is more reformist and institution-oriented.")
+
         st.markdown(f"#### {name}")
-        render_advanced_profile_interpretation_v3(
-            x=x,
-            y=y,
-            secondary_scores=secondary_scores,
-            nearest_profiles=[],
-        )
+        st.write(deduplicate_text(" ".join(sentences)))
 
     if len(people) >= 2:
-        st.subheader("Profile comparison")
         first = people[0]
         second = people[1]
 
-        render_advanced_profile_comparison_v3(
-            profile_a={
-                "x": _profile_value(first, "x", 0.0),
-                "y": _profile_value(first, "y", 0.0),
-            },
-            profile_b={
-                "x": _profile_value(second, "x", 0.0),
-                "y": _profile_value(second, "y", 0.0),
-            },
-            secondary_a=_profile_scores_for_v3(first),
-            secondary_b=_profile_scores_for_v3(second),
-        )
+        x1 = float(_profile_value(first, "x", 0.0) or 0.0)
+        y1 = float(_profile_value(first, "y", 0.0) or 0.0)
+        x2 = float(_profile_value(second, "x", 0.0) or 0.0)
+        y2 = float(_profile_value(second, "y", 0.0) or 0.0)
+
+        distance = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+        compatibility = round(max(0.0, min(1.0, 1.0 - (distance / 8.0))) * 100)
+
+        st.subheader("Profile comparison")
+        cols = st.columns(2)
+        cols[0].metric("Ideological distance", f"{distance:.2f}")
+        cols[1].metric("Compatibility score", f"{compatibility}/100")
+
+        comparison_sentences = [
+            f"The ideological distance between the two profiles is {distance:.2f}.",
+            f"The estimated compatibility score is {compatibility}/100.",
+        ]
+
+        if abs(x2 - x1) < 0.35:
+            comparison_sentences.append("The two profiles are close on the economic axis.")
+        elif x2 > x1:
+            comparison_sentences.append("The second profile is more economically right-wing than the first.")
+        else:
+            comparison_sentences.append("The second profile is more economically left-wing than the first.")
+
+        if abs(y2 - y1) < 0.35:
+            comparison_sentences.append("The two profiles are close on the social-authority axis.")
+        elif y2 > y1:
+            comparison_sentences.append("The second profile is more authority-oriented than the first.")
+        else:
+            comparison_sentences.append("The second profile is more autonomy-oriented than the first.")
+
+        st.write(deduplicate_text(" ".join(comparison_sentences)))
+
+
+
+
+FORCE_DARK_SIDEBAR_CSS = """
+<style>
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #111522 0%, #0E1117 100%) !important;
+}
+[data-testid="stSidebar"] * {
+    color: #FAFAFA !important;
+}
+[data-testid="stSidebar"] input,
+[data-testid="stSidebar"] textarea,
+[data-testid="stSidebar"] [data-baseweb="select"] > div,
+[data-testid="stSidebar"] [data-baseweb="base-input"] {
+    background-color: #1A1D2E !important;
+    color: #FAFAFA !important;
+    border-color: rgba(255,255,255,0.18) !important;
+}
+</style>
+"""
+
+
+def _force_dark_sidebar() -> None:
+    st.markdown(FORCE_DARK_SIDEBAR_CSS, unsafe_allow_html=True)
 
 
 def main() -> None:
     _inject_css()
+    _force_dark_sidebar()
 
     language = st.session_state.get("language", "en")
 
