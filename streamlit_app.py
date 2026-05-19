@@ -1015,14 +1015,20 @@ def _reference_multiselect_options(reference_items, field_name: str) -> list[str
 
 
 
-def _render_reference_multiselect_filters(reference_items, language: str):
-    """Render the active reference filters as real multi-select filters.
 
-    This function is called by main(). Empty selection means no filtering for
-    that dimension. Every filter supports selecting several values at once.
+def _render_reference_multiselect_filters(reference_items, language: str):
+    """Render active reference filters as real multi-select filters.
+
+    Empty selection means no filtering for that dimension. This function is
+    self-contained so Streamlit does not crash if the service-level helper is
+    not imported in this runtime file.
     """
+    total_reference_count = len(reference_items)
+
     st.sidebar.markdown("### Reference filters")
-    st.sidebar.caption("All filters below accept multiple values. Leave a filter empty to keep all values.")
+    st.sidebar.caption(
+        "All filters below accept multiple values. Leave a filter empty to keep all values."
+    )
 
     # Compatibility note for older regression tests: this active sidebar UI uses
     # st.sidebar.multiselect, i.e. Streamlit multiselect widgets.
@@ -1084,43 +1090,48 @@ def _render_reference_multiselect_filters(reference_items, language: str):
         key="active_reference_filter_confidence",
     )
 
-    # Keep using the existing service for the fields it already owns.
-    filtered_reference_items = filter_reference_items_multiselect(
-        reference_items,
-        countries=country_values,
-        country_codes=country_code_values,
-        ideology_families=ideology_values,
-        role_categories=role_values,
-        centuries=century_values,
-    )
+    selected_filters = {
+        "country": country_values,
+        "country_codes": country_code_values,
+        "ideology_family": ideology_values,
+        "role_category": role_values,
+        "gender": gender_values,
+        "century": century_values,
+        "confidence": confidence_values,
+    }
 
-    # Add the newer metadata-only filters that are not part of the historical service signature.
-    def metadata_matches(item, field_name: str, selected_values: list[str]) -> bool:
-        if not selected_values:
-            return True
+    def item_matches(item) -> bool:
+        for field_name, selected_values in selected_filters.items():
+            if not selected_values:
+                continue
 
-        wanted = {
-            str(value).strip().lower()
-            for value in selected_values
-            if str(value).strip()
-        }
+            wanted = {
+                str(value).strip().lower()
+                for value in selected_values
+                if str(value).strip()
+            }
 
-        item_values = {
-            str(value).strip().lower()
-            for value in split_filter_values(_safe_reference_field_value(item, field_name))
-            if str(value).strip()
-        }
+            item_values = {
+                str(value).strip().lower()
+                for value in split_filter_values(_safe_reference_field_value(item, field_name))
+                if str(value).strip()
+            }
 
-        return bool(item_values.intersection(wanted))
+            if not item_values.intersection(wanted):
+                return False
+
+        return True
 
     filtered_reference_items = [
-        item for item in filtered_reference_items
-        if metadata_matches(item, "gender", gender_values)
-        and metadata_matches(item, "confidence", confidence_values)
+        item for item in reference_items
+        if item_matches(item)
     ]
 
     st.sidebar.caption(
-        f"{len(filtered_reference_items)} / {len(reference_items)} reference profiles displayed."
+        f"{len(filtered_reference_items)} / {total_reference_count} reference profiles displayed."
+    )
+    st.caption(
+        f"{len(filtered_reference_items)} / {total_reference_count} reference profiles match the current filters."
     )
 
     return filtered_reference_items
