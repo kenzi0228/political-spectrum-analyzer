@@ -970,6 +970,37 @@ def _safe_reference_field_value(item, field_name: str):
     return getattr(item, field_name, "")
 
 
+
+def split_filter_values(value) -> list[str]:
+    """Split reference filter metadata values safely.
+
+    Values may be scalars, lists, tuples, sets, comma-separated strings, or
+    semi-colon-separated strings. Empty values are ignored while preserving
+    first-seen order.
+    """
+    if value is None:
+        return []
+
+    if isinstance(value, (list, tuple, set)):
+        raw_items = value
+    else:
+        raw_items = [value]
+
+    values: list[str] = []
+    seen: set[str] = set()
+
+    for raw_item in raw_items:
+        for item in str(raw_item).replace(",", ";").split(";"):
+            cleaned = item.strip()
+            key = cleaned.lower()
+
+            if cleaned and key not in seen:
+                values.append(cleaned)
+                seen.add(key)
+
+    return values
+
+
 def _reference_multiselect_options(reference_items, field_name: str) -> list[str]:
     values = set()
 
