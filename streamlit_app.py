@@ -235,9 +235,9 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "formula_main_blocks_intro": "The analyzer does not use a black-box model. It builds four weighted blocks, then compares them.",
         "formula_coefficients_note": "A coefficient is a weight. The higher it is, the more that score influences the final coordinate. 0.90 is direct and strong, 0.75 is strong, 0.55 is moderate, and values around 0.20-0.35 are secondary.",
         "formula_left_block_title": "Economic-left block",
-        "formula_left_block_explanation": "- 0.90 * communisme: strongest economic-left marker; it directly pushes x to the left.\\n- 0.75 * regulation: strong interventionist marker; it pushes x to the left.\\n- 0.35 * ecologie: moderate contribution because ecology often implies regulation, without being purely economic.\\n- 0.25 * revolution: secondary contribution because radicality is a method, not a complete economic doctrine.",
+        "formula_left_block_explanation": "- 0.90 * communisme: strongest economic-left marker; it directly pushes x to the left.\\n- 0.75 * regulation: strong interventionist marker; it pushes x to the left.\\n- 0.35 * ecologie: moderate contribution because ecology often implies regulation, without being purely economic.\\n- revolution excluded from coordinate blocks: secondary contribution because radicality is a method, not a complete economic doctrine.",
         "formula_right_block_title": "Economic-right block",
-        "formula_right_block_explanation": "- 0.90 * capitalisme: strongest economic-right marker; it directly pushes x to the right.\\n- 0.75 * laissez_faire: strong market-autonomy marker; it pushes x to the right.\\n- 0.35 * productivisme: moderate contribution because growth and production can exist in several systems.\\n- 0.20 * reformisme: weak secondary contribution because reformism is mainly a political method.",
+        "formula_right_block_explanation": "- 0.90 * capitalisme: strongest economic-right marker; it directly pushes x to the right.\\n- 0.75 * laissez_faire: strong market-autonomy marker; it pushes x to the right.\\n- 0.35 * productivisme: moderate contribution because growth and production can exist in several systems.\\n- reformisme excluded from coordinate blocks: weak secondary contribution because reformism is mainly a political method.",
         "formula_libertarian_block_title": "Libertarian / progressive social block",
         "formula_libertarian_block_explanation": "- 0.75 * constructivisme: strong progressive-social marker because it reflects flexible social interpretation.\\n- 0.70 * justice_rehabilitative: strong anti-punitive marker because it favors reintegration and prevention.\\n- 0.70 * progressisme: strong social-change marker.\\n- 0.55 * internationalisme: moderate openness marker because it moves the profile toward broader cooperation.",
         "formula_authoritarian_block_title": "Authoritarian / conservative social block",
@@ -333,9 +333,9 @@ UI_TEXT: dict[str, dict[str, str]] = {
         "formula_main_blocks_intro": "L'analyseur n'utilise pas un modele boite noire. Il construit quatre blocs ponderes, puis les compare.",
         "formula_coefficients_note": "Un coefficient est un poids. Plus il est eleve, plus le score influence la coordonnee finale. 0.90 est direct et fort, 0.75 est fort, 0.55 est modere, et les valeurs autour de 0.20-0.35 sont secondaires.",
         "formula_left_block_title": "Bloc economique de gauche",
-        "formula_left_block_explanation": "- 0.90 * communisme : marqueur economique de gauche le plus fort ; il pousse directement x vers la gauche.\\n- 0.75 * regulation : marqueur interventionniste fort ; il pousse x vers la gauche.\\n- 0.35 * ecologie : contribution moderee car l'ecologie implique souvent de la regulation, sans etre purement economique.\\n- 0.25 * revolution : contribution secondaire car la radicalite est une methode, pas une doctrine economique complete.",
+        "formula_left_block_explanation": "- 0.90 * communisme : marqueur economique de gauche le plus fort ; il pousse directement x vers la gauche.\\n- 0.75 * regulation : marqueur interventionniste fort ; il pousse x vers la gauche.\\n- 0.35 * ecologie : contribution moderee car l'ecologie implique souvent de la regulation, sans etre purement economique.\\n- revolution excluded from coordinate blocks : contribution secondaire car la radicalite est une methode, pas une doctrine economique complete.",
         "formula_right_block_title": "Bloc economique de droite",
-        "formula_right_block_explanation": "- 0.90 * capitalisme : marqueur economique de droite le plus fort ; il pousse directement x vers la droite.\\n- 0.75 * laissez_faire : marqueur fort d'autonomie du marche ; il pousse x vers la droite.\\n- 0.35 * productivisme : contribution moderee car croissance et production peuvent exister dans plusieurs systemes.\\n- 0.20 * reformisme : contribution secondaire faible car le reformisme est surtout une methode politique.",
+        "formula_right_block_explanation": "- 0.90 * capitalisme : marqueur economique de droite le plus fort ; il pousse directement x vers la droite.\\n- 0.75 * laissez_faire : marqueur fort d'autonomie du marche ; il pousse x vers la droite.\\n- 0.35 * productivisme : contribution moderee car croissance et production peuvent exister dans plusieurs systemes.\\n- reformisme excluded from coordinate blocks : contribution secondaire faible car le reformisme est surtout une methode politique.",
         "formula_libertarian_block_title": "Bloc societal libertaire / progressiste",
         "formula_libertarian_block_explanation": "- 0.75 * constructivisme : marqueur social progressiste fort car il traduit une lecture flexible du social.\\n- 0.70 * justice_rehabilitative : marqueur anti-punitif fort car il favorise reintegration et prevention.\\n- 0.70 * progressisme : marqueur fort d'ouverture au changement social.\\n- 0.55 * internationalisme : marqueur modere d'ouverture vers une cooperation elargie.",
         "formula_authoritarian_block_title": "Bloc societal autoritaire / conservateur",
@@ -1409,7 +1409,7 @@ def _render_methodology_tab(language: str) -> None:
         "    0.90 * communisme\\n"
         "  + 0.75 * regulation\\n"
         "  + 0.35 * ecologie\\n"
-        "  + 0.25 * revolution",
+        "  + revolution excluded from coordinate blocks",
         language="text",
     )
     st.markdown(_md_text(language, "formula_left_block_explanation"))
@@ -1420,7 +1420,7 @@ def _render_methodology_tab(language: str) -> None:
         "    0.90 * capitalisme\\n"
         "  + 0.75 * laissez_faire\\n"
         "  + 0.35 * productivisme\\n"
-        "  + 0.20 * reformisme",
+        "  + reformisme excluded from coordinate blocks",
         language="text",
     )
     st.markdown(_md_text(language, "formula_right_block_explanation"))
@@ -1461,7 +1461,7 @@ def _render_methodology_tab(language: str) -> None:
     st.code(
         "economic_raw += 0.12 * (productivisme - ecologie)\\n"
         "societal_raw += 0.10 * (nationalisme - internationalisme)\\n"
-        "societal_raw += 0.08 * (revolution - reformisme)",
+        "societal_raw += revolution - reformisme excluded from coordinate normalization",
         language="text",
     )
     st.markdown(_md_text(language, "formula_adjustments_explanation"))
@@ -1469,10 +1469,10 @@ def _render_methodology_tab(language: str) -> None:
     st.subheader(_t(language, "normalization"))
 
     st.code(
-        "economic_normalized = economic_raw / 120\\n"
-        "societal_normalized = societal_raw / 120\\n\\n"
-        "x = 4 * sigmoid_scaled(economic_normalized)\\n"
-        "y = 4 * sigmoid_scaled(societal_normalized)",
+        "economic_raw is normalized with tanh\\n"
+        "social_raw is normalized with tanh\\n\\n"
+        "x = 4 * tanh normalization(economic_normalized)\\n"
+        "y = 4 * tanh normalization(societal_normalized)",
         language="text",
     )
     st.markdown(_md_text(language, "formula_normalization_explanation"))
@@ -1661,6 +1661,10 @@ def _force_dark_metric_cards() -> None:
     st.markdown(PROFILE_METRIC_DARK_CSS, unsafe_allow_html=True)
 
 
+def _render_methodology_v3(language: str | None = None) -> None:
+    st.header("Methodology")
+    st.markdown('## How the analyzer works\n\nThe analyzer turns the 16 Politiscales-style scores into two readable coordinates:\n\n- **x**: economic position, from economic left to economic right.\n- **y**: social-authority position, from libertarian / progressive to authoritarian / conservative.\n\nThe model is not a black box. It builds weighted ideological blocks, compares opposite blocks, applies small secondary adjustments, then normalizes the result into the graph range `[-4, 4]`.\n\n---\n\n## 1. Coordinate system\n\n| Axis | Negative side | Positive side |\n|---|---|---|\n| `x` economic axis | Economic left | Economic right |\n| `y` social-authority axis | Libertarian / progressive | Authoritarian / conservative |\n\n```text\nx in [-4, 4]\ny in [-4, 4]\n```\n\n---\n\n## 2. Score blocks and coefficients\n\nA coefficient is a weight. Higher coefficients have stronger influence on the final coordinate.\n\n### Economic-left block\n\n```text\neconomic_left =\n    0.95 * communisme\n  + 0.75 * regulation\n  + 0.38 * ecologie\n```\n\n- `communisme`: strongest economic-left marker.\n- `regulation`: strong interventionist marker.\n- `ecologie`: secondary but meaningful economic-left pressure, because ecological politics often implies limits to growth, regulation of resources, and public constraint on markets.\n\n`revolution` is intentionally excluded from this block. It is a method of political change, not an economic doctrine.\n\n### Economic-right block\n\n```text\neconomic_right =\n    0.95 * capitalisme\n  + 0.80 * laissez_faire\n  + 0.32 * productivisme\n```\n\n- `capitalisme`: strongest economic-right marker.\n- `laissez_faire`: strong market-autonomy marker.\n- `productivisme`: secondary economic-right pressure, because growth and production can exist in different regimes but usually reinforce market or development-oriented readings.\n\n`reformisme` is intentionally excluded from this block. It is a method of institutional change, not an economic doctrine.\n\n### Libertarian / progressive social block\n\n```text\nsocial_libertarian =\n    0.75 * constructivisme\n  + 0.70 * justice_rehabilitative\n  + 0.75 * progressisme\n  + 0.45 * internationalisme\n```\n\n- `constructivisme`: strong progressive-social marker.\n- `justice_rehabilitative`: strong anti-punitive marker.\n- `progressisme`: strong social-change marker.\n- `internationalisme`: moderate openness marker.\n\n### Authoritarian / conservative social block\n\n```text\nsocial_authoritarian =\n    0.65 * essentialisme\n  + 0.75 * justice_punitive\n  + 0.75 * conservatisme\n  + 0.45 * nationalisme\n```\n\n- `essentialisme`: conservative-social marker.\n- `justice_punitive`: authority and sanction marker.\n- `conservatisme`: continuity and social-order marker.\n- `nationalisme`: moderate sovereignty / national-priority marker.\n\n---\n\n## 3. Raw axis calculation\n\n```text\neconomic_raw = economic_right - economic_left\nsocial_raw = social_authoritarian - social_libertarian\n```\n\nInterpretation:\n\n- positive `economic_raw` pushes the profile to the economic right;\n- negative `economic_raw` pushes it to the economic left;\n- positive `social_raw` pushes the profile toward authority / conservatism;\n- negative `social_raw` pushes it toward libertarian / progressive positions.\n\n---\n\n## 4. Secondary adjustments\n\nOnly two secondary adjustments are used in the coordinate calculation:\n\n```text\neconomic_raw += 0.10 * (productivisme - ecologie)\nsocial_raw += 0.06 * (nationalisme - internationalisme)\n```\n\nThese adjustments are deliberately small. They refine the reading without dominating the core blocks.\n\nRemoved from coordinate calculation:\n\n```text\nrevolution - reformisme\n```\n\n`revolution` and `reformisme` remain useful for the detailed interpretation, especially to explain the preferred strategy of political change. They do not directly define the economic or social-authority coordinate.\n\n---\n\n## 5. Normalization to `[-4, 4]`\n\nThe final coordinates are obtained with hyperbolic tangent normalization:\n\n```text\nx = 4 * tanh(0.015 * economic_raw)\ny = 4 * tanh(0.015 * social_raw)\n```\n\nWhy `tanh` is used:\n\n- it keeps the graph bounded between `-4` and `+4`;\n- it keeps moderate profiles close to the center;\n- it lets strong profiles move toward the edges without exploding out of range;\n- it avoids over-compressing all profiles into the same extreme positions.\n\n---\n\n## 6. Role of revolution and reformism\n\n`revolution` and `reformisme` are not discarded. They are used in the **detailed interpretation**:\n\n- rupture vs gradual reform;\n- rejection vs correction of institutions;\n- radical transformation vs institutional continuity.\n\nThey are not direct economic-left/economic-right or libertarian/authoritarian markers.\n\n---\n\n## 7. Meaning of the 16 axes\n\n| Axis | Main meaning |\n|---|---|\n| `communisme` | collective ownership, anti-capitalist economics |\n| `capitalisme` | private property, market-oriented economics |\n| `regulation` | state intervention, planning, public constraint |\n| `laissez_faire` | market autonomy, deregulation, economic freedom |\n| `ecologie` | environmental limits, anti-productivist pressure |\n| `productivisme` | growth, production, infrastructure, output |\n| `constructivisme` | flexible social interpretation, anti-essentialism |\n| `essentialisme` | fixed categories, naturalized social order |\n| `justice_rehabilitative` | reintegration, prevention, restorative justice |\n| `justice_punitive` | sanction, deterrence, punitive order |\n| `progressisme` | social change, equality expansion, reform of norms |\n| `conservatisme` | continuity, tradition, institutional stability |\n| `internationalisme` | cross-border cooperation, universalist openness |\n| `nationalisme` | sovereignty, national priority, cohesion |\n| `revolution` | rupture-oriented change strategy |\n| `reformisme` | gradual, institutional change strategy |\n\n---\n\n## 8. How to read the result\n\nThe app gives several levels of reading:\n\n1. **Graph position**: where the profile appears on the x/y spectrum.\n2. **Closest references**: which reference personalities are geometrically closest.\n3. **Detailed profile analysis**: strongest axes, weakest axes, pair balances, strategic tendencies, and internal tensions.\n4. **Profile comparison**: when several profiles are entered, the app compares their coordinates and their underlying score patterns.\n\nThe graph is a summary. The detailed interpretation is richer because it reads the full 16-axis score set.\n\n---\n\n## 9. Methodological limits\n\nThis model is an analytical approximation. It is not a scientific diagnosis and should not be treated as a definitive ideological identity.\n\nImportant limits:\n\n- coordinates depend on selected coefficients;\n- political labels are simplifications;\n- historical figures and reference personalities are approximate placements;\n- two profiles can share a graph position while having different internal score structures;\n- secondary dimensions should be interpreted as nuance, not as absolute classification.\n')
+
 def main() -> None:
     _inject_css()
     _force_dark_sidebar()
@@ -1743,11 +1747,8 @@ def main() -> None:
         st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
 
     with methodology_tab:
-        _render_methodology_tab(language)
-
-
-    # Runtime fallback: older layouts may render the About section outside st.tabs.
-    about_tab = locals().get('about_tab', st.container())
+        _render_methodology_v3(language)
+    about_tab = locals().get("about_tab", locals().get("guide_tab", locals().get("home_tab", st.container())))
     with about_tab:
         _render_about_tab(language)
 # Profile comparison analysis is available through _render_profile_comparison_analysis(people_results, language).
