@@ -1155,14 +1155,6 @@ def _render_reference_multiselect_filters(reference_items, language: str):
         key="active_reference_filter_country",
     )
 
-    country_code_values = st.sidebar.multiselect(
-        "Country code filter",
-        options=options_with_any_none("country_codes"),
-        default=["Any"],
-        help="Filter by metadata country code. Any disables this filter. None matches missing values.",
-        key="active_reference_filter_country_codes",
-    )
-
     ideology_values = st.sidebar.multiselect(
         "Ideology families",
         options=options_with_any_none("ideology_family"),
@@ -1205,7 +1197,6 @@ def _render_reference_multiselect_filters(reference_items, language: str):
 
     selected_filters = {
         "country": country_values,
-        "country_codes": country_code_values,
         "ideology_family": ideology_values,
         "role_category": role_values,
         "gender": gender_values,
@@ -1631,9 +1622,49 @@ def _force_dark_sidebar() -> None:
     st.markdown(FORCE_DARK_SIDEBAR_CSS, unsafe_allow_html=True)
 
 
+PROFILE_METRIC_DARK_CSS = """
+<style>
+[data-testid="metric-container"],
+[data-testid="stMetric"],
+div[data-testid="stMetric"] {
+    background: #111522 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 14px !important;
+    padding: 14px 16px !important;
+    color: #FAFAFA !important;
+}
+[data-testid="metric-container"] *,
+[data-testid="stMetric"] *,
+div[data-testid="stMetric"] * {
+    color: #FAFAFA !important;
+}
+[data-testid="stMetricLabel"],
+[data-testid="stMetricValue"],
+[data-testid="stMetricDelta"] {
+    color: #FAFAFA !important;
+}
+div[data-testid="column"] div[style*="background-color: rgb(255, 255, 255)"],
+div[data-testid="column"] div[style*="background: rgb(255, 255, 255)"] {
+    background: #111522 !important;
+    color: #FAFAFA !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+div[data-testid="column"] div[style*="background-color: rgb(255, 255, 255)"] *,
+div[data-testid="column"] div[style*="background: rgb(255, 255, 255)"] * {
+    color: #FAFAFA !important;
+}
+</style>
+"""
+
+
+def _force_dark_metric_cards() -> None:
+    st.markdown(PROFILE_METRIC_DARK_CSS, unsafe_allow_html=True)
+
+
 def main() -> None:
     _inject_css()
     _force_dark_sidebar()
+    _force_dark_metric_cards()
 
     language = st.session_state.get("language", "en")
 
@@ -2071,7 +2102,6 @@ REFERENCE_MULTISELECT_FILTER_FIELDS = {
     "ideology_family": "Ideology family",
     "role_category": "Role category",
     "gender": "Gender",
-    "country_codes": "Country code",
     "century": "Century",
     "confidence": "Confidence",
 }

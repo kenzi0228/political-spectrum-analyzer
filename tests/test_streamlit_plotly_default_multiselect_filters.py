@@ -21,7 +21,6 @@ def test_every_reference_filter_is_multiselect_capable():
     assert '"ideology_family": "Ideology family"' in content
     assert '"role_category": "Role category"' in content
     assert '"gender": "Gender"' in content
-    assert '"country_codes": "Country code"' in content
     assert '"century": "Century"' in content
     assert '"confidence": "Confidence"' in content
     assert "st.sidebar.multiselect" in content

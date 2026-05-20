@@ -37,7 +37,6 @@ def test_active_multiselect_filters_include_all_requested_dimensions():
 
     for field in [
         "country",
-        "country_codes",
         "ideology_family",
         "role_category",
         "gender",

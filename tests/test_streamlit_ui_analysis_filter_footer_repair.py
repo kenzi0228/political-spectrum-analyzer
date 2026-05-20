@@ -22,7 +22,7 @@ def test_reference_filter_aliases_and_real_value_fallbacks_exist():
 
 def test_country_code_filter_label_is_renamed():
     content = APP.read_text(encoding="utf-8")
-    assert '"Country code filter"' in content
+    assert '"Country code filter"' not in content
 
 
 def test_original_detailed_analysis_is_runtime_path():
