@@ -1,4 +1,5 @@
 from __future__ import annotations
+import csv
 import re
 # Reference chart tooltip contract: display_group is descriptive hover metadata, while role_category is the user-facing filter dimension.
 # Role category is the user-facing reference filter.
@@ -486,12 +487,35 @@ def _render_profile_interpretation(person: PersonResult) -> None:
     st.success(interpretation.archetype)
     st.write(interpretation.synthesis)
 
-    reading_col1, reading_col2, reading_col3 = st.columns(3)
-    reading_col1.info(interpretation.economic_reading)
-    reading_col2.info(interpretation.societal_reading)
-    reading_col3.info(interpretation.strategic_reading)
+    reading_details = [
+        ("Economic reading", interpretation.economic_reading),
+        ("Societal reading", interpretation.societal_reading),
+        ("Strategic reading", interpretation.strategic_reading),
+        ("Internal tension", interpretation.tension_reading),
+    ]
 
-    st.info(interpretation.tension_reading)
+    synthesis_normalized = " ".join(str(interpretation.synthesis).lower().split())
+    unique_reading_details = []
+    seen_reading_details = set()
+
+    for label, text in reading_details:
+        text = str(text).strip()
+        normalized = " ".join(text.lower().split())
+
+        if not normalized:
+            continue
+        if normalized in seen_reading_details:
+            continue
+        if normalized in synthesis_normalized:
+            continue
+
+        seen_reading_details.add(normalized)
+        unique_reading_details.append((label, text))
+
+    if unique_reading_details:
+        st.markdown("#### Detailed reading notes")
+        for label, text in unique_reading_details:
+            st.markdown(f"- **{label}:** {text}")
 
     if interpretation.profile_highlights:
         st.markdown("#### Profile highlights")
@@ -958,10 +982,82 @@ def _render_advanced_profile_interpretations(people: list, language: str) -> Non
     st.dataframe(pd.DataFrame(build_advanced_interpretation_rows(interpretations)), use_container_width=True, hide_index=True)
 
 
-def _safe_reference_field_value(item, field_name: str):
+REFERENCE_FILTER_FIELD_ALIASES = {
+    "country": ["country", "countries"],
+    "country_codes": ["country_codes", "country_code", "countryCode", "countries_codes"],
+    "ideology_family": ["ideology_family", "ideology", "family"],
+    "role_category": ["role_category", "role", "category", "display_group", "group"],
+    "gender": ["gender", "genre", "sex"],
+    "century": ["century", "centuries", "period", "era"],
+    "confidence": ["confidence", "confidence_level", "source_confidence"],
+}
+
+
+def _reference_metadata_lookup_by_name() -> dict[str, dict[str, str]]:
+    """Load raw reference CSV metadata by profile name for UI filter fallbacks."""
+    csv_path = Path("data/reference/personalities.csv")
+
+    if not csv_path.exists():
+        return {}
+
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as file:
+        rows = list(csv.DictReader(file))
+
+    lookup = {}
+    for row in rows:
+        name = str(row.get("name", "")).strip()
+        if name:
+            lookup[name] = row
+
+    return lookup
+
+
+def _reference_field_aliases(field_name: str) -> list[str]:
+    aliases = REFERENCE_FILTER_FIELD_ALIASES.get(field_name, [field_name])
+    return list(dict.fromkeys([field_name, *aliases]))
+
+
+def _object_field_value(item, field_name: str):
+    for alias in _reference_field_aliases(field_name):
+        if isinstance(item, dict) and alias in item:
+            return item.get(alias)
+        if hasattr(item, alias):
+            return getattr(item, alias)
+
+    return ""
+
+
+def _reference_item_name(item) -> str:
     if isinstance(item, dict):
-        return item.get(field_name, "")
-    return getattr(item, field_name, "")
+        return str(item.get("name", "")).strip()
+    return str(getattr(item, "name", "")).strip()
+
+
+def _safe_reference_field_value(item, field_name: str):
+    """Read reference metadata from object attributes, dicts, or CSV fallback."""
+    direct_value = _object_field_value(item, field_name)
+
+    if direct_value not in (None, ""):
+        return direct_value
+
+    name = _reference_item_name(item)
+    metadata = _reference_metadata_lookup_by_name().get(name, {})
+
+    for alias in _reference_field_aliases(field_name):
+        value = metadata.get(alias, "")
+        if value not in (None, ""):
+            return value
+
+    if field_name == "century":
+        for alias in ["period", "era"]:
+            value = metadata.get(alias, "")
+            if value not in (None, ""):
+                return value
+            object_value = _object_field_value(item, alias)
+            if object_value not in (None, ""):
+                return object_value
+
+    return ""
 
 
 def split_filter_values(value) -> list[str]:
@@ -995,14 +1091,33 @@ def split_filter_values(value) -> list[str]:
 
 
 def _reference_multiselect_options(reference_items, field_name: str) -> list[str]:
-    values = set()
+    """Return real dataset values for a reference filter field."""
+    values = []
+    seen = set()
 
     for item in reference_items:
-        for value in split_filter_values(_safe_reference_field_value(item, field_name)):
-            if value:
-                values.add(value)
+        raw_value = _safe_reference_field_value(item, field_name)
 
-    return sorted(values)
+        for value in split_filter_values(raw_value):
+            value = str(value).strip()
+            key = value.lower()
+
+            if value and key not in seen:
+                values.append(value)
+                seen.add(key)
+
+    if not values:
+        for metadata in _reference_metadata_lookup_by_name().values():
+            for alias in _reference_field_aliases(field_name):
+                for value in split_filter_values(metadata.get(alias, "")):
+                    value = str(value).strip()
+                    key = value.lower()
+
+                    if value and key not in seen:
+                        values.append(value)
+                        seen.add(key)
+
+    return sorted(values, key=lambda value: value.lower())
 
 
 def _render_reference_multiselect_filters(reference_items, language: str):
@@ -1041,10 +1156,10 @@ def _render_reference_multiselect_filters(reference_items, language: str):
     )
 
     country_code_values = st.sidebar.multiselect(
-        "Country codes",
+        "Country code filter",
         options=options_with_any_none("country_codes"),
         default=["Any"],
-        help="Select one or several country codes. Any disables this filter. None matches missing values.",
+        help="Filter by metadata country code. Any disables this filter. None matches missing values.",
         key="active_reference_filter_country_codes",
     )
 
@@ -1540,8 +1655,8 @@ def main() -> None:
         people = _render_multi_profile_inputs(precise_input_mode)
 
     with guide_tab:
-        _render_user_guide_tab(language)
 
+        _render_user_guide_tab(language)
     with graph_tab:
         st.header("Political positioning")
 
