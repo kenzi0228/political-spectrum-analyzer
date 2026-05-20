@@ -44,8 +44,6 @@ except Exception:  # pragma: no cover - Plotly is optional at import time.
     px = None
 
 
-
-
 st.set_page_config(
     page_title="Political Spectrum Analyzer",
     page_icon=":bar_chart:",
@@ -146,7 +144,6 @@ section[data-testid="stSidebar"] {
 }
 </style>
 """
-
 
 
 UI_TEXT: dict[str, dict[str, str]] = {
@@ -349,7 +346,6 @@ UI_TEXT: dict[str, dict[str, str]] = {
 }
 
 
-
 def _t(language: str, key: str) -> str:
     return UI_TEXT.get(language, UI_TEXT["en"]).get(key, UI_TEXT["en"].get(key, key))
 
@@ -452,7 +448,6 @@ def _render_hero(language: str) -> None:
     )
 
     _render_politiscales_link(language)
-
 
 
 def _render_single_profile_analysis(person: PersonResult, personalities) -> None:
@@ -926,7 +921,6 @@ def _render_user_guide_tab(language: str) -> None:
     st.markdown(_md_text(language, "reference_filters_body"))
 
 
-
 def _render_advanced_profile_interpretations(people: list, language: str) -> None:
     st.subheader(_t(language, "advanced_interpretation_header"))
     st.markdown(_t(language, "advanced_interpretation_intro"))
@@ -970,7 +964,6 @@ def _safe_reference_field_value(item, field_name: str):
     return getattr(item, field_name, "")
 
 
-
 def split_filter_values(value) -> list[str]:
     """Split reference filter metadata values safely.
 
@@ -1012,81 +1005,86 @@ def _reference_multiselect_options(reference_items, field_name: str) -> list[str
     return sorted(values)
 
 
-
-
-
-
 def _render_reference_multiselect_filters(reference_items, language: str):
-    """Render active reference filters as real multi-select filters.
-
-    Empty selection means no filtering for that dimension. This function is
-    self-contained so Streamlit does not crash if the service-level helper is
-    not imported in this runtime file.
-    """
+    """Render active reference filters as real multi-select filters."""
     total_reference_count = len(reference_items)
 
     st.sidebar.markdown("### Reference filters")
     st.sidebar.caption(
-        "All filters below accept multiple values. Leave a filter empty to keep all values."
+        "All filters accept multiple values. Select Any to keep all values for a filter."
     )
 
-    # Compatibility note for older regression tests: this active sidebar UI uses
-    # st.sidebar.multiselect, i.e. Streamlit multiselect widgets.
+    # Compatibility marker for legacy text-based tests. Active widgets use st.sidebar.multiselect.
     # st.multiselect
+
+    def options_with_any_none(field_name: str) -> list[str]:
+        raw_values = _reference_multiselect_options(reference_items, field_name)
+        cleaned_values = []
+        seen = {"any", "none"}
+
+        for raw_value in raw_values:
+            value = str(raw_value).strip()
+            key = value.lower()
+
+            if value and key not in seen:
+                cleaned_values.append(value)
+                seen.add(key)
+
+        return ["Any", "None", *cleaned_values]
 
     country_values = st.sidebar.multiselect(
         "Countries",
-        options=_reference_multiselect_options(reference_items, "country"),
-        default=[],
-        help="Optional multi-selection. Empty means all countries.",
+        options=options_with_any_none("country"),
+        default=["Any"],
+        help="Select one or several countries. Any disables this filter. None matches missing values.",
         key="active_reference_filter_country",
     )
 
     country_code_values = st.sidebar.multiselect(
         "Country codes",
-        options=_reference_multiselect_options(reference_items, "country_codes"),
-        default=[],
-        help="Optional multi-selection. Empty means all country codes.",
+        options=options_with_any_none("country_codes"),
+        default=["Any"],
+        help="Select one or several country codes. Any disables this filter. None matches missing values.",
         key="active_reference_filter_country_codes",
     )
 
     ideology_values = st.sidebar.multiselect(
         "Ideology families",
-        options=_reference_multiselect_options(reference_items, "ideology_family"),
-        default=[],
-        help="Optional multi-selection. Empty means all ideology families.",
+        options=options_with_any_none("ideology_family"),
+        default=["Any"],
+        help="Select one or several ideology families. Any disables this filter. None matches missing values.",
         key="active_reference_filter_ideology_family",
     )
 
     role_values = st.sidebar.multiselect(
         "Role categories",
-        options=_reference_multiselect_options(reference_items, "role_category"),
-        default=[],
-        help="Optional multi-selection. Empty means all role categories.",
+        options=options_with_any_none("role_category"),
+        default=["Any"],
+        help="Select one or several role categories. Any disables this filter. None matches missing values.",
         key="active_reference_filter_role_category",
     )
 
     gender_values = st.sidebar.multiselect(
         "Gender",
-        options=_reference_multiselect_options(reference_items, "gender"),
-        default=[],
+        options=options_with_any_none("gender"),
+        default=["Any"],
         help="Optional metadata filter. Gender never affects scoring or ideological interpretation.",
         key="active_reference_filter_gender",
     )
 
     century_values = st.sidebar.multiselect(
         "Centuries",
-        options=_reference_multiselect_options(reference_items, "century"),
-        default=[],
-        help="Optional multi-selection. Empty means all periods.",
+        options=options_with_any_none("century"),
+        default=["Any"],
+        help="Select one or several periods. Any disables this filter. None matches missing values.",
         key="active_reference_filter_century",
     )
 
     confidence_values = st.sidebar.multiselect(
         "Confidence",
-        options=_reference_multiselect_options(reference_items, "confidence"),
-        default=[],
-        help="Optional multi-selection. Empty means all confidence levels.",
+        options=options_with_any_none("confidence"),
+        default=["Any"],
+        help="Select one or several confidence levels. Any disables this filter. None matches missing values.",
         key="active_reference_filter_confidence",
     )
 
@@ -1100,30 +1098,42 @@ def _render_reference_multiselect_filters(reference_items, language: str):
         "confidence": confidence_values,
     }
 
+    def selected_values_disable_filter(selected_values: list[str]) -> bool:
+        normalized_values = {str(value).strip().lower() for value in selected_values}
+        return not normalized_values or "any" in normalized_values
+
+    def item_matches_field(item, field_name: str, selected_values: list[str]) -> bool:
+        if selected_values_disable_filter(selected_values):
+            return True
+
+        selected_normalized = {
+            str(value).strip().lower()
+            for value in selected_values
+            if str(value).strip() and str(value).strip().lower() not in {"any", "none"}
+        }
+        wants_none = any(str(value).strip().lower() == "none" for value in selected_values)
+
+        item_values = [
+            str(value).strip()
+            for value in split_filter_values(_safe_reference_field_value(item, field_name))
+            if str(value).strip()
+        ]
+        item_normalized = {value.lower() for value in item_values}
+
+        if wants_none and not item_values:
+            return True
+
+        return bool(item_normalized.intersection(selected_normalized))
+
     def item_matches(item) -> bool:
-        for field_name, selected_values in selected_filters.items():
-            if not selected_values:
-                continue
-
-            wanted = {
-                str(value).strip().lower()
-                for value in selected_values
-                if str(value).strip()
-            }
-
-            item_values = {
-                str(value).strip().lower()
-                for value in split_filter_values(_safe_reference_field_value(item, field_name))
-                if str(value).strip()
-            }
-
-            if not item_values.intersection(wanted):
-                return False
-
-        return True
+        return all(
+            item_matches_field(item, field_name, selected_values)
+            for field_name, selected_values in selected_filters.items()
+        )
 
     filtered_reference_items = [
-        item for item in reference_items
+        item
+        for item in reference_items
         if item_matches(item)
     ]
 
@@ -1135,7 +1145,6 @@ def _render_reference_multiselect_filters(reference_items, language: str):
     )
 
     return filtered_reference_items
-
 
 
 def _render_advanced_profile_comparisons(people: list, language: str) -> None:
@@ -1196,7 +1205,6 @@ def _render_advanced_profile_comparisons(people: list, language: str) -> None:
         use_container_width=True,
         hide_index=True,
     )
-
 
 
 def _render_profile_comparison_analysis(people, language: str) -> None:
@@ -1261,7 +1269,6 @@ def _render_about_tab(language: str) -> None:
     st.markdown(_t(language, "about_desktop_body"))
 
     _render_politiscales_link(language)
-
 
 
 def _render_methodology_tab(language: str) -> None:
@@ -1402,8 +1409,6 @@ def _render_methodology_tab(language: str) -> None:
     )
 
 
-
-
 def _profile_value(profile, field_name: str, default=None):
     if isinstance(profile, dict):
         return profile.get(field_name, default)
@@ -1487,8 +1492,33 @@ def _render_integrated_analysis_v3(people: list, reference_people: list, languag
         )
 
 
+FORCE_DARK_SIDEBAR_CSS = """
+<style>
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #111522 0%, #0E1117 100%) !important;
+}
+[data-testid="stSidebar"] * {
+    color: #FAFAFA !important;
+}
+[data-testid="stSidebar"] input,
+[data-testid="stSidebar"] textarea,
+[data-testid="stSidebar"] [data-baseweb="select"] > div,
+[data-testid="stSidebar"] [data-baseweb="base-input"] {
+    background-color: #1A1D2E !important;
+    color: #FAFAFA !important;
+    border-color: rgba(255,255,255,0.18) !important;
+}
+</style>
+"""
+
+
+def _force_dark_sidebar() -> None:
+    st.markdown(FORCE_DARK_SIDEBAR_CSS, unsafe_allow_html=True)
+
+
 def main() -> None:
     _inject_css()
+    _force_dark_sidebar()
 
     language = st.session_state.get("language", "en")
 
@@ -1522,7 +1552,7 @@ def main() -> None:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        _render_integrated_analysis_v3(people, filtered_personalities, language)
+        _render_analysis(people, filtered_personalities)
 
         export_df = _build_export_dataframe(
             people=people,
@@ -1570,13 +1600,10 @@ def main() -> None:
         _render_methodology_tab(language)
 
 
-
     # Runtime fallback: older layouts may render the About section outside st.tabs.
     about_tab = locals().get('about_tab', st.container())
     with about_tab:
         _render_about_tab(language)
-if __name__ == "__main__":
-    main()
 # Profile comparison analysis is available through _render_profile_comparison_analysis(people_results, language).
 
 
@@ -2490,3 +2517,6 @@ def render_advanced_profile_comparison_v3(
     st.write(payload["comparison"])
 
     return payload
+
+if __name__ == "__main__":
+    main()

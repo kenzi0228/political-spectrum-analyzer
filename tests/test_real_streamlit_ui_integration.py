@@ -34,11 +34,11 @@ def test_active_reference_filters_include_gender_and_confidence():
     assert "active_reference_filter_gender" in function_body
 
 
-def test_main_uses_integrated_analysis_v3_not_legacy_analysis():
+def test_main_uses_restored_detailed_analysis_renderer():
     main = _main_block()
 
-    assert "_render_integrated_analysis_v3(people, filtered_personalities, language)" in main
-    assert "_render_analysis(people, personalities)" not in main
+    assert "_render_analysis(people, filtered_personalities)" in main
+    assert "_render_integrated_analysis_v3(people, filtered_personalities, language)" not in main
 
 
 def test_score_input_mode_label_is_visible_before_sidebar_options():
