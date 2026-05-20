@@ -7,9 +7,9 @@ role_category_count,16,Number of role categories represented.
 country_code_count,97,Number of country codes represented.
 century_count,7,Number of century buckets represented.
 alias_count,96,Number of ideology alias mappings.
-male_count,221,Profiles coded as male.
-female_count,106,Profiles coded as female.
-unknown_gender_count,173,Profiles coded as unknown gender.
+male_count,352,Profiles coded as male.
+female_count,148,Profiles coded as female.
+unknown_gender_count,0,Profiles coded as unknown gender.
 female_share_percent,21.20,Share of profiles coded as female.
 high_confidence_count,23,Profiles marked as high confidence.
 medium_confidence_count,407,Profiles marked as medium confidence.

@@ -1,0 +1,8 @@
+name,ideology_family,role_category,display_group,x,y,confidence,flags
+Thomas Hobbes,Authoritarianism,Thinker,Philosopher,1.0,1.7,medium,authoritarianism with y < 2.0
+Augusto Pinochet,Liberalism,Authoritarian ruler,Dictator,3.2,1.6,medium,authoritarian ruler with y < 2.0
+Murray Rothbard,Anarchism,Economist,Economist,3.8,-3.4,medium,left/social anarchism with x > 0.5
+Josip Broz Tito,Other,Authoritarian ruler,Dictator,-1.3,1.5,medium,authoritarian ruler with y < 2.0
+Woodrow Wilson,Progressivism,Head of state,President,0.4,1.2,medium,progressivism with y > -0.5
+Deng Xiaoping,Socialism,Political Leader,Political Leader,1.0,2.4,medium,socialism with x > 0.2
+Kim Il-sung,Communism,Authoritarian ruler,Authoritarian ruler,-2.8,3.9,high,near graph boundary; verify that extremity is intentional
