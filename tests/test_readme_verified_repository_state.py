@@ -24,7 +24,15 @@ def test_readme_documents_current_scoring_model_v3_and_frames_legacy_v2():
 
     assert "0.95 * communisme" in text
     assert "0.80 * laissez_faire" in text
-    assert "0.38 * ecologie" in text
+    assert "0.28 * ecologie" in text
+    assert "0.24 * productivisme" in text
+    assert "0.35 * internationalisme" in text
+    assert "0.60 * essentialisme" in text
+    assert "0.70 * justice_punitive" in text
+    assert "0.70 * conservatisme" in text
+    assert "0.30 * nationalisme" in text
+    assert "0.04 * (productivisme - ecologie)" in text
+    assert "0.03 * (nationalisme - internationalisme)" in text
     assert "tanh(0.015 * economic_raw)" in text
     assert "Legacy scoring model v2 anchor" in text
     assert "This block is retained only as a legacy documentation contract" in text

@@ -15,6 +15,12 @@ def test_load_personalities_includes_metadata_fields():
     assert marx.period == "19th century"
     assert marx.ideology_family == "Socialism"
     assert marx.confidence == "medium"
+    assert marx.country_codes == "DEU"
+    assert marx.century == "19th century"
+    assert marx.ideology_subtype == "General"
+    assert marx.role_category == "Thinker"
+    assert marx.gender == "male"
+    assert "Socialism" in (marx.tags or "")
 
 
 def test_load_personalities_keeps_coordinates_as_float():

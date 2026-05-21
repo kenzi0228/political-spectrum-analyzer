@@ -21,7 +21,8 @@ def test_filters_include_any_none_and_real_value_pipeline():
 
     assert '"Any"' in body
     assert '"None"' in body
-    assert 'default=["Any"]' in body
+    assert "default=[]" in body
+    assert "has_filter_selection = any(selected_filters.values())" in body
     assert "_reference_multiselect_options(reference_items, field_name)" in body
     assert "cleaned_values" in body
     assert "reference profiles displayed" in body

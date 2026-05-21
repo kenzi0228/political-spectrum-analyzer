@@ -70,6 +70,7 @@ def get_unique_values(
 def filter_personalities(
     personalities: Iterable[PersonalityPoint],
     display_group: str | None = NONE_VALUE,
+    role_category: str | None = NONE_VALUE,
     country: str | None = NONE_VALUE,
     period: str | None = NONE_VALUE,
     ideology_family: str | None = NONE_VALUE,
@@ -85,6 +86,7 @@ def filter_personalities(
     """
     if not _has_explicit_filter_selection(
         display_group,
+        role_category,
         country,
         period,
         ideology_family,
@@ -95,6 +97,9 @@ def filter_personalities(
 
     for personality in personalities:
         if not _matches_filter(personality.display_group, display_group):
+            continue
+
+        if not _matches_filter(getattr(personality, "role_category", None), role_category):
             continue
 
         if not _matches_filter(personality.country, country):

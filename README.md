@@ -93,12 +93,12 @@ Economic blocks:
 economic_left =
     0.95 * communisme
   + 0.75 * regulation
-  + 0.38 * ecologie
+  + 0.28 * ecologie
 
 economic_right =
     0.95 * capitalisme
   + 0.80 * laissez_faire
-  + 0.32 * productivisme
+  + 0.24 * productivisme
 ```
 
 Social-authority blocks:
@@ -108,13 +108,13 @@ social_libertarian =
     0.75 * constructivisme
   + 0.70 * justice_rehabilitative
   + 0.75 * progressisme
-  + 0.45 * internationalisme
+  + 0.35 * internationalisme
 
 social_authoritarian =
-    0.65 * essentialisme
-  + 0.75 * justice_punitive
-  + 0.75 * conservatisme
-  + 0.45 * nationalisme
+    0.60 * essentialisme
+  + 0.70 * justice_punitive
+  + 0.70 * conservatisme
+  + 0.30 * nationalisme
 ```
 
 Raw axes and normalization:
@@ -123,8 +123,8 @@ Raw axes and normalization:
 economic_raw = economic_right - economic_left
 social_raw = social_authoritarian - social_libertarian
 
-economic_raw += 0.10 * (productivisme - ecologie)
-social_raw += 0.06 * (nationalisme - internationalisme)
+economic_raw += 0.04 * (productivisme - ecologie)
+social_raw += 0.03 * (nationalisme - internationalisme)
 
 x = 4 * tanh(0.015 * economic_raw)
 y = 4 * tanh(0.015 * social_raw)

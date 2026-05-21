@@ -19,6 +19,12 @@ class PersonalityPoint:
     ideology_family: Optional[str] = None
     source: Optional[str] = None
     notes: Optional[str] = None
+    country_codes: Optional[str] = None
+    century: Optional[str] = None
+    ideology_subtype: Optional[str] = None
+    role_category: Optional[str] = None
+    gender: Optional[str] = None
+    tags: Optional[str] = None
 
 
 @dataclass(frozen=True)

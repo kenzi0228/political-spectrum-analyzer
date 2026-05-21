@@ -27,5 +27,5 @@ def test_methodology_explains_coefficients_explicitly():
     assert "economic-right block" in content
     assert "secondary adjustments" in content
     assert "normalization and final coordinates" in content
-    assert "0.90 * communisme" in content
-    assert "0.90 * capitalisme" in content
+    assert "0.95 * communisme" in content
+    assert "0.95 * capitalisme" in content

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from political_spectrum_analyzer.services.scoring_model_v3 import (
     compute_scoring_model_v3_blocks,
     compute_scoring_model_v3_coordinates,
@@ -22,8 +24,15 @@ def test_methodology_uses_v3_coefficients_and_tanh():
 
     assert "0.95 * communisme" in body
     assert "0.80 * laissez_faire" in body
-    assert "0.38 * ecologie" in body
-    assert "0.06 * (nationalisme - internationalisme)" in body
+    assert "0.28 * ecologie" in body
+    assert "0.24 * productivisme" in body
+    assert "0.35 * internationalisme" in body
+    assert "0.60 * essentialisme" in body
+    assert "0.70 * justice_punitive" in body
+    assert "0.70 * conservatisme" in body
+    assert "0.30 * nationalisme" in body
+    assert "0.04 * (productivisme - ecologie)" in body
+    assert "0.03 * (nationalisme - internationalisme)" in body
     assert "tanh(0.015" in body
 
 
@@ -83,6 +92,20 @@ def test_scoring_model_v3_excludes_revolution_reformism_from_coordinate_blocks()
 
     assert blocks_with_revolution["economic_raw"] == blocks_with_reformism["economic_raw"]
     assert blocks_with_revolution["social_raw"] == blocks_with_reformism["social_raw"]
+
+
+def test_scoring_model_v3_uses_reduced_ecology_productivism_and_sovereignty_weights():
+    blocks = compute_scoring_model_v3_blocks({
+        "ecologie": 100,
+        "productivisme": 100,
+        "internationalisme": 100,
+        "nationalisme": 100,
+    })
+
+    assert blocks["economic_left"] == pytest.approx(28.0)
+    assert blocks["economic_right"] == pytest.approx(24.0)
+    assert blocks["social_libertarian"] == pytest.approx(35.0)
+    assert blocks["social_authoritarian"] == pytest.approx(30.0)
 
 
 def test_scoring_model_v3_coordinates_are_bounded():

@@ -48,6 +48,12 @@ def load_personalities(csv_path: str | Path) -> List[PersonalityPoint]:
                     ideology_family=_optional_str(row.get("ideology_family")),
                     source=_optional_str(row.get("source")),
                     notes=_optional_str(row.get("notes")),
+                    country_codes=_optional_str(row.get("country_codes")),
+                    century=_optional_str(row.get("century")),
+                    ideology_subtype=_optional_str(row.get("ideology_subtype")),
+                    role_category=_optional_str(row.get("role_category")),
+                    gender=_optional_str(row.get("gender")),
+                    tags=_optional_str(row.get("tags")),
                 )
             )
 

@@ -46,3 +46,20 @@ def test_active_multiselect_filters_include_all_requested_dimensions():
         assert f'"{field}"' in function_body
 
     assert "st.sidebar.multiselect" in function_body
+    assert '"Role categories"' in function_body
+    assert 'options=options_with_any_none("role_category")' in function_body
+    assert 'key="active_reference_filter_role_category"' in function_body
+
+
+def test_active_multiselect_filters_are_empty_by_default():
+    content = APP.read_text(encoding="utf-8")
+
+    function_start = content.index("def _render_reference_multiselect_filters")
+    function_end = content.index("def _render_advanced_profile_comparisons", function_start)
+    function_body = content[function_start:function_end]
+
+    assert "default=[]" in function_body
+    assert 'default=["Any"]' not in function_body
+    assert "Reference profiles stay hidden until at least one filter is selected" in function_body
+    assert "has_filter_selection = any(selected_filters.values())" in function_body
+    assert "else []" in function_body

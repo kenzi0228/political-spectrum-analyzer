@@ -15,6 +15,7 @@ def _sample_personalities():
             country="Germany",
             period="19th century",
             ideology_family="Socialism",
+            role_category="Thinker",
             x=-2.8,
             y=-0.8,
         ),
@@ -24,6 +25,7 @@ def _sample_personalities():
             country="France; Algeria",
             period="20th century",
             ideology_family="Liberalism",
+            role_category="Writer",
             x=-0.4,
             y=-0.8,
         ),
@@ -33,6 +35,7 @@ def _sample_personalities():
             country="France",
             period="20th century",
             ideology_family="Conservatism",
+            role_category="Head of state",
             x=1.8,
             y=1.3,
         ),
@@ -91,6 +94,19 @@ def test_filter_personalities_by_display_group_with_other_filters_none():
     result = filter_personalities(
         _sample_personalities(),
         display_group="President",
+        country=NONE_VALUE,
+        period=NONE_VALUE,
+        ideology_family=NONE_VALUE,
+    )
+
+    assert len(result) == 1
+    assert result[0].name == "Charles de Gaulle"
+
+
+def test_filter_personalities_by_role_category_with_other_filters_none():
+    result = filter_personalities(
+        _sample_personalities(),
+        role_category="Head of state",
         country=NONE_VALUE,
         period=NONE_VALUE,
         ideology_family=NONE_VALUE,

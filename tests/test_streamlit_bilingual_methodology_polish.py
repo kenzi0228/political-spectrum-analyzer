@@ -24,9 +24,9 @@ def test_methodology_explains_coefficients_in_both_languages():
 
     assert "A coefficient is a weight" in content
     assert "Un coefficient est un poids" in content
-    assert "0.90 * communisme" in content
+    assert "0.95 * communisme" in content
     assert "0.75 * regulation" in content
-    assert "0.12 * (productivisme - ecologie)" in content
+    assert "0.04 * (productivisme - ecologie)" in content
 
 
 def test_streamlit_translation_covers_profile_import_and_input_labels():

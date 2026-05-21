@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Desktop application for political profile positioning, reference comparison, OCR-assisted import, and CSV exports."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = { text = "Political Spectrum Analyzer Non-Commercial License" }
 authors = [
     { name = "Kenzi Lali" }
 ]
