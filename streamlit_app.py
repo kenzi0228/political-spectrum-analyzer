@@ -383,12 +383,54 @@ def _load_reference_personalities():
     return load_personalities(PERSONALITIES_CSV_PATH)
 
 
+@st.cache_data
+def _reference_metadata_lookup_by_name() -> dict[str, dict[str, str]]:
+    """Load raw reference CSV metadata by profile name for UI filter fallbacks."""
+    csv_path = Path("data/reference/personalities.csv")
+
+    if not csv_path.exists():
+        return {}
+
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as file:
+        rows = list(csv.DictReader(file))
+
+    lookup = {}
+    for row in rows:
+        name = str(row.get("name", "")).strip()
+        if name:
+            lookup[name] = row
+
+    return lookup
+
+
 def _default_scores() -> dict[str, int]:
     return {variable: 0 for variable in VARIABLE_NAMES}
 
 
 def _profile_state_prefix(profile_index: int) -> str:
     return f"profile_{profile_index}"
+
+
+def _profile_count_from_state() -> int:
+    try:
+        return max(1, min(8, int(st.session_state.get("profile_count", 1))))
+    except Exception:
+        return 1
+
+
+def _build_people_from_state() -> list[PersonResult]:
+    people: list[PersonResult] = []
+
+    for profile_index in range(_profile_count_from_state()):
+        prefix = _profile_state_prefix(profile_index)
+        profile_name = str(st.session_state.get(f"{prefix}_name", f"Profile {profile_index + 1}"))
+        scores = {
+            axis: int(st.session_state.get(f"{prefix}_{axis}", 0))
+            for axis in VARIABLE_NAMES
+        }
+        people.append(_build_person_result(profile_name, scores))
+
+    return people
 
 
 def _build_person_result(profile_name: str, scores: dict[str, int]) -> PersonResult:
@@ -656,6 +698,16 @@ def _render_reference_filters(personalities):
     return filtered
 
 
+def _render_sidebar_input_mode() -> bool:
+    precise_input_mode = st.sidebar.toggle(
+        _t(st.session_state.get("language", "en"), "manual_numeric_entry"),
+        value=True,
+        help=_t(st.session_state.get("language", "en"), "manual_numeric_help"),
+    )
+
+    return bool(precise_input_mode)
+
+
 def _render_sidebar_export_options():
     st.sidebar.subheader("Export options")
 
@@ -683,13 +735,40 @@ def _render_sidebar_export_options():
         step=1,
     )
 
-    precise_input_mode = st.sidebar.toggle(
-        _t(st.session_state.get("language", "en"), "manual_numeric_entry"),
-        value=True,
-        help=_t(st.session_state.get("language", "en"), "manual_numeric_help"),
+    return export_mode, int(closest_count)
+
+
+def _active_view_options(language: str) -> dict[str, str]:
+    return {
+        "input": _t(language, "tab_input"),
+        "guide": _t(language, "tab_guide"),
+        "visualization": _t(language, "tab_visualization"),
+        "reference": _t(language, "tab_reference"),
+        "methodology": _t(language, "tab_methodology"),
+    }
+
+
+def _render_active_view_selector(language: str) -> str:
+    options = _active_view_options(language)
+    return st.sidebar.radio(
+        "Active tab",
+        options=list(options.keys()),
+        index=0,
+        format_func=lambda value: options.get(value, value),
+        help=(
+            "Streamlit reruns the script after every widget change. "
+            "This selector keeps inactive tabs from loading reference data or building charts."
+        ),
+        key="active_tab_label",
     )
 
-    return export_mode, int(closest_count), precise_input_mode
+
+def _view_requires_reference_dataset(active_view: str) -> bool:
+    return active_view in {"visualization", "reference"}
+
+
+def _render_inactive_view_notice(view_label: str) -> None:
+    st.info(f"Select {view_label} in the sidebar Active tab selector to load this tab.")
 
 
 def _render_score_inputs(
@@ -878,6 +957,7 @@ def _render_multi_profile_inputs(precise_input_mode: bool) -> list[PersonResult]
         value=1,
         step=1,
         help=_t(st.session_state.get("language", "en"), "profile_count_help"),
+        key="profile_count",
     )
 
     people: list[PersonResult] = []
@@ -991,25 +1071,6 @@ REFERENCE_FILTER_FIELD_ALIASES = {
     "century": ["century", "centuries", "period", "era"],
     "confidence": ["confidence", "confidence_level", "source_confidence"],
 }
-
-
-def _reference_metadata_lookup_by_name() -> dict[str, dict[str, str]]:
-    """Load raw reference CSV metadata by profile name for UI filter fallbacks."""
-    csv_path = Path("data/reference/personalities.csv")
-
-    if not csv_path.exists():
-        return {}
-
-    with csv_path.open("r", encoding="utf-8-sig", newline="") as file:
-        rows = list(csv.DictReader(file))
-
-    lookup = {}
-    for row in rows:
-        name = str(row.get("name", "")).strip()
-        if name:
-            lookup[name] = row
-
-    return lookup
 
 
 def _reference_field_aliases(field_name: str) -> list[str]:
@@ -1676,85 +1737,118 @@ def main() -> None:
 
     language = st.session_state.get("language", "en")
 
-    personalities = _load_reference_personalities()
-
     _render_hero(language)
+
+    st.sidebar.header("Controls")
+    current_language = st.session_state.get("language", "en")
+    st.sidebar.selectbox(
+        _t(current_language, "language_label"),
+        options=["en", "fr"],
+        format_func=lambda value: "English" if value == "en" else "Francais",
+        key="language",
+    )
+    active_view = _render_active_view_selector(language)
 
     st.sidebar.markdown("### Score input mode")
     st.sidebar.caption("Choose slider-based manual scoring or precise numeric fields before editing profile scores.")
+    precise_input_mode = _render_sidebar_input_mode()
 
-    export_mode, closest_count, precise_input_mode = _render_sidebar_export_options()
-    filtered_personalities = _render_reference_multiselect_filters(personalities, language)
+    personalities = []
+    filtered_personalities = []
+
+    if _view_requires_reference_dataset(active_view):
+        personalities = _load_reference_personalities()
+        filtered_personalities = _render_reference_multiselect_filters(personalities, language)
+    else:
+        st.sidebar.caption("Reference dataset is not loaded on this tab.")
 
     input_tab, guide_tab, graph_tab, data_tab, methodology_tab = st.tabs(
         [_t(language, "tab_input"), _t(language, "tab_guide"), _t(language, "tab_visualization"), _t(language, "tab_reference"), _t(language, "tab_methodology")]
     )
 
     with input_tab:
-        people = _render_multi_profile_inputs(precise_input_mode)
+        if active_view == "input":
+            people = _render_multi_profile_inputs(precise_input_mode)
+        else:
+            people = _build_people_from_state()
+            _render_inactive_view_notice(_t(language, "tab_input"))
 
     with guide_tab:
-
-        _render_user_guide_tab(language)
+        if active_view == "guide":
+            _render_user_guide_tab(language)
+        else:
+            _render_inactive_view_notice(_t(language, "tab_guide"))
     with graph_tab:
-        st.header("Political positioning")
+        if active_view == "visualization":
+            st.header("Political positioning")
 
-        fig = build_political_spectrum_figure(
-            people=people,
-            personalities=filtered_personalities,
-        )
+            export_mode, closest_count = _render_sidebar_export_options()
 
-        st.plotly_chart(fig, use_container_width=True)
+            fig = build_political_spectrum_figure(
+                people=people,
+                personalities=filtered_personalities,
+            )
 
-        _render_analysis(people, filtered_personalities)
+            st.plotly_chart(fig, use_container_width=True)
 
-        export_df = _build_export_dataframe(
-            people=people,
-            personalities=personalities,
-            filtered_personalities=filtered_personalities,
-            export_mode=export_mode,
-            closest_count=closest_count,
-        )
+            _render_analysis(people, filtered_personalities)
 
-        csv_content = export_df.to_csv(index=False).encode("utf-8-sig")
+            export_df = _build_export_dataframe(
+                people=people,
+                personalities=personalities,
+                filtered_personalities=filtered_personalities,
+                export_mode=export_mode,
+                closest_count=closest_count,
+            )
 
-        st.download_button(
-            label="Download analysis CSV",
-            data=csv_content,
-            file_name="political_spectrum_analysis.csv",
-            mime="text/csv",
-            use_container_width=True,
-        )
+            csv_content = export_df.to_csv(index=False).encode("utf-8-sig")
+
+            st.download_button(
+                label="Download analysis CSV",
+                data=csv_content,
+                file_name="political_spectrum_analysis.csv",
+                mime="text/csv",
+                use_container_width=True,
+            )
+        else:
+            _render_inactive_view_notice(_t(language, "tab_visualization"))
 
     with data_tab:
-        st.header("Reference dataset")
+        if active_view == "reference":
+            st.header("Reference dataset")
 
-        data = [
-            {
-                "Name": person.name,
-                "Group": person.display_group,
-                "Country": person.country,
-                "Period": person.period,
-                "Ideology family": person.ideology_family,
-                "Role category": getattr(person, "role_category", ""),
-                "Gender": getattr(person, "gender", ""),
-                "Country codes": getattr(person, "country_codes", ""),
-                "Century": getattr(person, "century", ""),
-                "x": person.x,
-                "y": person.y,
-                "Confidence": person.confidence,
-                "Notes": person.notes,
-            }
-            for person in filtered_personalities
-        ]
+            data = [
+                {
+                    "Name": person.name,
+                    "Group": person.display_group,
+                    "Country": person.country,
+                    "Period": person.period,
+                    "Ideology family": person.ideology_family,
+                    "Role category": getattr(person, "role_category", ""),
+                    "Gender": getattr(person, "gender", ""),
+                    "Country codes": getattr(person, "country_codes", ""),
+                    "Century": getattr(person, "century", ""),
+                    "x": person.x,
+                    "y": person.y,
+                    "Confidence": person.confidence,
+                    "Notes": person.notes,
+                }
+                for person in filtered_personalities
+            ]
 
-        st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
+        else:
+            _render_inactive_view_notice(_t(language, "tab_reference"))
 
     with methodology_tab:
-        _render_methodology_v3(language)
+        if active_view == "methodology":
+            _render_methodology_v3(language)
+        else:
+            _render_inactive_view_notice(_t(language, "tab_methodology"))
     about_tab = locals().get("about_tab", locals().get("guide_tab", locals().get("home_tab", st.container())))
     with about_tab:
-        _render_about_tab(language)
+        if active_view == "guide":
+            _render_about_tab(language)
 # Profile comparison analysis is available through _render_profile_comparison_analysis(people_results, language).
 
 
