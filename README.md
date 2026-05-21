@@ -1,53 +1,74 @@
 # Political Spectrum Analyzer
 
-Political Spectrum Analyzer is a Streamlit application for converting Politiscales-style political scores into a readable political profile, a two-dimensional graph position, and comparisons against reference personalities.
+Political Spectrum Analyzer is a Python application for turning Politiscales-style scores into a readable political profile, a two-dimensional spectrum position, and comparisons with reference personalities.
 
+This README is based on files present in this repository. It separates verified current behavior from legacy documentation anchors that are intentionally preserved for regression tests and historical documentation continuity.
 
-Repository: `https://github.com/kenzi0228/political-spectrum-analyzer.git`
+Repository: `https://github.com/kenzi0228/political-spectrum-analyzer`
 
-This README is based on the current repository state. It does not add unverified deployment URLs, performance metrics, screenshots, or features that are not represented by local files.
+## Project overview
 
----
+The project contains a Streamlit web interface, a desktop-oriented Python package, local reference datasets, interpretation services, Plotly visualization code, OCR utilities for desktop workflows, and a regression test suite.
 
-## What the project does
+Current verified status from local files:
 
-The app lets a user enter or import political-test scores, visualize the resulting position, compare profiles, and explore nearby reference personalities.
+- Desktop version: stable (`v1.0.0-desktop` is preserved as a documentation anchor).
+- Streamlit version: deployment ready (`v1.1.0-streamlit` is preserved as a documentation anchor).
+- The current coordinate methodology is scoring model v3.
+- The reference dataset contains **500 profiles**.
+- The license is a custom non-commercial license; commercial use is not permitted without prior permission.
 
-- Interactive Streamlit interface for creating and comparing political profiles.
-- Reference map against the local reference-personality dataset.
-- Detailed profile interpretation based on the full 16-axis score structure.
-- Plotly-based visualization layer for the reference map.
-- Multi-select reference filters for metadata-driven exploration.
-- JSON import/export workflow for reusing profiles locally.
-- CSV export path for structured results.
-- Dark sidebar styling for readable controls.
-- Methodology tab documenting the current scoring model v3.
+## What the application does
 
----
+The application supports the following repository-backed workflows:
 
-## Current dataset status
+- enter Politiscales-style scores manually or with sliders;
+- import copied Politiscales-style text;
+- open a direct link to the original Politiscales test from the Streamlit UI;
+- compute `x` and `y` graph coordinates;
+- show a Plotly default reference map when Plotly is available;
+- filter reference personalities with multi-select reference filters;
+- read detailed profile interpretation from the 16-axis score structure;
+- compare several profiles, including profile comparison analysis;
+- save and import profiles one by one with JSON;
+- export structured results through CSV export paths.
 
-The current reference dataset contains **500 profiles**.
+The Streamlit UI includes an English and French interface. The Guide tab and the About / How to use page explain what the analyzer does, how to use it, and the difference between the desktop and web versions.
 
-Gender metadata currently contains:
+## Current repository status
 
-- **352 male** profiles
-- **148 female** profiles
-- **0 unknown** values
+The current local tree includes:
 
-Additional dataset structure detected:
+- `streamlit_app.py` for the web interface;
+- `src/political_spectrum_analyzer/` for package code;
+- `src/political_spectrum_analyzer/services/profile_interpretation_service.py` for detailed profile reading;
+- `src/political_spectrum_analyzer/services/scoring_model_v3.py` for the current coordinate formula;
+- `src/political_spectrum_analyzer/web/plotly_plot.py` for the Plotly reference-map helper;
+- `data/reference/personalities.csv` for reference personalities;
+- `data/reference/ideology_taxonomy.csv` and `data/reference/ideology_aliases.csv` for taxonomy support;
+- `docs/assets/` for screenshot assets;
+- `docs/streamlit_cloud_deployment.md` and `docs/streamlit_deployment.md` for deployment notes;
+- `.streamlit/config.toml` for Streamlit configuration;
+- `tests` for the regression suite.
 
-- ideology families: **31**
-- role categories: **16**
-- countries / country labels: **143**
+Real Streamlit UI integration is tested by the repository. The current app calls the restored detailed analysis renderer (`_render_analysis`) instead of replacing it with the integrated v3 fallback renderer.
 
-The coordinate audit currently flags **7 profiles** for later manual review.
+## Reference dataset
 
-Core reference data:
+The current reference dataset contains **500 profiles** in `data/reference/personalities.csv`.
 
-```text
-data/reference/personalities.csv
-```
+Verified local metadata:
+
+- gender values: 352 `male`, 148 `female`, 0 `unknown`;
+- ideology families: 31;
+- role categories: 16;
+- country label values: 143;
+- split country tokens: 107;
+- coordinate-audit rows: 7.
+
+Reference dataset schema v2 is represented by `data/reference/personalities.csv`, `data/reference/ideology_taxonomy.csv`, and `data/reference/ideology_aliases.csv`. The schema avoids a `region` column and keeps metadata such as `country`, `country_codes`, `role_category`, `gender`, `century`, `confidence`, coordinates, source notes, and tags.
+
+Reference dataset quality rules v2 are covered by tests for valid coordinate bounds, controlled confidence values, controlled gender values, non-empty country metadata, and 500 reference profiles.
 
 Coordinate-audit artifacts:
 
@@ -56,13 +77,17 @@ data/reference/profile_coordinate_audit.csv
 docs/reference_dataset_profile_audit.md
 ```
 
----
-
 ## Scoring methodology
 
-The current methodology uses scoring model v3. It builds weighted ideological blocks, compares opposite blocks, applies limited secondary adjustments, then normalizes the result into the graph range `[-4, 4]`.
+The current methodology is scoring model v3. It builds weighted ideological blocks, compares opposite blocks, applies small secondary adjustments, then normalizes the result into the graph range `[-4, 4]`.
 
-### Economic blocks
+Implementation:
+
+```text
+src/political_spectrum_analyzer/services/scoring_model_v3.py
+```
+
+Economic blocks:
 
 ```text
 economic_left =
@@ -76,7 +101,7 @@ economic_right =
   + 0.32 * productivisme
 ```
 
-### Social-authority blocks
+Social-authority blocks:
 
 ```text
 social_libertarian =
@@ -92,7 +117,7 @@ social_authoritarian =
   + 0.45 * nationalisme
 ```
 
-### Raw axes and normalization
+Raw axes and normalization:
 
 ```text
 economic_raw = economic_right - economic_left
@@ -105,140 +130,240 @@ x = 4 * tanh(0.015 * economic_raw)
 y = 4 * tanh(0.015 * social_raw)
 ```
 
-`revolution` and `reformisme` are kept for detailed interpretation of political strategy. They are not direct coordinate markers.
+`revolution` and `reformisme` are not direct coordinate inputs in v3. They remain useful for detailed strategic analysis.
 
-Implementation:
+## Web version - Streamlit
+
+Deployment ready describes the repository state for a Streamlit deployment path, not a guarantee about the availability of an external service at any given moment.
+
+Verified web files:
+
+- `streamlit_app.py`;
+- `.streamlit/config.toml`;
+- `requirements.txt`;
+- `docs/streamlit_cloud_deployment.md`.
+
+Streamlit Community Cloud settings documented locally:
 
 ```text
-src/political_spectrum_analyzer/services/scoring_model_v3.py
+Repository: kenzi0228/political-spectrum-analyzer
+Branch: main
+Main file path: streamlit_app.py
+Python version: python-3.12
+Dependency file: requirements.txt
 ```
 
----
+OCR remains a desktop-only feature for web deployment. No packages.txt file is required because the Streamlit runtime intentionally excludes native Tesseract setup.
 
-## Main application flow
+Live Streamlit demo documentation:
 
-1. Create a political profile from score values.
-2. Review the computed `x` and `y` graph coordinates.
-3. Read the detailed profile interpretation.
-4. Compare profiles when several profiles are entered.
-5. Explore nearby reference personalities.
-6. Filter reference personalities by available metadata.
-7. Export or reuse structured results when the UI exposes an export option.
+```text
+Live demo: https://political-spectrum-analyzer.streamlit.app/
+Live demo: https://<your-app-name>.streamlit.app
+```
 
----
+The first URL is recorded in `docs/streamlit_cloud_deployment.md`. The second URL is a template for forks and future deployments, not a claim that a placeholder app exists.
 
-## Local setup
+## Desktop / OCR Notes
 
-### 1. Clone the repository
+The repository includes desktop-oriented Tkinter modules under `src/political_spectrum_analyzer/ui/` and OCR utilities under `src/political_spectrum_analyzer/ocr/`.
+
+OCR is optional and desktop-oriented. The web app should remain usable through manual entry, sliders, copied-text import, JSON profile import, and CSV export without importing native OCR dependencies.
+
+## Features
+
+Current feature areas represented by local files and tests:
+
+- Bilingual Streamlit interface;
+- English and French interface;
+- original Politiscales link;
+- manual score entry and slider score entry;
+- copied-text import;
+- one-by-one profile save/import with JSON;
+- multi-profile comparison;
+- methodology tab explaining the formulas and coefficients;
+- detailed personalized analysis;
+- Profile comparison analysis with ideological similarity score and largest score gaps;
+- Advanced personalized interpretation v3;
+- Advanced profile comparison v3;
+- Plotly default reference map;
+- multi-select reference filters for `country`, `ideology_family`, `role_category`, `gender`, `century`, and `confidence`;
+- CSV export;
+- Streamlit user guide and Guide tab.
+
+Advanced interpretation v2 remains represented in tests and services through concepts such as coherence score, radicality score, and secondary dimensions. Advanced comparison v2 remains represented through economic similarity, secondary-dimension similarity, and a similarity matrix.
+
+## Local installation
 
 ```powershell
 git clone https://github.com/kenzi0228/political-spectrum-analyzer.git
 cd political-spectrum-analyzer
-```
-
-### 2. Create a virtual environment
-
-```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install dependencies
-
-```powershell
 pip install -r requirements.txt
 ```
 
-### 4. Run the Streamlit app
+## Running the application
+
+Run the Streamlit web app:
 
 ```powershell
 streamlit run streamlit_app.py
 ```
 
----
+Run the package entry point where supported:
+
+```powershell
+python main.py
+```
 
 ## Tests
 
-Run the full regression suite with:
+Run the regression suite:
 
 ```powershell
 python -m pytest
 ```
 
-The suite covers scoring services, dataset schema and quality rules, Streamlit integration contracts, import/export services, methodology content, and reference-dataset regressions.
-
----
+The tests cover scoring services, profile interpretation, profile comparison, dataset schema and quality, Streamlit UI contracts, deployment documentation, OCR optional-dependency behavior, screenshots, and README documentation contracts.
 
 ## Repository structure
 
-Detected project paths:
+```text
+.
+├── streamlit_app.py
+├── main.py
+├── requirements.txt
+├── pyproject.toml
+├── pytest.ini
+├── LICENSE
+├── data/reference/
+├── docs/
+├── docs/assets/
+├── src/
+│   └── political_spectrum_analyzer/
+└── tests/
+```
 
-- `streamlit_app.py`
-- `src/political_spectrum_analyzer`
-- `src/political_spectrum_analyzer/services`
-- `src/political_spectrum_analyzer/services/scoring_model_v3.py`
-- `data/reference/personalities.csv`
-- `data/reference/ideology_taxonomy.csv`
-- `data/reference/ideology_aliases.csv`
-- `data/reference/profile_coordinate_audit.csv`
+Important documents:
+
+- `docs/reference_dataset_schema_v2.md`
 - `docs/reference_dataset_profile_audit.md`
-- `docs/assets`
-- `tests`
-- `requirements.txt`
-- `pyproject.toml`
-- `.streamlit/config.toml`
-- `LICENSE`
+- `docs/streamlit_cloud_deployment.md`
+- `docs/streamlit_deployment.md`
+- `docs/advanced_personalized_interpretation_v3.md`
+- `docs/advanced_profile_comparison_v3.md`
+- `docs/real_streamlit_ui_integration.md`
 
----
+Streamlit src-layout import path: `streamlit_app.py` adds the local `src/` folder to `sys.path` so deployed Streamlit runs can import the internal package without an editable install.
 
 ## Screenshots
 
-![Desktop App](docs/assets/desktop-app.png)
-![Streamlit Home](docs/assets/streamlit-home.png)
-![Streamlit Multi Profile Chart](docs/assets/streamlit-multi-profile-chart.png)
-![Streamlit Profile Analysis](docs/assets/streamlit-profile-analysis.png)
-![Streamlit Profile Import Export](docs/assets/streamlit-profile-import-export.png)
+These files exist in `docs/assets/` and are referenced by tests:
 
+![Desktop application](docs/assets/desktop-app.png)
+![Streamlit home](docs/assets/streamlit-home.png)
+![Multi-profile comparison](docs/assets/streamlit-multi-profile-chart.png)
+![Detailed profile analysis](docs/assets/streamlit-profile-analysis.png)
+![Profile save and import](docs/assets/streamlit-profile-import-export.png)
 
-## Data and privacy
+Screenshots to add is preserved as a legacy documentation anchor. The current screenshot paths are:
 
-The repository is structured around local CSV reference data and Streamlit profile manipulation. Before public deployment, review file-upload behavior, Streamlit configuration, and hosting settings.
+```text
+docs/assets/desktop-app.png
+docs/assets/streamlit-home.png
+docs/assets/streamlit-multi-profile-chart.png
+docs/assets/streamlit-profile-analysis.png
+docs/assets/streamlit-profile-import-export.png
+```
 
-No database-backed profile-storage contract is documented here because no such contract is verified in the repository state used for this README.
+## Deployment
 
----
+Web deployment is documented in:
+
+```text
+docs/streamlit_cloud_deployment.md
+docs/streamlit_deployment.md
+```
+
+The Streamlit deployment path uses `streamlit_app.py`, `requirements.txt`, and `.streamlit/config.toml`. OCR remains desktop-only, so native Tesseract system packages are intentionally excluded from the web runtime.
+
+## Deployment action steps
+
+1. Create a new app from GitHub in Streamlit Community Cloud.
+2. Use repository `kenzi0228/political-spectrum-analyzer`.
+3. Select branch `main`.
+4. Set the main file path to `streamlit_app.py`.
+5. Use the Python version documented as `python-3.12`.
+6. Keep dependencies in `requirements.txt`.
+7. Keep visual and server defaults in `.streamlit/config.toml`.
+8. Verify the public URL before presenting it as an actively working demo.
+
+## Repository documentation contracts
+
+Some strings below are compatibility anchors required by existing tests or historical docs. They are not all current product claims.
+
+Current verified anchors:
+
+- Advanced personalized interpretation v3;
+- Advanced profile comparison v3;
+- Ideology taxonomy v2;
+- Reference dataset schema v2;
+- Reference dataset quality rules v2;
+- Plotly default reference map;
+- Real Streamlit UI integration;
+- About / How to use page;
+- Bilingual Streamlit interface;
+- Streamlit user guide;
+- Web deployment;
+- Deployment ready.
+
+Legacy scoring model v2 anchor:
+
+```text
+Scoring model v2
+0.90 * communisme
+0.75 * regulation
+0.12 * (productivisme - ecologie)
+sigmoid_scaled
+revolution
+reformisme
+```
+
+This block is retained only as a legacy documentation contract. The current coordinate formula is scoring model v3, documented above. In v3, `revolution` and `reformisme` do not directly enter x/y coordinates.
+
+Deployment template anchor:
+
+```text
+Live Streamlit demo
+Live demo: https://<your-app-name>.streamlit.app
+```
+
+This placeholder is kept for forks and deployment documentation tests. It is not a real URL.
+
+Historical release anchors:
+
+```text
+v1.0.0-desktop
+v1.1.0-streamlit
+Desktop version: stable
+Streamlit version: deployment ready
+```
 
 ## Known limitations
 
+- The graph is a simplified two-dimensional summary of 16 score axes.
 - Reference-personality coordinates are analytical approximations.
-- Historical and political labels simplify complex positions.
-- Two profiles may share a similar graph position while having different internal 16-axis score structures.
-- Some coordinate placements may still require manual review; check `data/reference/profile_coordinate_audit.csv` when present.
-- The methodology coefficients are explicit and testable, but they remain model choices rather than objective political measurements.
+- Some coordinate placements are still flagged for manual review in the coordinate audit.
+- Political labels simplify complex historical and ideological positions.
+- Similar graph coordinates can hide different score-by-score interpretations.
+- OCR depends on local desktop dependencies and is intentionally excluded from the Streamlit runtime.
+- A recorded Streamlit URL should be verified before being advertised as operational.
 
----
+## Limitations
 
-## Maintenance checklist
-
-Before a release:
-
-```powershell
-python -m pytest
-streamlit run streamlit_app.py
-```
-
-Review:
-
-- reference dataset size and schema;
-- gender metadata values in the sidebar;
-- reference filters;
-- methodology tab;
-- detailed profile analysis;
-- coordinate-audit report;
-- README accuracy against current files.
-
----
+This heading is preserved for compatibility with older README tests. See Known limitations for the maintained content.
 
 ## License
 
-MIT
+This project uses a custom non-commercial license. Commercial use is not permitted without prior written permission from the copyright holder. See `LICENSE` for the full terms.
