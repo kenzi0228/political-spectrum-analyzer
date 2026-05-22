@@ -3,8 +3,10 @@ import re
 
 
 APP = Path("streamlit_app.py")
+REFERENCE_FILTERS = Path("src/political_spectrum_analyzer/streamlit_ui/reference_filters.py")
 DOC = Path("docs/real_streamlit_ui_integration.md")
 README = Path("README.md")
+TEXT = Path("src/political_spectrum_analyzer/streamlit_ui/text.py")
 
 
 def _main_block() -> str:
@@ -22,11 +24,10 @@ def test_main_uses_active_multiselect_reference_filters():
 
 
 def test_active_reference_filters_include_gender_and_confidence():
-    content = APP.read_text(encoding="utf-8")
+    content = REFERENCE_FILTERS.read_text(encoding="utf-8")
 
-    function_start = content.index("def _render_reference_multiselect_filters")
-    function_end = content.index("def _render_advanced_profile_comparisons", function_start)
-    function_body = content[function_start:function_end]
+    function_start = content.index("def render_reference_multiselect_filters")
+    function_body = content[function_start:]
 
     assert '"gender"' in function_body
     assert '"confidence"' in function_body
@@ -37,15 +38,18 @@ def test_active_reference_filters_include_gender_and_confidence():
 def test_main_uses_restored_detailed_analysis_renderer():
     main = _main_block()
 
-    assert "_render_analysis(people, filtered_personalities)" in main
+    assert "_render_analysis(people, filtered_personalities, language)" in main
     assert "_render_integrated_analysis_v3(people, filtered_personalities, language)" not in main
 
 
 def test_score_input_mode_label_is_visible_before_sidebar_options():
     main = _main_block()
+    text = TEXT.read_text(encoding="utf-8")
 
-    assert "Score input mode" in main
-    assert "slider-based manual scoring" in main
+    assert "score_input_mode_header" in main
+    assert "score_input_mode_caption" in main
+    assert "Score input mode" in text
+    assert "slider-based manual scoring" in text
 
 
 def test_reference_dataset_tab_uses_filtered_personalities():

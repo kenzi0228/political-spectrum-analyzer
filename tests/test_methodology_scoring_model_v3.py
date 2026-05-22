@@ -10,13 +10,11 @@ from political_spectrum_analyzer.services.scoring_model_v3 import (
 
 
 APP = Path("streamlit_app.py")
+METHODOLOGY = Path("src/political_spectrum_analyzer/streamlit_ui/methodology.py")
 
 
 def _methodology_v3_body() -> str:
-    content = APP.read_text(encoding="utf-8")
-    start = content.index("def _render_methodology_v3")
-    end = content.index("def main", start)
-    return content[start:end]
+    return METHODOLOGY.read_text(encoding="utf-8")
 
 
 def test_methodology_uses_v3_coefficients_and_tanh():
@@ -62,6 +60,7 @@ def test_main_calls_methodology_v3_in_methodology_tab():
 
     assert "with methodology_tab:" in main_body
     assert "_render_methodology_v3(language)" in main_body
+    assert "render_methodology_v3 as _render_methodology_v3" in content
 
 
 def test_scoring_model_v3_excludes_revolution_reformism_from_coordinate_blocks():

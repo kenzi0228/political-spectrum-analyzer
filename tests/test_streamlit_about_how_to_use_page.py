@@ -1,8 +1,13 @@
 from pathlib import Path
 
 
+APP = Path("streamlit_app.py")
+CONTENT_PAGES = Path("src/political_spectrum_analyzer/streamlit_ui/content_pages.py")
+TEXT = Path("src/political_spectrum_analyzer/streamlit_ui/text.py")
+
+
 def test_streamlit_has_about_tab_translation_keys():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    content = TEXT.read_text(encoding="utf-8")
 
     assert '"tab_about": "About / How to use"' in content
     assert '"tab_about": "A propos / Mode d emploi"' in content
@@ -11,15 +16,19 @@ def test_streamlit_has_about_tab_translation_keys():
 
 
 def test_streamlit_defines_about_renderer():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    content = (
+        APP.read_text(encoding="utf-8")
+        + CONTENT_PAGES.read_text(encoding="utf-8")
+        + TEXT.read_text(encoding="utf-8")
+    )
 
-    assert "def _render_about_tab" in content
-    assert "_render_politiscales_link(language)" in content
+    assert "def render_about_tab" in content
+    assert "render_politiscales_link(language, translate)" in content
     assert "about_how_to_use_body" in content
 
 
 def test_streamlit_renders_about_tab():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    content = APP.read_text(encoding="utf-8")
 
     assert "about_tab" in content
     assert "with about_tab:" in content

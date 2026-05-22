@@ -1,8 +1,10 @@
 from political_spectrum_analyzer.services.profile_interpretation_service import (
     build_profile_archetype,
+    build_internal_tensions,
     build_tension_reading,
     get_axis_pair_balances,
     get_dominant_axes,
+    get_score_notes,
     get_weak_axes,
     interpret_profile,
 )
@@ -68,6 +70,7 @@ def test_interpret_profile_returns_readable_sections():
     assert interpretation.archetype
     assert interpretation.tension_reading
     assert interpretation.profile_highlights
+    assert len(interpretation.score_notes) == 16
 
 
 def test_archetype_changes_with_scores():
@@ -106,3 +109,29 @@ def test_tension_reading_is_not_empty():
     )
 
     assert reading
+
+
+def test_score_notes_include_level_aware_interpretation():
+    notes = get_score_notes({"capitalisme": 82, "progressisme": 12})
+
+    capitalism = next(note for note in notes if note.axis == "capitalisme")
+    progressivism = next(note for note in notes if note.axis == "progressisme")
+
+    assert capitalism.level == "Very high"
+    assert capitalism.interpretation.startswith("Very strong marker")
+    assert progressivism.level == "Very low"
+    assert progressivism.interpretation.startswith("Very weak")
+
+
+def test_internal_tensions_detect_cross_axis_patterns():
+    tensions = build_internal_tensions(
+        {
+            "capitalisme": 70,
+            "regulation": 75,
+            "progressisme": 72,
+            "justice_punitive": 68,
+        }
+    )
+
+    assert any("market/private-ownership support" in tension for tension in tensions)
+    assert any("punitive conception of justice" in tension for tension in tensions)

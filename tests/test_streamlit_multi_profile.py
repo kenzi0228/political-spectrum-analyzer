@@ -7,10 +7,15 @@ from political_spectrum_analyzer.web.plotly_plot import build_political_spectrum
 
 def test_streamlit_app_source_mentions_multi_profile_workflow():
     content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    text_content = Path("src/political_spectrum_analyzer/streamlit_ui/text.py").read_text(encoding="utf-8")
+    input_content = Path("src/political_spectrum_analyzer/streamlit_ui/profile_inputs.py").read_text(encoding="utf-8")
+    analysis_content = Path("src/political_spectrum_analyzer/streamlit_ui/analysis_rendering.py").read_text(encoding="utf-8")
 
     assert "_render_multi_profile_inputs" in content
-    assert "profile_count_label" in content or "Number of profiles to compare" in content
-    assert "Multi-profile analysis" in content
+    assert "profile_count_label" in text_content or "Number of profiles to compare" in text_content
+    assert "analysis_multi_header" in analysis_content
+    assert "Multi-profile analysis" in text_content
+    assert "def render_multi_profile_inputs" in input_content
 
 
 def test_plotly_figure_supports_multiple_people():

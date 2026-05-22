@@ -1,8 +1,13 @@
 from pathlib import Path
 
 
+APP = Path("streamlit_app.py")
+TEXT = Path("src/political_spectrum_analyzer/streamlit_ui/text.py")
+METHODOLOGY = Path("src/political_spectrum_analyzer/streamlit_ui/methodology.py")
+
+
 def test_streamlit_methodology_tab_explains_formula_and_axes():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8").lower()
+    content = APP.read_text(encoding="utf-8").lower()
 
     assert "def _render_methodology_tab" in content
     assert "left_economic" in content
@@ -14,7 +19,7 @@ def test_streamlit_methodology_tab_explains_formula_and_axes():
 
 
 def test_streamlit_methodology_tab_mentions_all_16_axes():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8").lower()
+    content = (APP.read_text(encoding="utf-8") + TEXT.read_text(encoding="utf-8")).lower()
 
     expected_axes = [
         "constructivisme",
@@ -40,7 +45,11 @@ def test_streamlit_methodology_tab_mentions_all_16_axes():
 
 
 def test_streamlit_methodology_is_product_facing_not_academic():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8").lower()
+    content = (
+        APP.read_text(encoding="utf-8")
+        + TEXT.read_text(encoding="utf-8")
+        + METHODOLOGY.read_text(encoding="utf-8")
+    ).lower()
 
     assert "how the analyzer works" in content
     assert "how to read your result" in content

@@ -2,6 +2,7 @@ from pathlib import Path
 
 
 APP = Path("streamlit_app.py")
+REFERENCE_FILTERS = Path("src/political_spectrum_analyzer/streamlit_ui/reference_filters.py")
 
 
 def test_profile_reading_does_not_duplicate_synthesis_in_three_cards():
@@ -12,12 +13,12 @@ def test_profile_reading_does_not_duplicate_synthesis_in_three_cards():
 
 
 def test_reference_filter_aliases_and_real_value_fallbacks_exist():
-    content = APP.read_text(encoding="utf-8")
+    content = REFERENCE_FILTERS.read_text(encoding="utf-8")
     assert "REFERENCE_FILTER_FIELD_ALIASES" in content
     assert "role_category" in content
     assert "display_group" in content
-    assert "_reference_metadata_lookup_by_name" in content
-    assert "_reference_multiselect_options(reference_items, field_name)" in content
+    assert "reference_metadata_lookup_by_name" in content
+    assert "reference_multiselect_options(reference_items, field_name)" in content
 
 
 def test_country_code_filter_label_is_renamed():
@@ -30,5 +31,5 @@ def test_original_detailed_analysis_is_runtime_path():
     main_start = content.index("def main")
     entrypoint = content.rfind('if __name__ == "__main__"')
     main_body = content[main_start:entrypoint]
-    assert "_render_analysis(people, filtered_personalities)" in main_body
+    assert "_render_analysis(people, filtered_personalities, language)" in main_body
     assert "_render_integrated_analysis_v3(people, filtered_personalities, language)" not in main_body

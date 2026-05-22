@@ -1,8 +1,12 @@
 from pathlib import Path
 
 
+APP = Path("streamlit_app.py")
+TEXT = Path("src/political_spectrum_analyzer/streamlit_ui/text.py")
+
+
 def test_streamlit_app_has_user_guide_tab():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    content = APP.read_text(encoding="utf-8") + TEXT.read_text(encoding="utf-8")
 
     assert "def _render_user_guide_tab" in content
     assert '"Guide"' in content
@@ -10,7 +14,7 @@ def test_streamlit_app_has_user_guide_tab():
 
 
 def test_user_guide_mentions_profile_workflow():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    content = APP.read_text(encoding="utf-8") + TEXT.read_text(encoding="utf-8")
 
     assert "Step 1 - Enter scores" in content
     assert "Step 2 - Read the graph" in content

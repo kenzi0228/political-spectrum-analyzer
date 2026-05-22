@@ -2,10 +2,11 @@ from pathlib import Path
 
 
 APP = Path("streamlit_app.py")
+REFERENCE_FILTERS = Path("src/political_spectrum_analyzer/streamlit_ui/reference_filters.py")
 
 
 def test_streamlit_uses_role_category_as_reference_filter_dimension():
-    content = APP.read_text(encoding="utf-8")
+    content = REFERENCE_FILTERS.read_text(encoding="utf-8")
 
     assert "role_category" in content
     assert "Role category" in content or "role category" in content

@@ -28,6 +28,7 @@ class ProfileInterpretation:
     archetype: str
     tension_reading: str
     profile_highlights: list[str]
+    score_notes: list[AxisInterpretation]
 
 
 AXIS_LABELS: dict[str, str] = {
@@ -103,13 +104,27 @@ def _average(scores: Mapping[str, int], axes: list[str]) -> float:
     return sum(_safe_score(scores, axis) for axis in axes) / len(axes)
 
 
+def _score_sensitive_interpretation(axis: str, score: int) -> str:
+    base = AXIS_INTERPRETATIONS.get(axis, "")
+
+    if score >= 75:
+        return f"Very strong marker. {base}"
+    if score >= 60:
+        return f"Clear marker. {base}"
+    if score >= 40:
+        return f"Moderate signal. {base}"
+    if score >= 25:
+        return f"Weak signal. {base}"
+    return f"Very weak or marginal signal. {base}"
+
+
 def _axis_interpretation(axis: str, score: int) -> AxisInterpretation:
     return AxisInterpretation(
         axis=axis,
         label=AXIS_LABELS.get(axis, axis.replace("_", " ").title()),
         score=score,
         level=_score_level(score),
-        interpretation=AXIS_INTERPRETATIONS.get(axis, ""),
+        interpretation=_score_sensitive_interpretation(axis, score),
     )
 
 
@@ -125,6 +140,10 @@ def get_weak_axes(scores: Mapping[str, int], limit: int = 5) -> list[AxisInterpr
     return axes[:limit]
 
 
+def get_score_notes(scores: Mapping[str, int]) -> list[AxisInterpretation]:
+    return [_axis_interpretation(axis, _safe_score(scores, axis)) for axis in AXIS_LABELS]
+
+
 def get_axis_pair_balances(scores: Mapping[str, int]) -> list[dict[str, object]]:
     balances: list[dict[str, object]] = []
 
@@ -133,15 +152,26 @@ def get_axis_pair_balances(scores: Mapping[str, int]) -> list[dict[str, object]]
         right_score = _safe_score(scores, right_axis)
         delta = left_score - right_score
 
-        if abs(delta) <= 10:
+        if left_score >= 60 and right_score >= 60:
+            leading_side = "Internally mixed"
+            reading = (
+                f"{label}: both {AXIS_LABELS[left_axis]} and {AXIS_LABELS[right_axis]} are high, "
+                "so this pair should be read as a real internal tension rather than a simple winner."
+            )
+        elif left_score <= 35 and right_score <= 35:
+            leading_side = "Muted"
+            reading = (
+                f"{label}: both poles are weak, so this dimension does not strongly structure the profile."
+            )
+        elif abs(delta) <= 10:
             leading_side = "Balanced"
             reading = f"{label}: balanced between {AXIS_LABELS[left_axis]} and {AXIS_LABELS[right_axis]}."
         elif delta > 0:
             leading_side = AXIS_LABELS[left_axis]
-            reading = f"{label}: stronger {AXIS_LABELS[left_axis]} tendency."
+            reading = f"{label}: stronger {AXIS_LABELS[left_axis]} tendency by {abs(delta)} points."
         else:
             leading_side = AXIS_LABELS[right_axis]
-            reading = f"{label}: stronger {AXIS_LABELS[right_axis]} tendency."
+            reading = f"{label}: stronger {AXIS_LABELS[right_axis]} tendency by {abs(delta)} points."
 
         balances.append(
             {
@@ -225,6 +255,10 @@ def build_profile_archetype(scores: Mapping[str, int]) -> str:
 
 
 def build_tension_reading(scores: Mapping[str, int]) -> str:
+    internal_tensions = build_internal_tensions(scores)
+    if internal_tensions:
+        return "Main internal tensions: " + " ".join(internal_tensions[:3])
+
     balances = get_axis_pair_balances(scores)
     strongest_tension = max(balances, key=lambda row: abs(int(row["delta"])))
 
@@ -235,6 +269,45 @@ def build_tension_reading(scores: Mapping[str, int]) -> str:
         "The strongest internal contrast appears in "
         f"{strongest_tension['dimension']}: {strongest_tension['leading_side']} dominates this pair."
     )
+
+
+def build_internal_tensions(scores: Mapping[str, int]) -> list[str]:
+    tensions: list[str] = []
+
+    pair_balances = get_axis_pair_balances(scores)
+    for row in pair_balances:
+        if row["leading_side"] == "Internally mixed":
+            tensions.append(
+                f"{row['dimension']} combines high {row['left_axis']} ({row['left_score']}/100) "
+                f"with high {row['right_axis']} ({row['right_score']}/100)."
+            )
+
+    if _safe_score(scores, "capitalisme") >= 60 and _safe_score(scores, "regulation") >= 60:
+        tensions.append(
+            "The profile combines market/private-ownership support with a strong appetite for public regulation."
+        )
+    if _safe_score(scores, "progressisme") >= 60 and _safe_score(scores, "justice_punitive") >= 60:
+        tensions.append(
+            "The profile combines social-progressive instincts with a punitive conception of justice."
+        )
+    if _safe_score(scores, "ecologie") >= 60 and _safe_score(scores, "productivisme") >= 60:
+        tensions.append(
+            "The profile values both ecological limits and productive expansion, which can create policy trade-offs."
+        )
+    if _safe_score(scores, "internationalisme") >= 60 and _safe_score(scores, "nationalisme") >= 60:
+        tensions.append(
+            "The profile combines international openness with national-sovereignty priorities."
+        )
+
+    unique_tensions: list[str] = []
+    seen = set()
+    for tension in tensions:
+        key = tension.lower()
+        if key not in seen:
+            unique_tensions.append(tension)
+            seen.add(key)
+
+    return unique_tensions
 
 
 def build_profile_highlights(scores: Mapping[str, int]) -> list[str]:
@@ -257,6 +330,16 @@ def build_profile_highlights(scores: Mapping[str, int]) -> list[str]:
         weak_labels = ", ".join(axis.label for axis in weak)
         highlights.append(f"Low-impact dimensions in this profile: {weak_labels}.")
 
+    sharpest_balance = max(get_axis_pair_balances(scores), key=lambda row: abs(int(row["delta"])))
+    if abs(int(sharpest_balance["delta"])) > 20:
+        highlights.append(
+            f"Sharpest contrast: {sharpest_balance['dimension']} leans toward {sharpest_balance['leading_side']}."
+        )
+
+    internal_tensions = build_internal_tensions(scores)
+    if internal_tensions:
+        highlights.append(internal_tensions[0])
+
     return highlights[:6]
 
 
@@ -270,7 +353,8 @@ def build_profile_synthesis(profile_name: str, scores: Mapping[str, int]) -> str
         f"The strongest drivers are {strongest_labels}. "
         f"{build_economic_reading(scores)} "
         f"{build_societal_reading(scores)} "
-        f"{build_strategic_reading(scores)}"
+        f"{build_strategic_reading(scores)} "
+        f"{build_tension_reading(scores)}"
     )
 
 
@@ -287,6 +371,7 @@ def interpret_profile(profile_name: str, scores: Mapping[str, int]) -> ProfileIn
         archetype=build_profile_archetype(scores),
         tension_reading=build_tension_reading(scores),
         profile_highlights=build_profile_highlights(scores),
+        score_notes=get_score_notes(scores),
     )
 
 # Secondary dimensions from scoring model v2 are available for advanced interpretation.
