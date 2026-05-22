@@ -7,7 +7,7 @@
 - Confidence values: {'high': 23, 'low': 70, 'medium': 407}
 - Role categories: 16
 - Gender corrections applied: 174
-- Coordinate overrides applied: 12
+- Coordinate overrides applied: 13
 - Coordinate rows flagged for manual review: 7
 
 ## Gender correction policy
@@ -36,6 +36,7 @@ The remaining questionable placements are exported to `data/reference/profile_co
 | King Faisal | 1.5 | 2.9 | 1.6 | 3.0 | Conservative monarchy should remain strongly authoritarian. |
 | Mohammed bin Salman | 2.0 | 2.5 | 2.3 | 2.8 | Authoritarian monarchy with reformist market-development orientation should sit higher and further right. |
 | Aung San Suu Kyi | 0.2 | -1.4 | 0.2 | -0.2 | Pro-democracy dissident image and later governing record require a less libertarian y placement. |
+| Marine Le Pen | 0.2 | 2.1 | 1.0 | 2.8 | National populism, sovereignty politics, and immigration restriction warrant a clearer right-authoritarian placement. |
 
 ## Top rows requiring later manual coordinate review
 

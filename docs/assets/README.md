@@ -1,8 +1,8 @@
 # README and demo screenshots
 
-Add screenshots for the GitHub README and project presentation here.
+This folder contains the screenshots used by the GitHub README and project presentation.
 
-Recommended files:
+Current files:
 
 - `desktop-app.png`
 - `streamlit-home.png`

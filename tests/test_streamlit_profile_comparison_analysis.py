@@ -1,8 +1,11 @@
 from pathlib import Path
 
 
+ADVANCED_RENDERING = Path("src/political_spectrum_analyzer/streamlit_ui/advanced_rendering.py")
+
+
 def test_streamlit_imports_profile_comparison_service():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    content = ADVANCED_RENDERING.read_text(encoding="utf-8")
 
     assert "profile_comparison_service" in content
     assert "build_profile_comparisons" in content
@@ -10,10 +13,12 @@ def test_streamlit_imports_profile_comparison_service():
 
 
 def test_streamlit_defines_profile_comparison_renderer():
-    content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    app_content = Path("streamlit_app.py").read_text(encoding="utf-8")
+    content = ADVANCED_RENDERING.read_text(encoding="utf-8")
 
-    assert "def _render_profile_comparison_analysis" in content
-    assert "Profile comparison analysis" in content
+    assert "def render_profile_comparison_analysis" in content
+    assert "render_profile_comparison_analysis as _render_profile_comparison_analysis" in app_content
+    assert "profile_comparison_header" in content
     assert "ideological_similarity_score" in Path(
         "src/political_spectrum_analyzer/services/profile_comparison_service.py"
     ).read_text(encoding="utf-8")

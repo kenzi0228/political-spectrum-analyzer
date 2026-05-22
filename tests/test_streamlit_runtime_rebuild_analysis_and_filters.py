@@ -1,4 +1,9 @@
 from pathlib import Path
+from types import SimpleNamespace
+
+from political_spectrum_analyzer.constants import VARIABLE_NAMES
+from political_spectrum_analyzer.domain.models import PersonResult
+from political_spectrum_analyzer.streamlit_ui import profile_state
 
 
 APP = Path("streamlit_app.py")
@@ -80,6 +85,24 @@ def test_people_can_be_rebuilt_from_session_state_without_rendering_inputs():
     assert "persist_people_to_state(people)" in profile_inputs
     assert "people = _build_people_from_state()" in content
     assert 'key="profile_count"' in profile_inputs
+
+
+def test_profile_snapshot_survives_filter_rerun_when_input_widgets_are_unmounted(monkeypatch):
+    session_state = {"profile_count": 1}
+    monkeypatch.setattr(profile_state, "st", SimpleNamespace(session_state=session_state))
+
+    scores = {axis: 0 for axis in VARIABLE_NAMES}
+    scores["capitalisme"] = 72
+    scores["progressisme"] = 61
+    person = PersonResult(name="Saved profile", scores=scores, x=1.2, y=-0.4)
+
+    profile_state.persist_people_to_state([person])
+
+    rebuilt = profile_state.build_people_from_state()
+
+    assert rebuilt[0].name == "Saved profile"
+    assert rebuilt[0].scores["capitalisme"] == 72
+    assert rebuilt[0].scores["progressisme"] == 61
 
 
 def test_streamlit_pages_are_split_from_entrypoint():

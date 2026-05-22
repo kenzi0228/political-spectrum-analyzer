@@ -28,3 +28,6 @@ outputs/*.png
 !outputs/.gitkeep
 # Streamlit local secrets
 .streamlit/secrets.toml
+
+# Generated reports
+reports/
