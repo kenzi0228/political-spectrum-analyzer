@@ -38,7 +38,6 @@ from political_spectrum_analyzer.streamlit_ui.content_pages import (
 )
 from political_spectrum_analyzer.streamlit_ui.navigation import (
     render_active_view_selector as _render_active_view_selector,
-    render_inactive_view_notice as _render_inactive_view_notice,
     view_requires_reference_dataset as _view_requires_reference_dataset,
 )
 from political_spectrum_analyzer.streamlit_ui.profile_inputs import (
@@ -150,6 +149,10 @@ def _render_sidebar_input_mode() -> bool:
     )
 
     return bool(precise_input_mode)
+
+
+def _render_translated_inactive_view_notice(view_label: str, language: str) -> None:
+    st.info(_t(language, "inactive_tab_notice").format(view_label=view_label))
 
 
 def _render_sidebar_export_options(language: str):
@@ -614,13 +617,13 @@ def main() -> None:
             people = _render_multi_profile_inputs(precise_input_mode, _t)
         else:
             people = _build_people_from_state()
-            _render_inactive_view_notice(_t(language, "tab_input"), language, _t)
+            _render_translated_inactive_view_notice(_t(language, "tab_input"), language)
 
     with guide_tab:
         if active_view == "guide":
             _render_user_guide_tab(language)
         else:
-            _render_inactive_view_notice(_t(language, "tab_guide"), language, _t)
+            _render_translated_inactive_view_notice(_t(language, "tab_guide"), language)
     with graph_tab:
         if active_view == "visualization":
             st.header(_t(language, "political_positioning_header"))
@@ -654,7 +657,7 @@ def main() -> None:
                 use_container_width=True,
             )
         else:
-            _render_inactive_view_notice(_t(language, "tab_visualization"), language, _t)
+            _render_translated_inactive_view_notice(_t(language, "tab_visualization"), language)
 
     with data_tab:
         if active_view == "reference":
@@ -681,13 +684,13 @@ def main() -> None:
 
             st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
         else:
-            _render_inactive_view_notice(_t(language, "tab_reference"), language, _t)
+            _render_translated_inactive_view_notice(_t(language, "tab_reference"), language)
 
     with methodology_tab:
         if active_view == "methodology":
             _render_methodology_v3(language)
         else:
-            _render_inactive_view_notice(_t(language, "tab_methodology"), language, _t)
+            _render_translated_inactive_view_notice(_t(language, "tab_methodology"), language)
     about_tab = locals().get("about_tab", locals().get("guide_tab", locals().get("home_tab", st.container())))
     with about_tab:
         if active_view == "guide":
