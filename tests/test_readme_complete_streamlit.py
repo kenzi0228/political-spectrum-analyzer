@@ -33,7 +33,7 @@ def test_readme_documents_model_coefficients():
     content = Path("README.md").read_text(encoding="utf-8")
 
     assert "0.90 * communisme" in content
-    assert "0.75 * regulation" in content
+    assert "0.70 * regulation" in content
     assert "0.12 * (productivisme - ecologie)" in content
     assert "sigmoid_scaled" in content
 

@@ -19,6 +19,8 @@ def test_streamlit_app_contains_personalized_profile_reading():
     assert "Weakest axes" in text_content
     assert "Axis-by-axis balance" in text_content
     assert "Score-by-score reading" in text_content
+    assert "Profile diagnostics" in text_content
+    assert "Intensity score" in text_content
 
 
 def test_streamlit_methodology_is_product_oriented():
@@ -47,4 +49,5 @@ def test_streamlit_has_product_facing_profile_interpretation():
     assert "weakest axes" in content
     assert "axis-by-axis balance" in content
     assert "score-by-score reading" in content
+    assert "profile diagnostics" in content
     assert "limitations" not in content

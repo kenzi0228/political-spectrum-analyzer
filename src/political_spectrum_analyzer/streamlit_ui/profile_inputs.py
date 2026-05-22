@@ -13,6 +13,7 @@ from political_spectrum_analyzer.domain.models import PersonResult
 from political_spectrum_analyzer.services.text_import_service import extract_scores_from_text
 from political_spectrum_analyzer.streamlit_ui.profile_state import (
     build_person_result,
+    persist_people_to_state,
     profile_state_prefix,
 )
 
@@ -258,6 +259,7 @@ def render_multi_profile_inputs(precise_input_mode: bool, translate: Translate) 
 
     if int(profile_count) == 1:
         people.append(render_profile_input(0, precise_input_mode, translate))
+        persist_people_to_state(people)
         return people
 
     tabs = st.tabs([
@@ -269,4 +271,5 @@ def render_multi_profile_inputs(precise_input_mode: bool, translate: Translate) 
         with tab:
             people.append(render_profile_input(index, precise_input_mode, translate))
 
+    persist_people_to_state(people)
     return people

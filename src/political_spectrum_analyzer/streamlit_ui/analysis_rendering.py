@@ -47,6 +47,25 @@ def render_profile_interpretation(person: PersonResult, language: str = "en") ->
     st.success(interpretation.archetype)
     st.write(interpretation.synthesis)
 
+    diagnostic_cols = st.columns(3)
+    diagnostic_cols[0].metric(
+        translate(language, "analysis_intensity_score"),
+        f"{interpretation.intensity_score:.1f}/100",
+    )
+    diagnostic_cols[1].metric(
+        translate(language, "analysis_coherence_score"),
+        f"{interpretation.coherence_score:.1f}/100",
+    )
+    diagnostic_cols[2].metric(
+        translate(language, "analysis_center_of_gravity"),
+        interpretation.center_of_gravity,
+    )
+
+    if interpretation.diagnostic_notes:
+        st.markdown(f"#### {translate(language, 'analysis_diagnostic_notes')}")
+        for note in interpretation.diagnostic_notes:
+            st.markdown(f"- {note}")
+
     reading_details = [
         (translate(language, "analysis_economic_reading"), interpretation.economic_reading),
         (translate(language, "analysis_societal_reading"), interpretation.societal_reading),

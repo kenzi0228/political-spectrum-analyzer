@@ -21,6 +21,9 @@ class ProfileInterpretation:
     dominant_axes: list[AxisInterpretation]
     weak_axes: list[AxisInterpretation]
     axis_pair_balances: list[dict[str, object]]
+    intensity_score: float
+    coherence_score: float
+    center_of_gravity: str
     synthesis: str
     economic_reading: str
     societal_reading: str
@@ -28,6 +31,7 @@ class ProfileInterpretation:
     archetype: str
     tension_reading: str
     profile_highlights: list[str]
+    diagnostic_notes: list[str]
     score_notes: list[AxisInterpretation]
 
 
@@ -144,6 +148,37 @@ def get_score_notes(scores: Mapping[str, int]) -> list[AxisInterpretation]:
     return [_axis_interpretation(axis, _safe_score(scores, axis)) for axis in AXIS_LABELS]
 
 
+def compute_intensity_score(scores: Mapping[str, int]) -> float:
+    """Return how strongly the profile departs from a neutral 50/100 baseline."""
+    distances = [abs(_safe_score(scores, axis) - 50) for axis in AXIS_LABELS]
+    return round((sum(distances) / len(distances)) * 2, 1)
+
+
+def compute_coherence_score(scores: Mapping[str, int]) -> float:
+    """Estimate internal coherence by penalizing simultaneously high opposite poles."""
+    penalty = 0.0
+
+    for left_axis, right_axis, _label in AXIS_PAIRS:
+        left_score = _safe_score(scores, left_axis)
+        right_score = _safe_score(scores, right_axis)
+        if left_score >= 60 and right_score >= 60:
+            penalty += min(left_score, right_score) - 50
+
+    cross_axis_pairs = [
+        ("capitalisme", "regulation"),
+        ("progressisme", "justice_punitive"),
+        ("ecologie", "productivisme"),
+        ("internationalisme", "nationalisme"),
+    ]
+    for left_axis, right_axis in cross_axis_pairs:
+        left_score = _safe_score(scores, left_axis)
+        right_score = _safe_score(scores, right_axis)
+        if left_score >= 65 and right_score >= 65:
+            penalty += (min(left_score, right_score) - 55) * 0.75
+
+    return round(max(0.0, min(100.0, 100.0 - penalty)), 1)
+
+
 def get_axis_pair_balances(scores: Mapping[str, int]) -> list[dict[str, object]]:
     balances: list[dict[str, object]] = []
 
@@ -187,6 +222,71 @@ def get_axis_pair_balances(scores: Mapping[str, int]) -> list[dict[str, object]]
         )
 
     return balances
+
+
+def build_center_of_gravity(scores: Mapping[str, int]) -> str:
+    left_avg = _average(scores, ["communisme", "regulation", "ecologie"])
+    right_avg = _average(scores, ["capitalisme", "laissez_faire", "productivisme"])
+    progressive_avg = _average(scores, ["constructivisme", "justice_rehabilitative", "progressisme", "internationalisme"])
+    conservative_avg = _average(scores, ["essentialisme", "justice_punitive", "conservatisme", "nationalisme"])
+    revolution = _safe_score(scores, "revolution")
+    reformism = _safe_score(scores, "reformisme")
+
+    if left_avg > right_avg + 8:
+        economic = "economic-left"
+    elif right_avg > left_avg + 8:
+        economic = "economic-right"
+    else:
+        economic = "economically mixed"
+
+    if progressive_avg > conservative_avg + 8:
+        social = "progressive/libertarian"
+    elif conservative_avg > progressive_avg + 8:
+        social = "order-oriented/conservative"
+    else:
+        social = "socially mixed"
+
+    if revolution > reformism + 10:
+        strategy = "rupture-oriented"
+    elif reformism > revolution + 10:
+        strategy = "reformist"
+    else:
+        strategy = "strategically balanced"
+
+    return f"{economic}, {social}, {strategy}"
+
+
+def build_diagnostic_notes(scores: Mapping[str, int]) -> list[str]:
+    notes: list[str] = []
+    intensity = compute_intensity_score(scores)
+    coherence = compute_coherence_score(scores)
+    secondary = compute_secondary_dimensions(scores)
+
+    if intensity >= 55:
+        notes.append(f"High profile intensity ({intensity}/100): several scores are far from the neutral midpoint.")
+    elif intensity <= 25:
+        notes.append(f"Low profile intensity ({intensity}/100): most scores remain close to the center, so the graph position should be read cautiously.")
+    else:
+        notes.append(f"Moderate profile intensity ({intensity}/100): the profile has clear signals without being uniformly extreme.")
+
+    if coherence >= 80:
+        notes.append(f"High coherence ({coherence}/100): few opposing axes are simultaneously high.")
+    elif coherence >= 55:
+        notes.append(f"Mixed coherence ({coherence}/100): the profile contains some cross-pressures that deserve interpretation.")
+    else:
+        notes.append(f"Low coherence ({coherence}/100): several opposing axes are high at the same time, so tensions are central to the reading.")
+
+    change_method = secondary["change_method"]
+    if abs(change_method) >= 25:
+        direction = "revolutionary rupture" if change_method > 0 else "institutional reform"
+        notes.append(f"Strategic tilt: {direction} leads by {abs(round(change_method, 1))} points on the revolution/reformism balance.")
+
+    globalism_balance = secondary["globalism_balance"]
+    if abs(globalism_balance) >= 25:
+        direction = "international cooperation" if globalism_balance > 0 else "national sovereignty"
+        notes.append(f"Political-community tilt: {direction} clearly structures the profile.")
+
+    return notes
 
 
 def build_economic_reading(scores: Mapping[str, int]) -> str:
@@ -354,7 +454,8 @@ def build_profile_synthesis(profile_name: str, scores: Mapping[str, int]) -> str
         f"{build_economic_reading(scores)} "
         f"{build_societal_reading(scores)} "
         f"{build_strategic_reading(scores)} "
-        f"{build_tension_reading(scores)}"
+        f"{build_tension_reading(scores)} "
+        f"The center of gravity is {build_center_of_gravity(scores)}."
     )
 
 
@@ -364,6 +465,9 @@ def interpret_profile(profile_name: str, scores: Mapping[str, int]) -> ProfileIn
         dominant_axes=get_dominant_axes(scores),
         weak_axes=get_weak_axes(scores),
         axis_pair_balances=get_axis_pair_balances(scores),
+        intensity_score=compute_intensity_score(scores),
+        coherence_score=compute_coherence_score(scores),
+        center_of_gravity=build_center_of_gravity(scores),
         synthesis=build_profile_synthesis(profile_name, scores),
         economic_reading=build_economic_reading(scores),
         societal_reading=build_societal_reading(scores),
@@ -371,8 +475,9 @@ def interpret_profile(profile_name: str, scores: Mapping[str, int]) -> ProfileIn
         archetype=build_profile_archetype(scores),
         tension_reading=build_tension_reading(scores),
         profile_highlights=build_profile_highlights(scores),
+        diagnostic_notes=build_diagnostic_notes(scores),
         score_notes=get_score_notes(scores),
     )
 
 # Secondary dimensions from scoring model v2 are available for advanced interpretation.
-# Revolution and reformism stay outside x/y placement and are used as qualitative dimensions.
+# Revolution and reformism are direct but secondary v2 coordinate inputs and remain important qualitative dimensions.

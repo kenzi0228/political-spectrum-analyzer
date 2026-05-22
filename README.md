@@ -14,7 +14,7 @@ Current verified status from local files:
 
 - Desktop version: stable (`v1.0.0-desktop` is preserved as a documentation anchor).
 - Streamlit version: deployment ready (`v1.1.0-streamlit` is preserved as a documentation anchor).
-- The current coordinate methodology is scoring model v3.
+- The current coordinate methodology is scoring model v2.
 - The reference dataset contains **500 profiles**.
 - The license is a custom non-commercial license; commercial use is not permitted without prior permission.
 
@@ -42,7 +42,7 @@ The current local tree includes:
 - `streamlit_app.py` for the web interface;
 - `src/political_spectrum_analyzer/` for package code;
 - `src/political_spectrum_analyzer/services/profile_interpretation_service.py` for detailed profile reading;
-- `src/political_spectrum_analyzer/services/scoring_model_v3.py` for the current coordinate formula;
+- `src/political_spectrum_analyzer/model/scoring_model_v2.py` for the current coordinate formula;
 - `src/political_spectrum_analyzer/web/plotly_plot.py` for the Plotly reference-map helper;
 - `data/reference/personalities.csv` for reference personalities;
 - `data/reference/ideology_taxonomy.csv` and `data/reference/ideology_aliases.csv` for taxonomy support;
@@ -79,42 +79,44 @@ docs/reference_dataset_profile_audit.md
 
 ## Scoring methodology
 
-The current methodology is scoring model v3. It builds weighted ideological blocks, compares opposite blocks, applies small secondary adjustments, then normalizes the result into the graph range `[-4, 4]`.
+The current methodology is Scoring model v2. It builds weighted ideological blocks, compares opposite blocks, applies secondary adjustments, normalizes raw scores with `/ 120`, then maps the result into the graph range `[-4, 4]` with `sigmoid_scaled`.
 
 Implementation:
 
 ```text
-src/political_spectrum_analyzer/services/scoring_model_v3.py
+src/political_spectrum_analyzer/model/scoring_model_v2.py
 ```
 
 Economic blocks:
 
 ```text
 economic_left =
-    0.95 * communisme
-  + 0.75 * regulation
-  + 0.28 * ecologie
+    0.90 * communisme
+  + 0.70 * regulation
+  + 0.35 * ecologie
+  + 0.25 * revolution
 
 economic_right =
-    0.95 * capitalisme
-  + 0.80 * laissez_faire
-  + 0.24 * productivisme
+    0.90 * capitalisme
+  + 0.75 * laissez_faire
+  + 0.25 * productivisme
+  + 0.20 * reformisme
 ```
 
 Social-authority blocks:
 
 ```text
 social_libertarian =
-    0.75 * constructivisme
-  + 0.70 * justice_rehabilitative
-  + 0.75 * progressisme
-  + 0.35 * internationalisme
+    0.70 * constructivisme
+  + 0.65 * justice_rehabilitative
+  + 0.70 * progressisme
+  + 0.50 * internationalisme
 
 social_authoritarian =
     0.60 * essentialisme
   + 0.70 * justice_punitive
   + 0.70 * conservatisme
-  + 0.30 * nationalisme
+  + 0.50 * nationalisme
 ```
 
 Raw axes and normalization:
@@ -123,14 +125,18 @@ Raw axes and normalization:
 economic_raw = economic_right - economic_left
 social_raw = social_authoritarian - social_libertarian
 
-economic_raw += 0.04 * (productivisme - ecologie)
-social_raw += 0.03 * (nationalisme - internationalisme)
+economic_raw += 0.12 * (productivisme - ecologie)
+social_raw += 0.10 * (nationalisme - internationalisme)
+social_raw += 0.08 * (revolution - reformisme)
 
-x = 4 * tanh(0.015 * economic_raw)
-y = 4 * tanh(0.015 * social_raw)
+economic_normalized = economic_raw / 120
+social_normalized = social_raw / 120
+
+x = 4 * sigmoid_scaled(economic_normalized)
+y = 4 * sigmoid_scaled(social_normalized)
 ```
 
-`revolution` and `reformisme` are not direct coordinate inputs in v3. They remain useful for detailed strategic analysis.
+In the current V2 formula, `revolution` and `reformisme` are direct but secondary coordinate inputs. They are also used by the detailed strategic analysis.
 
 ## Web version - Streamlit
 
@@ -318,19 +324,26 @@ Current verified anchors:
 - Web deployment;
 - Deployment ready.
 
-Legacy scoring model v2 anchor:
+Current scoring model v2 anchor:
 
 ```text
 Scoring model v2
 0.90 * communisme
-0.75 * regulation
+0.70 * regulation
 0.12 * (productivisme - ecologie)
 sigmoid_scaled
 revolution
 reformisme
 ```
 
-This block is retained only as a legacy documentation contract. The current coordinate formula is scoring model v3, documented above. In v3, `revolution` and `reformisme` do not directly enter x/y coordinates.
+Legacy scoring model v3 anchor:
+
+```text
+Scoring model v3
+tanh(0.015 * economic_raw)
+```
+
+This block is retained only as a legacy documentation contract. The current coordinate formula is scoring model v2, documented above.
 
 Deployment template anchor:
 

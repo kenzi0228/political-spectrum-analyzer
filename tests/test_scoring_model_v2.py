@@ -3,39 +3,41 @@ import math
 from political_spectrum_analyzer.model.scoring_model_v2 import (
     ECONOMIC_LEFT_WEIGHTS,
     ECONOMIC_RIGHT_WEIGHTS,
-    MODEL_SCALE_K,
+    NORMALIZATION_DENOMINATOR,
     SOCIAL_AUTHORITARIAN_WEIGHTS,
     SOCIAL_LIBERTARIAN_WEIGHTS,
     compute_position,
     compute_projection_breakdown,
     compute_secondary_dimensions,
     scale_raw_score,
+    sigmoid_scaled,
 )
 
 
-def test_revolution_and_reformism_are_not_primary_position_weights():
-    all_position_axes = set(ECONOMIC_LEFT_WEIGHTS)
-    all_position_axes |= set(ECONOMIC_RIGHT_WEIGHTS)
-    all_position_axes |= set(SOCIAL_LIBERTARIAN_WEIGHTS)
-    all_position_axes |= set(SOCIAL_AUTHORITARIAN_WEIGHTS)
+def test_v2_primary_weights_match_documented_model():
+    assert ECONOMIC_LEFT_WEIGHTS == {
+        "communisme": 0.90,
+        "regulation": 0.70,
+        "ecologie": 0.35,
+        "revolution": 0.25,
+    }
+    assert ECONOMIC_RIGHT_WEIGHTS == {
+        "capitalisme": 0.90,
+        "laissez_faire": 0.75,
+        "productivisme": 0.25,
+        "reformisme": 0.20,
+    }
+    assert SOCIAL_LIBERTARIAN_WEIGHTS["internationalisme"] == 0.50
+    assert SOCIAL_AUTHORITARIAN_WEIGHTS["nationalisme"] == 0.50
 
-    assert "revolution" not in all_position_axes
-    assert "reformisme" not in all_position_axes
 
-
-def test_revised_weights_match_documented_model():
-    assert ECONOMIC_LEFT_WEIGHTS["ecologie"] == 0.38
-    assert SOCIAL_LIBERTARIAN_WEIGHTS["internationalisme"] == 0.45
-    assert SOCIAL_AUTHORITARIAN_WEIGHTS["nationalisme"] == 0.45
-    assert ECONOMIC_RIGHT_WEIGHTS["productivisme"] == 0.32
-
-
-def test_tanh_scaling_is_bounded_and_symmetric():
+def test_sigmoid_scaling_is_bounded_and_symmetric():
     assert scale_raw_score(0) == 0
     assert scale_raw_score(10) > 0
     assert scale_raw_score(-10) < 0
     assert abs(scale_raw_score(1000)) <= 4
-    assert math.isclose(scale_raw_score(80), math.tanh(MODEL_SCALE_K * 80) * 4)
+    assert sigmoid_scaled(0) == 0
+    assert math.isclose(scale_raw_score(80), 4 * sigmoid_scaled(80 / NORMALIZATION_DENOMINATOR))
 
 
 def test_left_ecological_profile_moves_left():
@@ -115,6 +117,8 @@ def test_projection_breakdown_exposes_raw_blocks_and_coordinates():
 
     assert hasattr(breakdown, "economic_left")
     assert hasattr(breakdown, "economic_right")
+    assert hasattr(breakdown, "strategic_adjustment")
+    assert hasattr(breakdown, "economic_normalized")
     assert hasattr(breakdown, "x_raw")
     assert hasattr(breakdown, "secondary_dimensions")
     assert -4 <= breakdown.x <= 4

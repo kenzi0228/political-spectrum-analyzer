@@ -2,6 +2,8 @@ from political_spectrum_analyzer.services.profile_interpretation_service import 
     build_profile_archetype,
     build_internal_tensions,
     build_tension_reading,
+    compute_coherence_score,
+    compute_intensity_score,
     get_axis_pair_balances,
     get_dominant_axes,
     get_score_notes,
@@ -69,6 +71,10 @@ def test_interpret_profile_returns_readable_sections():
     assert interpretation.strategic_reading
     assert interpretation.archetype
     assert interpretation.tension_reading
+    assert interpretation.intensity_score > 0
+    assert interpretation.coherence_score >= 0
+    assert interpretation.center_of_gravity
+    assert interpretation.diagnostic_notes
     assert interpretation.profile_highlights
     assert len(interpretation.score_notes) == 16
 
@@ -135,3 +141,12 @@ def test_internal_tensions_detect_cross_axis_patterns():
 
     assert any("market/private-ownership support" in tension for tension in tensions)
     assert any("punitive conception of justice" in tension for tension in tensions)
+
+
+def test_profile_diagnostics_measure_intensity_and_coherence():
+    neutral = {axis: 50 for axis in ["communisme", "capitalisme", "progressisme", "conservatisme"]}
+    marked = {"communisme": 95, "capitalisme": 5, "progressisme": 90, "conservatisme": 10}
+    conflicted = {"communisme": 80, "capitalisme": 80, "progressisme": 80, "conservatisme": 80}
+
+    assert compute_intensity_score(marked) > compute_intensity_score(neutral)
+    assert compute_coherence_score(conflicted) < compute_coherence_score(marked)

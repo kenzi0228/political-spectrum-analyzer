@@ -7,7 +7,7 @@ def test_scoring_model_v2_module_exists():
     assert "compute_position" in content
     assert "compute_projection_breakdown" in content
     assert "compute_secondary_dimensions" in content
-    assert "tanh" in content
+    assert "sigmoid_scaled" in content
 
 
 def test_transforms_exposes_scoring_model_v2_wrappers():
@@ -24,7 +24,7 @@ def test_readme_documents_scoring_model_v2():
     assert "Scoring model v2" in content
     assert "revolution" in content
     assert "reformisme" in content
-    assert "tanh" in content
+    assert "sigmoid_scaled" in content
 
 
 def test_methodology_documents_scoring_model_v2_when_present():
@@ -37,4 +37,4 @@ def test_methodology_documents_scoring_model_v2_when_present():
 
     assert "Scoring model v2" in content
     assert "revolution" in content
-    assert "tanh" in content
+    assert "sigmoid_scaled" in content

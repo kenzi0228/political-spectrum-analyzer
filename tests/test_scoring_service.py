@@ -1,6 +1,6 @@
 from political_spectrum_analyzer.constants import VARIABLE_NAMES
 from political_spectrum_analyzer.domain.models import PersonScores
-from political_spectrum_analyzer.services.scoring_model_v3 import compute_scoring_model_v3_coordinates
+from political_spectrum_analyzer.model.scoring_model_v2 import compute_position
 from political_spectrum_analyzer.services.scoring_service import compute_person_result
 
 
@@ -13,7 +13,7 @@ def test_compute_person_result_returns_coordinates():
     assert isinstance(result.y, float)
 
 
-def test_compute_person_result_uses_scoring_model_v3_coordinates():
+def test_compute_person_result_uses_scoring_model_v2_coordinates():
     scores = {name: 50 for name in VARIABLE_NAMES}
     scores.update(
         {
@@ -25,10 +25,10 @@ def test_compute_person_result_uses_scoring_model_v3_coordinates():
             "productivisme": 30,
         }
     )
-    person = PersonScores(name="Model v3 profile", scores=scores)
+    person = PersonScores(name="Model v2 profile", scores=scores)
 
     result = compute_person_result(person)
-    expected_x, expected_y = compute_scoring_model_v3_coordinates(scores)
+    expected_x, expected_y = compute_position(scores)
 
     assert result.x == expected_x
     assert result.y == expected_y

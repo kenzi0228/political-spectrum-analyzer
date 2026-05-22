@@ -6,6 +6,7 @@ NAVIGATION = Path("src/political_spectrum_analyzer/streamlit_ui/navigation.py")
 PROFILE_STATE = Path("src/political_spectrum_analyzer/streamlit_ui/profile_state.py")
 PROFILE_INPUTS = Path("src/political_spectrum_analyzer/streamlit_ui/profile_inputs.py")
 REFERENCE_FILTERS = Path("src/political_spectrum_analyzer/streamlit_ui/reference_filters.py")
+PAGES = Path("src/political_spectrum_analyzer/streamlit_ui/pages.py")
 STYLES = Path("src/political_spectrum_analyzer/streamlit_ui/styles.py")
 TEXT = Path("src/political_spectrum_analyzer/streamlit_ui/text.py")
 
@@ -40,11 +41,13 @@ def test_filters_include_any_none_and_real_value_pipeline():
 
 def test_main_uses_original_detailed_analysis_renderer():
     content = APP.read_text(encoding="utf-8")
+    pages = PAGES.read_text(encoding="utf-8")
     main_start = content.index("def main")
     entrypoint = content.rfind('if __name__ == "__main__"')
     main_body = content[main_start:entrypoint]
 
     assert "_render_analysis(people, filtered_personalities, language)" in main_body
+    assert "render_analysis(people, filtered_personalities, language)" in pages
     assert "_render_integrated_analysis_v3(people, filtered_personalities, language)" not in main_body
 
 
@@ -71,8 +74,22 @@ def test_people_can_be_rebuilt_from_session_state_without_rendering_inputs():
     profile_inputs = PROFILE_INPUTS.read_text(encoding="utf-8")
 
     assert "def build_people_from_state()" in profile_state
+    assert "PROFILE_SNAPSHOT_KEY" in profile_state
+    assert "def persist_people_to_state" in profile_state
+    assert "snapshot_scores.get(axis, 0)" in profile_state
+    assert "persist_people_to_state(people)" in profile_inputs
     assert "people = _build_people_from_state()" in content
     assert 'key="profile_count"' in profile_inputs
+
+
+def test_streamlit_pages_are_split_from_entrypoint():
+    content = APP.read_text(encoding="utf-8")
+    pages = PAGES.read_text(encoding="utf-8")
+
+    assert "render_visualization_page" in pages
+    assert "render_reference_data_page" in pages
+    assert "_render_visualization_page(" in content
+    assert "_render_reference_data_page(" in content
 
 
 def test_advanced_helpers_are_defined_before_entrypoint():

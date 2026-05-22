@@ -458,77 +458,39 @@ Potential improvements include:
 - improving the UI with more advanced visual components.
 
 
-## Current Streamlit scoring model v3
+## Current Streamlit Scoring model v2
 
-The current Streamlit coordinate model uses a lighter direct role for ecology,
-productivism, nationalism, and internationalism than earlier drafts. These axes
-still matter, but they should not dominate the main economic and social
-projection because they can appear in several ideological families.
+The current Streamlit coordinate model is Scoring model v2. It uses weighted
+economic and societal blocks, includes `revolution` and `reformisme` as
+secondary strategic pressures, then normalizes the raw axes with `/ 120` and
+`sigmoid_scaled`.
 
 Economic coordinate:
 
 ```text
-economic_left = communisme * 0.95 + regulation * 0.75 + ecologie * 0.28
-economic_right = capitalisme * 0.95 + laissez_faire * 0.80 + productivisme * 0.24
+economic_left = communisme * 0.90 + regulation * 0.70 + ecologie * 0.35 + revolution * 0.25
+economic_right = capitalisme * 0.90 + laissez_faire * 0.75 + productivisme * 0.25 + reformisme * 0.20
 x_raw = economic_right - economic_left
-x_raw += 0.04 * (productivisme - ecologie)
+x_raw += 0.12 * (productivisme - ecologie)
 ```
 
 Societal coordinate:
 
 ```text
-social_libertarian = constructivisme * 0.75 + justice_rehabilitative * 0.70 + progressisme * 0.75 + internationalisme * 0.35
-social_authoritarian = essentialisme * 0.60 + justice_punitive * 0.70 + conservatisme * 0.70 + nationalisme * 0.30
+social_libertarian = constructivisme * 0.70 + justice_rehabilitative * 0.65 + progressisme * 0.70 + internationalisme * 0.50
+social_authoritarian = essentialisme * 0.60 + justice_punitive * 0.70 + conservatisme * 0.70 + nationalisme * 0.50
 y_raw = social_authoritarian - social_libertarian
-y_raw += 0.03 * (nationalisme - internationalisme)
+y_raw += 0.10 * (nationalisme - internationalisme)
+y_raw += 0.08 * (revolution - reformisme)
 ```
 
 Saturation:
 
 ```text
-x = tanh(0.015 * x_raw) * 4
-y = tanh(0.015 * y_raw) * 4
-```
-
-`revolution` and `reformisme` remain outside the x/y coordinate model and are
-used for strategic interpretation.
-
-
-## Scoring model v2
-
-The revised positioning model separates ideological coordinates from the method of political change.
-
-`revolution` and `reformisme` are not included in the x/y projection anymore. They describe how political change is pursued, not whether a profile is economically left/right or socially authoritarian/libertarian.
-
-They are preserved as a secondary analytical dimension:
-
-```text
-change_method = revolution - reformisme
-```
-
-Economic coordinate:
-
-```text
-economic_left = communisme * 0.95 + regulation * 0.75 + ecologie * 0.38
-economic_right = capitalisme * 0.95 + laissez_faire * 0.80 + productivisme * 0.32
-x_raw = economic_right - economic_left
-x_raw += 0.10 * (productivisme - ecologie)
-```
-
-Societal coordinate:
-
-```text
-social_libertarian = constructivisme * 0.75 + justice_rehabilitative * 0.70 + progressisme * 0.75 + internationalisme * 0.45
-social_authoritarian = essentialisme * 0.65 + justice_punitive * 0.75 + conservatisme * 0.75 + nationalisme * 0.45
-y_raw = social_authoritarian - social_libertarian
-y_raw += 0.06 * (nationalisme - internationalisme)
-```
-
-Saturation:
-
-```text
-x = tanh(0.016 * x_raw) * 4
-y = tanh(0.016 * y_raw) * 4
+economic_normalized = x_raw / 120
+social_normalized = y_raw / 120
+x = 4 * sigmoid_scaled(economic_normalized)
+y = 4 * sigmoid_scaled(social_normalized)
 ```
 
 This keeps moderate profiles nuanced and prevents extreme raw scores from leaving the graph range.

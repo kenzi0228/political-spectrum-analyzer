@@ -4,6 +4,7 @@ import re
 
 APP = Path("streamlit_app.py")
 REFERENCE_FILTERS = Path("src/political_spectrum_analyzer/streamlit_ui/reference_filters.py")
+PAGES = Path("src/political_spectrum_analyzer/streamlit_ui/pages.py")
 DOC = Path("docs/real_streamlit_ui_integration.md")
 README = Path("README.md")
 TEXT = Path("src/political_spectrum_analyzer/streamlit_ui/text.py")
@@ -54,8 +55,10 @@ def test_score_input_mode_label_is_visible_before_sidebar_options():
 
 def test_reference_dataset_tab_uses_filtered_personalities():
     main = _main_block()
+    pages = PAGES.read_text(encoding="utf-8")
 
-    assert "for person in filtered_personalities" in main
+    assert "_render_reference_data_page(filtered_personalities, language, _t)" in main
+    assert "for person in filtered_personalities" in pages
 
 
 def test_real_ui_integration_doc_exists():

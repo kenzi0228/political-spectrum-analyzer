@@ -1,25 +1,36 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from math import tanh
+from math import exp
 from typing import Mapping
 
 GRAPH_LIMIT = 4.0
-MODEL_SCALE_K = 0.016
+NORMALIZATION_DENOMINATOR = 120.0
+SIGMOID_STEEPNESS = 2.0
 
-ECONOMIC_LEFT_WEIGHTS = {"communisme": 0.95, "regulation": 0.75, "ecologie": 0.38}
-ECONOMIC_RIGHT_WEIGHTS = {"capitalisme": 0.95, "laissez_faire": 0.80, "productivisme": 0.32}
+ECONOMIC_LEFT_WEIGHTS = {
+    "communisme": 0.90,
+    "regulation": 0.70,
+    "ecologie": 0.35,
+    "revolution": 0.25,
+}
+ECONOMIC_RIGHT_WEIGHTS = {
+    "capitalisme": 0.90,
+    "laissez_faire": 0.75,
+    "productivisme": 0.25,
+    "reformisme": 0.20,
+}
 SOCIAL_LIBERTARIAN_WEIGHTS = {
-    "constructivisme": 0.75,
-    "justice_rehabilitative": 0.70,
-    "progressisme": 0.75,
-    "internationalisme": 0.45,
+    "constructivisme": 0.70,
+    "justice_rehabilitative": 0.65,
+    "progressisme": 0.70,
+    "internationalisme": 0.50,
 }
 SOCIAL_AUTHORITARIAN_WEIGHTS = {
-    "essentialisme": 0.65,
-    "justice_punitive": 0.75,
-    "conservatisme": 0.75,
-    "nationalisme": 0.45,
+    "essentialisme": 0.60,
+    "justice_punitive": 0.70,
+    "conservatisme": 0.70,
+    "nationalisme": 0.50,
 }
 
 
@@ -31,8 +42,11 @@ class ProjectionBreakdown:
     social_authoritarian: float
     economic_adjustment: float
     social_adjustment: float
+    strategic_adjustment: float
     x_raw: float
     y_raw: float
+    economic_normalized: float
+    social_normalized: float
     x: float
     y: float
     secondary_dimensions: dict[str, float]
@@ -49,8 +63,18 @@ def _weighted_sum(scores: Mapping[str, object], weights: Mapping[str, float]) ->
     return sum(_score(scores, axis) * weight for axis, weight in weights.items())
 
 
-def scale_raw_score(raw: float, k: float = MODEL_SCALE_K, graph_limit: float = GRAPH_LIMIT) -> float:
-    return tanh(k * raw) * graph_limit
+def sigmoid_scaled(value: float, steepness: float = SIGMOID_STEEPNESS) -> float:
+    """Map a normalized value to [-1, 1] using the legacy v2 sigmoid scale."""
+    return (2.0 / (1.0 + exp(-steepness * value))) - 1.0
+
+
+def scale_raw_score(
+    raw: float,
+    denominator: float = NORMALIZATION_DENOMINATOR,
+    graph_limit: float = GRAPH_LIMIT,
+) -> float:
+    normalized = raw / denominator
+    return graph_limit * sigmoid_scaled(normalized)
 
 
 def compute_secondary_dimensions(scores: Mapping[str, object]) -> dict[str, float]:
@@ -69,11 +93,15 @@ def compute_projection_breakdown(scores: Mapping[str, object]) -> ProjectionBrea
     social_libertarian = _weighted_sum(scores, SOCIAL_LIBERTARIAN_WEIGHTS)
     social_authoritarian = _weighted_sum(scores, SOCIAL_AUTHORITARIAN_WEIGHTS)
 
-    economic_adjustment = 0.10 * (_score(scores, "productivisme") - _score(scores, "ecologie"))
-    social_adjustment = 0.06 * (_score(scores, "nationalisme") - _score(scores, "internationalisme"))
+    economic_adjustment = 0.12 * (_score(scores, "productivisme") - _score(scores, "ecologie"))
+    social_adjustment = 0.10 * (_score(scores, "nationalisme") - _score(scores, "internationalisme"))
+    strategic_adjustment = 0.08 * (_score(scores, "revolution") - _score(scores, "reformisme"))
 
     x_raw = economic_right - economic_left + economic_adjustment
-    y_raw = social_authoritarian - social_libertarian + social_adjustment
+    y_raw = social_authoritarian - social_libertarian + social_adjustment + strategic_adjustment
+
+    economic_normalized = x_raw / NORMALIZATION_DENOMINATOR
+    social_normalized = y_raw / NORMALIZATION_DENOMINATOR
 
     x = scale_raw_score(x_raw)
     y = scale_raw_score(y_raw)
@@ -85,8 +113,11 @@ def compute_projection_breakdown(scores: Mapping[str, object]) -> ProjectionBrea
         social_authoritarian=round(social_authoritarian, 4),
         economic_adjustment=round(economic_adjustment, 4),
         social_adjustment=round(social_adjustment, 4),
+        strategic_adjustment=round(strategic_adjustment, 4),
         x_raw=round(x_raw, 4),
         y_raw=round(y_raw, 4),
+        economic_normalized=round(economic_normalized, 4),
+        social_normalized=round(social_normalized, 4),
         x=round(x, 3),
         y=round(y, 3),
         secondary_dimensions={k: round(v, 4) for k, v in compute_secondary_dimensions(scores).items()},

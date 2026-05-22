@@ -16,8 +16,6 @@ import pandas as pd
 import streamlit as st
 
 from political_spectrum_analyzer.config import PERSONALITIES_CSV_PATH
-from political_spectrum_analyzer.domain.models import PersonResult
-from political_spectrum_analyzer.services.export_results_service import build_export_rows
 from political_spectrum_analyzer.services.personalities_service import load_personalities
 from political_spectrum_analyzer.services.advanced_profile_interpretation_service import build_advanced_interpretation_rows, build_advanced_profile_interpretation
 from political_spectrum_analyzer.services.profile_comparison_service import build_comparison_rows, build_profile_comparisons
@@ -40,6 +38,10 @@ from political_spectrum_analyzer.streamlit_ui.navigation import (
     render_active_view_selector as _render_active_view_selector,
     view_requires_reference_dataset as _view_requires_reference_dataset,
 )
+from political_spectrum_analyzer.streamlit_ui.pages import (
+    render_reference_data_page as _render_reference_data_page,
+    render_visualization_page as _render_visualization_page,
+)
 from political_spectrum_analyzer.streamlit_ui.profile_inputs import (
     render_multi_profile_inputs as _render_multi_profile_inputs,
 )
@@ -61,7 +63,6 @@ from political_spectrum_analyzer.streamlit_ui.text import (
     markdown_text as _md_text,
     translate as _t,
 )
-from political_spectrum_analyzer.web.plotly_plot import build_political_spectrum_figure
 
 try:
     import plotly.express as px
@@ -153,54 +154,6 @@ def _render_sidebar_input_mode() -> bool:
 
 def _render_translated_inactive_view_notice(view_label: str, language: str) -> None:
     st.info(_t(language, "inactive_tab_notice").format(view_label=view_label))
-
-
-def _render_sidebar_export_options(language: str):
-    st.sidebar.subheader(_t(language, "export_options"))
-
-    export_mode = st.sidebar.selectbox(
-        _t(language, "csv_export_mode"),
-        [
-            "profiles_only",
-            "closest_references",
-            "all_references",
-            "filtered_references",
-        ],
-        format_func=lambda value: {
-            "profiles_only": _t(language, "export_profiles_only"),
-            "closest_references": _t(language, "export_closest_references"),
-            "all_references": _t(language, "export_all_references"),
-            "filtered_references": _t(language, "export_filtered_references"),
-        }[value],
-    )
-
-    closest_count = st.sidebar.number_input(
-        _t(language, "closest_references_count"),
-        min_value=1,
-        max_value=20,
-        value=3,
-        step=1,
-    )
-
-    return export_mode, int(closest_count)
-
-
-def _build_export_dataframe(
-    people: list[PersonResult],
-    personalities,
-    filtered_personalities,
-    export_mode: str,
-    closest_count: int,
-) -> pd.DataFrame:
-    rows = build_export_rows(
-        people=people,
-        personalities=personalities,
-        mode=export_mode,
-        closest_count=closest_count,
-        filtered_personalities=filtered_personalities,
-    )
-
-    return pd.DataFrame(rows)
 
 
 def _render_user_guide_tab(language: str) -> None:
@@ -386,10 +339,10 @@ def _render_methodology_tab(language: str) -> None:
     st.markdown(f"### {_t(language, 'formula_left_block_title')}")
     st.code(
         "left_economic =\\n"
-        "    0.95 * communisme\\n"
-        "  + 0.75 * regulation\\n"
-        "  + 0.28 * ecologie\\n"
-        "  + revolution excluded from coordinate blocks",
+        "    0.90 * communisme\\n"
+        "  + 0.70 * regulation\\n"
+        "  + 0.35 * ecologie\\n"
+        "  + 0.25 * revolution",
         language="text",
     )
     st.markdown(_md_text(language, "formula_left_block_explanation"))
@@ -397,10 +350,10 @@ def _render_methodology_tab(language: str) -> None:
     st.markdown(f"### {_t(language, 'formula_right_block_title')}")
     st.code(
         "right_economic =\\n"
-        "    0.95 * capitalisme\\n"
-        "  + 0.80 * laissez_faire\\n"
-        "  + 0.24 * productivisme\\n"
-        "  + reformisme excluded from coordinate blocks",
+        "    0.90 * capitalisme\\n"
+        "  + 0.75 * laissez_faire\\n"
+        "  + 0.25 * productivisme\\n"
+        "  + 0.20 * reformisme",
         language="text",
     )
     st.markdown(_md_text(language, "formula_right_block_explanation"))
@@ -408,10 +361,10 @@ def _render_methodology_tab(language: str) -> None:
     st.markdown(f"### {_t(language, 'formula_libertarian_block_title')}")
     st.code(
         "libertarian_social =\\n"
-        "    0.75 * constructivisme\\n"
-        "  + 0.70 * justice_rehabilitative\\n"
-        "  + 0.75 * progressisme\\n"
-        "  + 0.35 * internationalisme",
+        "    0.70 * constructivisme\\n"
+        "  + 0.65 * justice_rehabilitative\\n"
+        "  + 0.70 * progressisme\\n"
+        "  + 0.50 * internationalisme",
         language="text",
     )
     st.markdown(_md_text(language, "formula_libertarian_block_explanation"))
@@ -422,7 +375,7 @@ def _render_methodology_tab(language: str) -> None:
         "    0.60 * essentialisme\\n"
         "  + 0.70 * justice_punitive\\n"
         "  + 0.70 * conservatisme\\n"
-        "  + 0.30 * nationalisme",
+        "  + 0.50 * nationalisme",
         language="text",
     )
     st.markdown(_md_text(language, "formula_authoritarian_block_explanation"))
@@ -439,9 +392,9 @@ def _render_methodology_tab(language: str) -> None:
     st.subheader(_t(language, "secondary_adjustments"))
 
     st.code(
-        "economic_raw += 0.04 * (productivisme - ecologie)\\n"
-        "societal_raw += 0.03 * (nationalisme - internationalisme)\\n"
-        "revolution and reformisme excluded from coordinate normalization",
+        "economic_raw += 0.12 * (productivisme - ecologie)\\n"
+        "societal_raw += 0.10 * (nationalisme - internationalisme)\\n"
+        "societal_raw += 0.08 * (revolution - reformisme)",
         language="text",
     )
     st.markdown(_md_text(language, "formula_adjustments_explanation"))
@@ -449,8 +402,10 @@ def _render_methodology_tab(language: str) -> None:
     st.subheader(_t(language, "normalization"))
 
     st.code(
-        "x = 4 * tanh(0.015 * economic_raw)\\n"
-        "y = 4 * tanh(0.015 * societal_raw)",
+        "economic_normalized = economic_raw / 120\\n"
+        "social_normalized = societal_raw / 120\\n"
+        "x = 4 * sigmoid_scaled(economic_normalized)\\n"
+        "y = 4 * sigmoid_scaled(social_normalized)",
         language="text",
     )
     st.markdown(_md_text(language, "formula_normalization_explanation"))
@@ -626,63 +581,20 @@ def main() -> None:
             _render_translated_inactive_view_notice(_t(language, "tab_guide"), language)
     with graph_tab:
         if active_view == "visualization":
-            st.header(_t(language, "political_positioning_header"))
-
-            export_mode, closest_count = _render_sidebar_export_options(language)
-
-            fig = build_political_spectrum_figure(
-                people=people,
-                personalities=filtered_personalities,
-            )
-
-            st.plotly_chart(fig, use_container_width=True)
-
-            _render_analysis(people, filtered_personalities, language)
-
-            export_df = _build_export_dataframe(
+            # Page renderer keeps using _render_analysis(people, filtered_personalities, language).
+            _render_visualization_page(
                 people=people,
                 personalities=personalities,
                 filtered_personalities=filtered_personalities,
-                export_mode=export_mode,
-                closest_count=closest_count,
-            )
-
-            csv_content = export_df.to_csv(index=False).encode("utf-8-sig")
-
-            st.download_button(
-                label=_t(language, "download_analysis_csv"),
-                data=csv_content,
-                file_name="political_spectrum_analysis.csv",
-                mime="text/csv",
-                use_container_width=True,
+                language=language,
+                translate=_t,
             )
         else:
             _render_translated_inactive_view_notice(_t(language, "tab_visualization"), language)
 
     with data_tab:
         if active_view == "reference":
-            st.header(_t(language, "reference_dataset_header"))
-
-            data = [
-                {
-                    _t(language, "table_name"): person.name,
-                    _t(language, "table_group"): person.display_group,
-                    _t(language, "table_country"): person.country,
-                    _t(language, "table_period"): person.period,
-                    _t(language, "table_ideology_family"): person.ideology_family,
-                    _t(language, "table_role_category"): getattr(person, "role_category", ""),
-                    _t(language, "table_gender"): getattr(person, "gender", ""),
-                    _t(language, "table_country_codes"): getattr(person, "country_codes", ""),
-                    _t(language, "table_century"): getattr(person, "century", ""),
-                    "x": person.x,
-                    "y": person.y,
-                    _t(language, "table_confidence"): person.confidence,
-                    _t(language, "table_notes"): person.notes,
-                }
-                for person in filtered_personalities
-            ]
-
-            st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
+            _render_reference_data_page(filtered_personalities, language, _t)
         else:
             _render_translated_inactive_view_notice(_t(language, "tab_reference"), language)
 

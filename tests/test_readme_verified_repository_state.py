@@ -19,27 +19,26 @@ def test_readme_mentions_actual_reference_dataset_size():
     assert f"**{_dataset_count()} profiles**" in _readme()
 
 
-def test_readme_documents_current_scoring_model_v3_and_frames_legacy_v2():
+def test_readme_documents_current_scoring_model_v2():
     text = _readme()
 
-    assert "0.95 * communisme" in text
-    assert "0.80 * laissez_faire" in text
-    assert "0.28 * ecologie" in text
-    assert "0.24 * productivisme" in text
-    assert "0.35 * internationalisme" in text
+    assert "The current coordinate methodology is scoring model v2." in text
+    assert "0.90 * communisme" in text
+    assert "0.75 * laissez_faire" in text
+    assert "0.35 * ecologie" in text
+    assert "0.25 * productivisme" in text
+    assert "0.50 * internationalisme" in text
     assert "0.60 * essentialisme" in text
     assert "0.70 * justice_punitive" in text
     assert "0.70 * conservatisme" in text
-    assert "0.30 * nationalisme" in text
-    assert "0.04 * (productivisme - ecologie)" in text
-    assert "0.03 * (nationalisme - internationalisme)" in text
-    assert "tanh(0.015 * economic_raw)" in text
-    assert "Legacy scoring model v2 anchor" in text
+    assert "0.50 * nationalisme" in text
+    assert "0.12 * (productivisme - ecologie)" in text
+    assert "0.10 * (nationalisme - internationalisme)" in text
+    assert "0.08 * (revolution - reformisme)" in text
+    assert "economic_normalized = economic_raw / 120" in text
+    assert "sigmoid_scaled" in text
+    assert "Legacy scoring model v3 anchor" in text
     assert "This block is retained only as a legacy documentation contract" in text
-
-    assert "0.25 * revolution" not in text
-    assert "0.20 * reformisme" not in text
-    assert "raw / 120" not in text
 
 
 def test_readme_frames_demo_placeholder_as_template_not_fake_claim():

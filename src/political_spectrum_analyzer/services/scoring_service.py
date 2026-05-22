@@ -10,7 +10,6 @@ from political_spectrum_analyzer.constants import (
 )
 from political_spectrum_analyzer.domain.models import PersonResult, PersonScores
 from political_spectrum_analyzer.domain.validation import validate_scores
-from political_spectrum_analyzer.services.scoring_model_v3 import compute_scoring_model_v3_coordinates
 
 
 def clamp(value: float, lower: float, upper: float) -> float:
@@ -19,7 +18,7 @@ def clamp(value: float, lower: float, upper: float) -> float:
 
 def compute_person_result(person: PersonScores) -> PersonResult:
     validate_scores(person.scores)
-    x_val, y_val = compute_scoring_model_v3_coordinates(person.scores)
+    x_val, y_val = compute_position_v2(person.scores)
 
     return PersonResult(
         name=person.name,
