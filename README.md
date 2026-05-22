@@ -349,33 +349,8 @@ Deployment template anchor:
 
 ```text
 Live Streamlit demo
-Live demo: https://<your-app-name>.streamlit.app
+Live demo: https://political-spectrum-analyzer.streamlit.app/
 ```
-
-This placeholder is kept for forks and deployment documentation tests. It is not a real URL.
-
-Historical release anchors:
-
-```text
-v1.0.0-desktop
-v1.1.0-streamlit
-Desktop version: stable
-Streamlit version: deployment ready
-```
-
-## Known limitations
-
-- The graph is a simplified two-dimensional summary of 16 score axes.
-- Reference-personality coordinates are analytical approximations.
-- Some coordinate placements are still flagged for manual review in the coordinate audit.
-- Political labels simplify complex historical and ideological positions.
-- Similar graph coordinates can hide different score-by-score interpretations.
-- OCR depends on local desktop dependencies and is intentionally excluded from the Streamlit runtime.
-- A recorded Streamlit URL should be verified before being advertised as operational.
-
-## Limitations
-
-This heading is preserved for compatibility with older README tests. See Known limitations for the maintained content.
 
 ## License
 
