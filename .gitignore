@@ -15,6 +15,12 @@ outputs/ocr_debug/
 *.egg-info/
 dist/
 build/
+node_modules/
+.vite/
+coverage/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
 
 # Local helper scripts
 commit_*.ps1

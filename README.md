@@ -1,5 +1,11 @@
 # Political Spectrum Analyzer
 
+> **Web rebuild branch:** the repository now contains a React/TypeScript/Vite
+> application intended for Vercel or Cloudflare Pages. See
+> [`docs/web_platform_rebuild.md`](docs/web_platform_rebuild.md). The existing
+> Streamlit documentation below remains available during the migration and
+> should not be read as the target architecture of this branch.
+
 Political Spectrum Analyzer is a Python application for turning Politiscales-style scores into a readable political profile, a two-dimensional spectrum position, and comparisons with reference personalities.
 
 This README is based on files present in this repository. It separates verified current behavior from legacy documentation anchors that are intentionally preserved for regression tests and historical documentation continuity.
