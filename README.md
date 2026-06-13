@@ -71,6 +71,25 @@ For the web application, the exact current identifier is
 `scoring-model-v2.1`; the `.1` denotes declarative implementation and
 documentation alignment, not a change to the V2 coefficients.
 
+Legacy status anchors retained only for historical test compatibility:
+
+```text
+Desktop version: stable
+Streamlit version: deployment ready
+v1.0.0-desktop
+v1.1.0-streamlit
+Limitations
+```
+
+Legacy deployment-template anchor:
+
+```text
+Live demo: https://<your-app-name>.streamlit.app
+```
+
+This placeholder is kept for forks and deployment documentation tests. It is
+not the public URL of the current web application.
+
 ## What the application does
 
 The application supports the following repository-backed workflows:
