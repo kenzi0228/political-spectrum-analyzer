@@ -22,6 +22,7 @@ export interface Profile {
   id: string;
   name: string;
   scores: Scores;
+  modelVersion: string;
 }
 
 export interface Projection {
@@ -40,6 +41,7 @@ export interface Projection {
 
 export interface ReferenceProfile {
   name: string;
+  period: string;
   display_group: string;
   country: string;
   ideology_family: string;
@@ -50,13 +52,22 @@ export interface ReferenceProfile {
   role_category: string;
   gender: string;
   notes: string;
+  source: string;
+  is_estimated: boolean;
+  provenanceStatus: "sourced" | "unsourced";
 }
 
 export type ViewKey =
+  | "home"
   | "input"
+  | "guide"
   | "visualization"
   | "analysis"
   | "comparison"
-  | "methodology";
+  | "methodology"
+  | "atlas"
+  | "privacy"
+  | "legal"
+  | "about";
 
 export type Language = "fr" | "en";

@@ -17,7 +17,12 @@ dist/
 build/
 node_modules/
 .vite/
+.vite-*.log
 coverage/
+playwright-report/
+test-results/
+.pytest_tmp/
+.npm-cache/
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
@@ -37,3 +42,4 @@ outputs/*.png
 
 # Generated reports
 reports/
+.vercel

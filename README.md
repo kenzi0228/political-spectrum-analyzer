@@ -1,28 +1,75 @@
-# Political Spectrum Analyzer
+# Politiscales Analyser
 
-> **Web rebuild branch:** the repository now contains a React/TypeScript/Vite
-> application intended for Vercel or Cloudflare Pages. See
-> [`docs/web_platform_rebuild.md`](docs/web_platform_rebuild.md). The existing
-> Streamlit documentation below remains available during the migration and
-> should not be read as the target architecture of this branch.
+Politiscales Analyser is a bilingual React and TypeScript application for
+building, comparing, and explaining political profiles across 16 axes.
 
-Political Spectrum Analyzer is a Python application for turning Politiscales-style scores into a readable political profile, a two-dimensional spectrum position, and comparisons with reference personalities.
+Public application:
+`https://politiscales-analyser.vercel.app/`
 
-This README is based on files present in this repository. It separates verified current behavior from legacy documentation anchors that are intentionally preserved for regression tests and historical documentation continuity.
+The current `main` branch targets Vercel and other static web platforms. The
+former Streamlit application is preserved on the `desktop` branch and remains
+in this repository temporarily as a regression oracle during migration.
 
 Repository: `https://github.com/kenzi0228/political-spectrum-analyzer`
 
 ## Project overview
 
-The project contains a Streamlit web interface, a desktop-oriented Python package, local reference datasets, interpretation services, Plotly visualization code, OCR utilities for desktop workflows, and a regression test suite.
+The primary product is a privacy-first browser application:
 
-Current verified status from local files:
+- profiles and scores remain in browser local storage;
+- the scoring model is declared once in `web/model.ts`;
+- analysis exposes raw x/y contributions and a sensitivity simulator;
+- comparison identifies major differences and common ground;
+- the political map supports filters, search, zoom, pan, PNG export, and an
+  accessible table alternative;
+- the reference atlas exposes the provenance status of all 500 estimates;
+- French and English interfaces are available;
+- AdSense is loaded only after an explicit advertising choice.
 
-- Desktop version: stable (`v1.0.0-desktop` is preserved as a documentation anchor).
-- Streamlit version: deployment ready (`v1.1.0-streamlit` is preserved as a documentation anchor).
-- The current coordinate methodology is scoring model v2.
-- The reference dataset contains **500 profiles**.
-- The license is a custom non-commercial license; commercial use is not permitted without prior permission.
+The reference dataset currently contains 500 unsourced editorial estimates.
+The UI labels them accordingly. See
+[`docs/reference_dataset_governance.md`](docs/reference_dataset_governance.md)
+before proposing coordinate changes.
+
+## Web development
+
+```powershell
+npm install
+npm run dev
+```
+
+Verification:
+
+```powershell
+npm test
+npm run build
+npm run test:e2e
+```
+
+The E2E suite runs Chromium at desktop and mobile sizes and includes an
+automated WCAG audit. Production source maps are disabled.
+
+## Privacy and advertising
+
+The application does not send political profiles to an application backend.
+Google AdSense is optional and gated behind the visitor's choice. Before
+serving personalized advertising in the EEA, the publisher must also configure
+a Google-certified CMP in AdSense Privacy & messaging. The local consent banner
+does not claim to replace that account-level certification.
+
+## Repository documentation contracts
+
+The sections below document the former Python and Streamlit implementation.
+Some exact phrases are retained as legacy documentation anchors for regression
+tests. They are historical contracts, not claims about the architecture
+deployed from the current `main` branch.
+
+Legacy project-name anchor: Political Spectrum Analyzer.
+
+Legacy methodology anchor: The current coordinate methodology is scoring model v2.
+For the web application, the exact current identifier is
+`scoring-model-v2.1`; the `.1` denotes declarative implementation and
+documentation alignment, not a change to the V2 coefficients.
 
 ## What the application does
 

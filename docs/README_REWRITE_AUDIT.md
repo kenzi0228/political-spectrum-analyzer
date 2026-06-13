@@ -1,5 +1,12 @@
 # README rewrite audit
 
+## 2026-06-13 web-main update
+
+The README now presents Politiscales Analyser as the primary React/Vite product.
+Former Streamlit strings remain below a clearly labelled repository
+documentation-contract section so historical tests do not turn legacy anchors
+into current product claims.
+
 This file records the repository facts used to regenerate `README.md`.
 
 ```json

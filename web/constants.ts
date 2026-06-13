@@ -33,7 +33,7 @@ export const axisLabel = (axis: AxisKey, language: "fr" | "en"): string => {
   const labels: Record<AxisKey, [string, string]> = {
     constructivisme: ["Constructivisme", "Constructivism"],
     essentialisme: ["Essentialisme", "Essentialism"],
-    justice_rehabilitative: ["Justice rehabilitative", "Rehabilitative justice"],
+    justice_rehabilitative: ["Justice réhabilitative", "Rehabilitative justice"],
     justice_punitive: ["Justice punitive", "Punitive justice"],
     progressisme: ["Progressisme", "Progressivism"],
     conservatisme: ["Conservatisme", "Conservatism"],
@@ -41,12 +41,12 @@ export const axisLabel = (axis: AxisKey, language: "fr" | "en"): string => {
     nationalisme: ["Nationalisme", "Nationalism"],
     communisme: ["Communisme", "Communism"],
     capitalisme: ["Capitalisme", "Capitalism"],
-    regulation: ["Regulation", "Regulation"],
+    regulation: ["Régulation", "Regulation"],
     laissez_faire: ["Laissez-faire", "Laissez-faire"],
-    ecologie: ["Ecologie", "Ecology"],
+    ecologie: ["Écologie", "Ecology"],
     productivisme: ["Productivisme", "Productivism"],
-    revolution: ["Revolution", "Revolution"],
-    reformisme: ["Reformisme", "Reformism"],
+    revolution: ["Révolution", "Revolution"],
+    reformisme: ["Réformisme", "Reformism"],
   };
   return labels[axis][language === "fr" ? 0 : 1];
 };

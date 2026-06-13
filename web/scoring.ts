@@ -1,49 +1,66 @@
 import type { AxisKey, Projection, Scores } from "./types";
+import {
+  MAP_SCALE,
+  MODEL_ADJUSTMENTS,
+  MODEL_BLOCKS,
+  NORMALIZATION_SCALE,
+} from "./model";
 
-const weightedSum = (
+export interface AxisContribution {
+  axis: AxisKey;
+  xWeight: number;
+  yWeight: number;
+  xContribution: number;
+  yContribution: number;
+}
+
+const weightedBlock = (
   scores: Scores,
-  weights: Partial<Record<AxisKey, number>>,
+  terms: readonly { axis: AxisKey; weight: number }[],
 ): number =>
-  Object.entries(weights).reduce(
-    (sum, [axis, weight]) => sum + scores[axis as AxisKey] * (weight ?? 0),
-    0,
+  terms.reduce((sum, { axis, weight }) => sum + scores[axis] * weight, 0);
+
+const axisWeights = (target: "x" | "y"): Partial<Record<AxisKey, number>> => {
+  const weights: Partial<Record<AxisKey, number>> = {};
+  const add = (axis: AxisKey, weight: number) => {
+    weights[axis] = (weights[axis] ?? 0) + weight;
+  };
+  if (target === "x") {
+    MODEL_BLOCKS.economicLeft.forEach(({ axis, weight }) => add(axis, -weight));
+    MODEL_BLOCKS.economicRight.forEach(({ axis, weight }) => add(axis, weight));
+  } else {
+    MODEL_BLOCKS.socialLibertarian.forEach(({ axis, weight }) => add(axis, -weight));
+    MODEL_BLOCKS.socialAuthoritarian.forEach(({ axis, weight }) => add(axis, weight));
+  }
+  MODEL_ADJUSTMENTS.filter((adjustment) => adjustment.target === target).forEach(
+    ({ positive, negative, weight }) => {
+      add(positive, weight);
+      add(negative, -weight);
+    },
   );
+  return weights;
+};
+
+const X_WEIGHTS = axisWeights("x");
+const Y_WEIGHTS = axisWeights("y");
 
 export const sigmoidScaled = (value: number): number =>
   2 / (1 + Math.exp(-2 * value)) - 1;
 
 export const computeProjection = (scores: Scores): Projection => {
-  const economicLeft = weightedSum(scores, {
-    communisme: 0.9,
-    regulation: 0.7,
-    ecologie: 0.35,
-    revolution: 0.25,
-  });
-  const economicRight = weightedSum(scores, {
-    capitalisme: 0.9,
-    laissez_faire: 0.75,
-    productivisme: 0.25,
-    reformisme: 0.2,
-  });
-  const socialLibertarian = weightedSum(scores, {
-    constructivisme: 0.7,
-    justice_rehabilitative: 0.65,
-    progressisme: 0.7,
-    internationalisme: 0.5,
-  });
-  const socialAuthoritarian = weightedSum(scores, {
-    essentialisme: 0.6,
-    justice_punitive: 0.7,
-    conservatisme: 0.7,
-    nationalisme: 0.5,
-  });
-
+  const economicLeft = weightedBlock(scores, MODEL_BLOCKS.economicLeft);
+  const economicRight = weightedBlock(scores, MODEL_BLOCKS.economicRight);
+  const socialLibertarian = weightedBlock(scores, MODEL_BLOCKS.socialLibertarian);
+  const socialAuthoritarian = weightedBlock(scores, MODEL_BLOCKS.socialAuthoritarian);
+  const [economicRule, socialRule, strategicRule] = MODEL_ADJUSTMENTS;
   const economicAdjustment =
-    0.12 * (scores.productivisme - scores.ecologie);
+    economicRule.weight *
+    (scores[economicRule.positive] - scores[economicRule.negative]);
   const socialAdjustment =
-    0.1 * (scores.nationalisme - scores.internationalisme);
+    socialRule.weight * (scores[socialRule.positive] - scores[socialRule.negative]);
   const strategicAdjustment =
-    0.08 * (scores.revolution - scores.reformisme);
+    strategicRule.weight *
+    (scores[strategicRule.positive] - scores[strategicRule.negative]);
   const xRaw = economicRight - economicLeft + economicAdjustment;
   const yRaw =
     socialAuthoritarian -
@@ -52,8 +69,8 @@ export const computeProjection = (scores: Scores): Projection => {
     strategicAdjustment;
 
   return {
-    x: Number((4 * sigmoidScaled(xRaw / 120)).toFixed(3)),
-    y: Number((4 * sigmoidScaled(yRaw / 120)).toFixed(3)),
+    x: Number((MAP_SCALE * sigmoidScaled(xRaw / NORMALIZATION_SCALE)).toFixed(3)),
+    y: Number((MAP_SCALE * sigmoidScaled(yRaw / NORMALIZATION_SCALE)).toFixed(3)),
     xRaw,
     yRaw,
     economicLeft,
@@ -65,6 +82,19 @@ export const computeProjection = (scores: Scores): Projection => {
     strategicAdjustment,
   };
 };
+
+export const computeAxisContributions = (scores: Scores): AxisContribution[] =>
+  (Object.keys(scores) as AxisKey[]).map((axis) => {
+    const xWeight = X_WEIGHTS[axis] ?? 0;
+    const yWeight = Y_WEIGHTS[axis] ?? 0;
+    return {
+      axis,
+      xWeight,
+      yWeight,
+      xContribution: scores[axis] * xWeight,
+      yContribution: scores[axis] * yWeight,
+    };
+  });
 
 export const quadrant = (
   x: number,

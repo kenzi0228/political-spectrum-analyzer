@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SCORES } from "./constants";
-import { computeProjection, sigmoidScaled } from "./scoring";
+import { computeAxisContributions, computeProjection, sigmoidScaled } from "./scoring";
 
 describe("scoring model V2", () => {
   it("keeps the sigmoid centered", () => {
@@ -34,5 +34,28 @@ describe("scoring model V2", () => {
     const projection = computeProjection(DEFAULT_SCORES);
     expect(Number.isFinite(projection.x)).toBe(true);
     expect(Number.isFinite(projection.y)).toBe(true);
+  });
+
+  it("exposes exact per-axis contributions to x and y", () => {
+    const scores = {
+      ...DEFAULT_SCORES,
+      communisme: 80,
+      nationalisme: 70,
+    };
+    const contributions = computeAxisContributions(scores);
+    const projection = computeProjection(scores);
+    const communism = contributions.find((item) => item.axis === "communisme");
+    const nationalism = contributions.find((item) => item.axis === "nationalisme");
+
+    expect(communism?.xWeight).toBe(-0.9);
+    expect(communism?.xContribution).toBe(-72);
+    expect(nationalism?.yWeight).toBe(0.6);
+    expect(nationalism?.yContribution).toBe(42);
+    expect(
+      contributions.reduce((sum, item) => sum + item.xContribution, 0),
+    ).toBeCloseTo(projection.xRaw, 10);
+    expect(
+      contributions.reduce((sum, item) => sum + item.yContribution, 0),
+    ).toBeCloseTo(projection.yRaw, 10);
   });
 });

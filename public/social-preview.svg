@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0e1117"/>
+  <rect x="76" y="72" width="1048" height="486" rx="16" fill="#151827" stroke="#6c63ff"/>
+  <text x="130" y="235" fill="#fafafa" font-family="Arial,sans-serif" font-size="72" font-weight="700">Politiscales Analyser</text>
+  <text x="132" y="308" fill="#b8bccb" font-family="Arial,sans-serif" font-size="30">16 axes · analyses explicables · 500 références documentaires</text>
+  <path d="M132 410h360M312 350v120" stroke="#6c63ff" stroke-width="4"/>
+  <circle cx="385" cy="382" r="15" fill="#f2b134"/>
+</svg>

@@ -1,16 +1,19 @@
 {
-  "name": "political-spectrum-analyzer-web",
+  "name": "politiscales-analyser-web",
   "private": true,
   "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit -p tsconfig.app.json && vite build",
+    "build": "tsc --noEmit -p tsconfig.app.json && vite build && node scripts/generate-static-pages.mjs",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "node scripts/run-e2e.mjs",
+    "test:all": "npm run test && npm run build && npm run test:e2e"
   },
   "dependencies": {
+    "html-to-image": "^1.11.13",
     "lucide-react": "^1.17.0",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",
@@ -18,10 +21,16 @@
     "recharts": "^3.8.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
+    "@playwright/test": "^1.60.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/papaparse": "^5.3.15",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^6.0.2",
+    "jsdom": "^29.1.1",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"

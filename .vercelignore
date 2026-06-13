@@ -1,0 +1,15 @@
+.venv
+.pytest_cache
+.streamlit
+__pycache__
+outputs
+reports
+src
+tests
+streamlit_app.py
+main.py
+requirements.txt
+pyproject.toml
+runtime.txt
+*.py
+*.pyc
