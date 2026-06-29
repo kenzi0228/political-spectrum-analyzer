@@ -32,19 +32,25 @@ const reference = (
 });
 
 describe("visualization reference context", () => {
-  it("keeps every reference when no filter is selected", () => {
+  it("keeps references hidden until a filter is selected", () => {
     const references = [
       reference("A", 0, 0, "France"),
       reference("B", 1, 1, "Germany"),
     ];
 
-    expect(filterReferenceProfiles(references, EMPTY_FILTERS)).toEqual(references);
+    expect(filterReferenceProfiles(references, EMPTY_FILTERS)).toEqual([]);
     expect(
       filterReferenceProfiles(references, {
         ...EMPTY_FILTERS,
         country: ["France"],
       }).map((item) => item.name),
     ).toEqual(["A"]);
+    expect(
+      filterReferenceProfiles(references, {
+        ...EMPTY_FILTERS,
+        country: ["__ANY__"],
+      }),
+    ).toEqual(references);
   });
 
   it("returns the three closest references to the active profile", () => {

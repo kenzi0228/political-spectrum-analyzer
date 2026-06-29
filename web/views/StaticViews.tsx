@@ -1,4 +1,4 @@
-import { CircleHelp, SlidersHorizontal } from "lucide-react";
+import { CircleHelp, ExternalLink, SlidersHorizontal } from "lucide-react";
 import { MODEL_ADJUSTMENTS, MODEL_BLOCKS, MODEL_STATUS, SCORING_MODEL_VERSION } from "../model";
 import type { Language, ViewKey } from "../types";
 import { PageHeading } from "../components/Common";
@@ -54,6 +54,47 @@ export function HomeView({
           </section>
         ))}
       </div>
+      <section className="politiscales-notice">
+        <div>
+          <strong>
+            {language === "fr"
+              ? "Où récupérer vos résultats ?"
+              : "Where can you get your results?"}
+          </strong>
+          <p>
+            {language === "fr"
+              ? "Passez le test original sur Politiscales, relevez les pourcentages affichés sur la page de résultats, puis reportez-les dans la saisie de profil de cet analyseur."
+              : "Take the original Politiscales test, note the percentages shown on its results page, then enter them in this analyzer’s profile input."}
+          </p>
+        </div>
+        <a href="https://politiscales.fr/" target="_blank" rel="noreferrer">
+          <ExternalLink size={16} aria-hidden="true" />
+          {language === "fr"
+            ? "Passer le test Politiscales"
+            : "Take the Politiscales test"}
+        </a>
+      </section>
+      <section className="analysis-block">
+        <h2>{language === "fr" ? "Une lecture, pas une étiquette définitive" : "A reading, not a fixed label"}</h2>
+        <p>
+          {language === "fr"
+            ? "Politiscales Analyser transforme des scores en indices lisibles : coordonnées, contributions du modèle, axes dominants, signaux faibles et tensions internes. La carte sert à explorer un profil, mais l'interprétation sérieuse reste dans le détail des 16 axes."
+            : "Politiscales Analyser turns scores into readable signals: coordinates, model contributions, dominant axes, weak signals, and internal tensions. The map supports exploration, but serious interpretation remains in the detail of all 16 axes."}
+        </p>
+        <p>
+          {language === "fr"
+            ? "Les références historiques et politiques sont des repères documentaires. Une proximité avec une personnalité ne signifie pas une identité politique ; elle indique seulement une distance faible dans ce modèle éditorial."
+            : "Historical and political references are documentary landmarks. Proximity to a personality does not mean political identity; it only indicates a short distance inside this editorial model."}
+        </p>
+      </section>
+      <section className="analysis-block">
+        <h2>{language === "fr" ? "Transparence du contenu" : "Content transparency"}</h2>
+        <ul>
+          <li>{language === "fr" ? "Le modèle est documenté et versionné dans la méthodologie." : "The model is documented and versioned in the methodology."}</li>
+          <li>{language === "fr" ? "Les références non sourcées sont indiquées comme à vérifier." : "Unsourced references are marked as requiring review."}</li>
+          <li>{language === "fr" ? "Les profils créés restent dans le navigateur et peuvent être exportés." : "Created profiles stay in the browser and can be exported."}</li>
+        </ul>
+      </section>
       <section className="privacy-notice">
         <div>
           <strong>{language === "fr" ? "Données et confidentialité" : "Data and privacy"}</strong>
@@ -71,13 +112,13 @@ export function HomeView({
 export function GuideView({ language }: { language: Language }) {
   const steps = language === "fr"
     ? [
-        ["1", "Saisissez les scores", "Créez ou importez un profil, puis ajustez les 16 axes."],
-        ["2", "Lisez la carte", "Sans filtre, les 500 références estimées sont affichées. Un filtre limite à la fois la carte et les proximités."],
+        ["1", "Saisissez les scores", "Passez le test Politiscales, relevez ses pourcentages, puis créez ou importez un profil et ajustez les 16 axes."],
+        ["2", "Lisez la carte", "Les références sont masquées par défaut. Choisissez un filtre ou sélectionnez Any pour afficher les 500 estimations."],
         ["3", "Vérifiez l’analyse", "Consultez les contributions x/y et les contre-signaux avant de retenir une étiquette."],
       ]
     : [
-        ["1", "Enter scores", "Create or import a profile, then adjust all 16 axes."],
-        ["2", "Read the map", "Without filters, all 500 estimated references are displayed. Filters affect both map and proximity."],
+        ["1", "Enter scores", "Take the Politiscales test, note its percentages, then create or import a profile and adjust all 16 axes."],
+        ["2", "Read the map", "References are hidden by default. Choose a filter or select Any to display all 500 estimates."],
         ["3", "Verify the analysis", "Inspect x/y contributions and counter-signals before accepting a label."],
       ];
   return (

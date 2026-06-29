@@ -34,6 +34,7 @@ export type Filters = Record<
 >;
 
 export const ANY_FILTER = "__ANY__";
+const FILTER_STORAGE_KEY = "psa.referenceFilters.v2";
 
 export const EMPTY_FILTERS: Filters = {
   country: [],
@@ -47,7 +48,7 @@ export const EMPTY_FILTERS: Filters = {
 const readStoredFilters = (): Filters => {
   try {
     const parsed: unknown = JSON.parse(
-      localStorage.getItem("psa.referenceFilters") ?? "{}",
+      localStorage.getItem(FILTER_STORAGE_KEY) ?? "{}",
     );
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
       return EMPTY_FILTERS;
@@ -95,8 +96,11 @@ export const findNearestReferences = (
 export const filterReferenceProfiles = (
   references: ReferenceProfile[],
   filters: Filters,
-): ReferenceProfile[] =>
-  references.filter((reference) =>
+): ReferenceProfile[] => {
+  const hasSelection = Object.values(filters).some((values) => values.length > 0);
+  if (!hasSelection) return [];
+
+  return references.filter((reference) =>
     Object.entries(filters).every(([key, values]) => {
       if (values.length === 0 || values.includes(ANY_FILTER)) return true;
       const raw = reference[key as keyof Filters] as string;
@@ -105,6 +109,7 @@ export const filterReferenceProfiles = (
       );
     }),
   );
+};
 
 const safeFilename = (value: string): string =>
   value
@@ -164,7 +169,7 @@ export default function VisualizationView({
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("psa.referenceFilters", JSON.stringify(filters));
+    localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
   }, [filters]);
 
   useEffect(() => {
@@ -201,9 +206,13 @@ export default function VisualizationView({
   const filterSummary =
     activeFilterLabels.length > 0
       ? activeFilterLabels.join(" · ")
-      : language === "fr"
-        ? "Toutes les références"
-        : "All references";
+      : Object.values(filters).some((values) => values.includes(ANY_FILTER))
+        ? language === "fr"
+          ? "Toutes les références"
+          : "All references"
+        : language === "fr"
+          ? "Aucune référence sélectionnée"
+          : "No references selected";
   const options = (key: keyof Filters) =>
     Array.from(
       new Set(
@@ -283,8 +292,8 @@ export default function VisualizationView({
         <h1>{language === "fr" ? "Carte politique" : "Political map"}</h1>
         <p>
           {language === "fr"
-            ? "Sans filtre, les 500 références sont incluses. Les proximités suivent toujours le sous-ensemble affiché."
-            : "Without filters, all 500 references are included. Nearest matches always use the displayed subset."}
+            ? "Les références restent masquées tant qu’aucun filtre n’est choisi. Sélectionnez Any pour toutes les afficher."
+            : "References remain hidden until a filter is selected. Select Any to display them all."}
         </p>
       </div>
       <section className="filter-bar" ref={filtersRef}>

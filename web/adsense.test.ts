@@ -19,6 +19,18 @@ describe("AdSense publication contract", () => {
     expect(loader).toContain("script.crossOrigin = \"anonymous\"");
   });
 
+  it("serves crawlable editorial content before React loads", () => {
+    const html = readFileSync("index.html", "utf8");
+    const staticGenerator = readFileSync("scripts/generate-static-pages.mjs", "utf8");
+
+    expect(html).toContain("crawlable-content");
+    expect(html).toContain("Ce que le site apporte");
+    expect(html).toContain("Méthode et limites");
+    expect(staticGenerator).toContain("renderFallback");
+    expect(staticGenerator).toContain("Récupérer ses scores");
+    expect(staticGenerator).toContain("Politique de confidentialité");
+  });
+
   it("publishes the authorized seller declaration", () => {
     const adsText = readFileSync("public/ads.txt", "utf8").trim();
 

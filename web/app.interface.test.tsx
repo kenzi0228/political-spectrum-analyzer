@@ -14,6 +14,15 @@ beforeEach(() => {
 });
 
 describe("main application interface", () => {
+  it("links the home page to the original Politiscales test", () => {
+    render(<App />);
+
+    expect(
+      screen.getByRole("link", { name: "Passer le test Politiscales" }),
+    ).toHaveAttribute("href", "https://politiscales.fr/");
+    expect(screen.getByText(/relevez les pourcentages affichés/)).toBeInTheDocument();
+  });
+
   it("starts with precise numeric input and navigates to analysis", async () => {
     const user = userEvent.setup();
     render(<App />);
